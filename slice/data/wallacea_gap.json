@@ -1,0 +1,279 @@
+{
+ "what": "Minimum-bottleneck water crossing from the Sunda shelf to Sahul.",
+ "definition": "Over all island-hopping routes, the smallest achievable longest single hop. Any crossing by any route must include a gap at least this wide.",
+ "grid": "ETOPO 2022 bedrock, 60 arc-seconds, corridor (105.0, 152.0, -16.0, 8.0)",
+ "distances": "Exact great-circle on unit-sphere coordinates. No projection.",
+ "notMeasured": "This is NOT the Sunda-to-Sahul coastline distance, which is ~994 km at -74 m and is a different quantity.",
+ "rows": [
+  {
+   "bottleneckKm": 76.2,
+   "hops": 1859,
+   "gapFrom": [
+    129.525,
+    -2.792
+   ],
+   "gapTo": [
+    129.575,
+    -2.108
+   ],
+   "seaM": 0.0,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 114.9,
+   "hops": 385,
+   "gapFrom": [
+    116.625,
+    -2.325
+   ],
+   "gapTo": [
+    117.658,
+    -2.292
+   ],
+   "seaM": 0.0,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 115.2,
+   "hops": 84,
+   "gapFrom": [
+    119.892,
+    0.492
+   ],
+   "gapTo": [
+    118.958,
+    0.942
+   ],
+   "seaM": 0.0,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 70.5,
+   "hops": 1397,
+   "gapFrom": [
+    126.092,
+    -3.108
+   ],
+   "gapTo": [
+    126.058,
+    -2.475
+   ],
+   "seaM": -68.3,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 70.5,
+   "hops": 424,
+   "gapFrom": [
+    126.092,
+    -3.108
+   ],
+   "gapTo": [
+    126.058,
+    -2.475
+   ],
+   "seaM": -68.3,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 80.9,
+   "hops": 102,
+   "gapFrom": [
+    130.592,
+    -2.275
+   ],
+   "gapTo": [
+    130.342,
+    -2.958
+   ],
+   "seaM": -68.3,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 70.5,
+   "hops": 1365,
+   "gapFrom": [
+    126.092,
+    -3.108
+   ],
+   "gapTo": [
+    126.058,
+    -2.475
+   ],
+   "seaM": -73.9,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 70.5,
+   "hops": 439,
+   "gapFrom": [
+    126.092,
+    -3.108
+   ],
+   "gapTo": [
+    126.058,
+    -2.475
+   ],
+   "seaM": -73.9,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 80.9,
+   "hops": 98,
+   "gapFrom": [
+    130.592,
+    -2.275
+   ],
+   "gapTo": [
+    130.342,
+    -2.958
+   ],
+   "seaM": -73.9,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 70.5,
+   "hops": 1288,
+   "gapFrom": [
+    126.092,
+    -3.108
+   ],
+   "gapTo": [
+    126.058,
+    -2.475
+   ],
+   "seaM": -77.0,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 70.5,
+   "hops": 424,
+   "gapFrom": [
+    126.092,
+    -3.108
+   ],
+   "gapTo": [
+    126.058,
+    -2.475
+   ],
+   "seaM": -77.0,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 80.9,
+   "hops": 100,
+   "gapFrom": [
+    130.592,
+    -2.275
+   ],
+   "gapTo": [
+    130.342,
+    -2.958
+   ],
+   "seaM": -77.0,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 70.5,
+   "hops": 1097,
+   "gapFrom": [
+    126.092,
+    -3.108
+   ],
+   "gapTo": [
+    126.058,
+    -2.475
+   ],
+   "seaM": -85.0,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 70.5,
+   "hops": 358,
+   "gapFrom": [
+    126.092,
+    -3.108
+   ],
+   "gapTo": [
+    126.058,
+    -2.475
+   ],
+   "seaM": -85.0,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 78.5,
+   "hops": 88,
+   "gapFrom": [
+    130.592,
+    -2.292
+   ],
+   "gapTo": [
+    130.358,
+    -2.958
+   ],
+   "seaM": -85.0,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 70.4,
+   "hops": 643,
+   "gapFrom": [
+    126.092,
+    -3.108
+   ],
+   "gapTo": [
+    126.075,
+    -2.475
+   ],
+   "seaM": -131.0,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 70.4,
+   "hops": 281,
+   "gapFrom": [
+    126.092,
+    -3.108
+   ],
+   "gapTo": [
+    126.075,
+    -2.475
+   ],
+   "seaM": -131.0,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 70.4,
+   "hops": 84,
+   "gapFrom": [
+    126.092,
+    -3.108
+   ],
+   "gapTo": [
+    126.075,
+    -2.475
+   ],
+   "seaM": -131.0,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  }
+ ]
+}

@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>One Ember — Beats 05, 06, 07</title>
+<meta name="description" content="Phase 5. Beats 05, 06 and 07 of One Ember on one continuous t: the hold, the crossing, and the others.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' fill='%2304060A'/%3E%3Ccircle cx='8' cy='8' r='3' fill='%23E8703A'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap">
+<style>
+/* ==========================================================================
+   THE TYPE SYSTEM
+   Three voices. They never mix, and each has exactly one job.
+
+     THE FILM VOICE   Fraunces 300. The line the beat is about. Once per beat,
+                      never more. Bone. 24ch. The only large thing on screen.
+     THE RECORD       Plex Sans 300. What the evidence says, qualifiers intact.
+                      Law 07 lives here. 42ch, bone-dim, hairline rule.
+     INSTRUMENTATION  Plex Mono 400, 10.5px, uppercase, tracked .16em. Places,
+                      dates, measurements, the ruler. Ice-dim. Never bone.
+
+   Three placement laws:
+     1. Copy lives in the left column and instrumentation in the right margin.
+        Nothing is ever written across the middle of the frame. A place is
+        named by a marker on the globe and a word in the margin, joined by a
+        leader - never by type laid over the ground.
+     2. No plate, no box, no blur behind a word. The frame may be GRADED -
+        edges down for the chrome, the lower left down further while there is
+        a sentence in it - and the grade leaves when the sentence does. That
+        is a graduated filter, and it is the difference between photography
+        and a caption.
+     3. Ember never appears in type. Law 02 reserves warm light for people, so
+        the only ember on this page is a person-marker or a person's pigment.
+   ========================================================================== */
+:root{
+  --void:#04060A;
+  --rule:#1A2130;
+  --bone:#E6E2D8;
+  --bone-dim:#A9A498;
+  --ice:#8FA8C4;
+  --ice-dim:#5F7794;
+  --ember:#E8703A;
+  --display:"Fraunces","Iowan Old Style",Georgia,serif;
+  --body:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
+  --gutter:64px;
+  --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--void);scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+body{
+  background:var(--void);color:var(--bone);font-family:var(--body);font-weight:300;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  overscroll-behavior-y:none;
+}
+canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+#earth{z-index:1}
+#over{z-index:2;pointer-events:none}
+
+/* -- the copy column ------------------------------------------------------ */
+#copy{
+  position:fixed;z-index:3;pointer-events:none;
+  left:var(--gutter);bottom:136px;width:min(38vw,520px);
+}
+#voice{
+  font-family:var(--display);font-optical-sizing:auto;
+  font-size:clamp(28px,3.05vw,44px);font-weight:300;line-height:1.14;
+  letter-spacing:-.015em;color:var(--bone);max-width:24ch;text-wrap:balance;
+}
+#voice .l{display:block;opacity:0;transform:translateY(9px);
+  transition:opacity .9s var(--ease),transform .9s var(--ease)}
+#voice.on .l{opacity:1;transform:none}
+#voice.on .l:nth-child(2){transition-delay:.18s}
+
+#record{
+  margin-top:26px;max-width:42ch;font-size:15.5px;line-height:1.62;
+  color:var(--bone-dim);font-weight:300;
+  border-left:1px solid var(--rule);padding-left:18px;
+  opacity:0;transform:translateY(9px);
+  transition:opacity .9s var(--ease),transform .9s var(--ease);
+}
+#record.on{opacity:1;transform:none}
+#record b{color:var(--bone);font-weight:500}
+#record .src{
+  display:block;margin-top:13px;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ice-dim);line-height:1.85;
+  white-space:nowrap;
+}
+
+/* -- instrumentation ------------------------------------------------------ */
+.mono{font-family:var(--mono);font-size:10.5px;font-weight:400;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ice-dim)}
+
+#state{position:fixed;z-index:3;left:var(--gutter);bottom:112px;pointer-events:none;
+  font-variant-numeric:tabular-nums}
+#state .k{color:var(--ice)}
+
+/* -- the ruler (Law 05) --------------------------------------------------- */
+#ruler{
+  position:fixed;z-index:4;left:var(--gutter);right:var(--gutter);bottom:22px;
+  height:62px;pointer-events:none;display:flex;flex-direction:column;justify-content:flex-end;
+}
+#ruler svg{width:100%;height:38px;overflow:visible;display:block}
+#rlab{display:flex;gap:28px;margin-top:12px;align-items:baseline}
+#rlab span{white-space:nowrap}
+
+/* -- head ----------------------------------------------------------------- */
+#head{position:fixed;z-index:4;left:var(--gutter);top:30px;pointer-events:none}
+#head .no{font-family:var(--mono);font-size:10.5px;letter-spacing:.24em;color:var(--ice-dim)}
+#head .ti{font-family:var(--display);font-size:15px;font-weight:400;color:var(--bone-dim);
+  margin-top:6px}
+
+/* -- director's panel, hidden by default ---------------------------------- */
+#panel{
+  /* above the loading overlay: when the film fails to start, the panel is
+     exactly where you go to find out why */
+  position:fixed;z-index:40;right:22px;top:22px;width:352px;display:none;
+  background:rgba(6,9,15,.95);border:1px solid var(--rule);padding:15px 16px;
+  font-family:var(--mono);font-size:10.5px;line-height:1.75;color:var(--ice-dim);
+  max-height:calc(100vh - 44px);overflow:auto;
+}
+#panel.on{display:block}
+#panel h4{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ice);
+  font-weight:500;margin:14px 0 6px;border-top:1px solid var(--rule);padding-top:11px}
+#panel h4:first-child{margin-top:0;border-top:0;padding-top:0}
+#panel .r{display:flex;justify-content:space-between;gap:14px}
+#panel .r b{color:var(--bone);font-weight:500;font-variant-numeric:tabular-nums}
+#panel button{width:100%;margin-top:8px;background:transparent;border:1px solid #2A3344;
+  color:var(--ice);font:inherit;letter-spacing:.12em;text-transform:uppercase;
+  padding:7px;cursor:pointer;pointer-events:auto}
+#panel button:hover{background:rgba(143,168,196,.09)}
+#panel pre{white-space:pre-wrap;font:inherit;margin-top:8px;color:var(--bone-dim)}
+#panel .ok{color:#7FBF8F}
+#panel .bad{color:var(--ember)}
+#hint{position:fixed;z-index:5;right:22px;bottom:26px;opacity:.45}
+
+/* -- loading -------------------------------------------------------------- */
+#load{position:fixed;inset:0;z-index:20;background:var(--void);display:grid;
+  place-content:center;justify-items:center;gap:22px;transition:opacity .9s var(--ease)}
+#load.off{opacity:0;pointer-events:none}
+#load .bar{width:240px;height:1px;background:var(--rule);position:relative}
+#load .bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--ice-dim);
+  transition:width .3s linear}
+#ldetail{display:none;max-width:60ch;margin-top:4px;text-align:left;
+  font-size:13.5px;line-height:1.6;color:var(--bone-dim)}
+#ldetail p{margin:0 0 14px}
+#ldetail b{color:var(--bone);font-weight:500}
+#ldetail table{width:100%;border-collapse:collapse;margin:0 0 16px;
+  font-family:var(--mono);font-size:10.5px;color:var(--ice-dim)}
+#ldetail td{border-top:1px solid var(--rule);padding:5px 0;vertical-align:top}
+#ldetail td:first-child{width:38%;padding-right:16px;text-transform:uppercase;
+  letter-spacing:.1em}
+#ldetail td:last-child{color:var(--bone-dim);word-break:break-word}
+
+/* -- the gate: desktop is the film, everything else gets the atlas -------- */
+#gate{position:fixed;inset:0;z-index:30;background:var(--void);display:none;
+  place-content:center;padding:40px}
+#gate.on{display:grid}
+#gate div,#nojs div{max-width:48ch}
+#gate h2,#nojs h2{font-family:var(--display);font-weight:300;font-size:27px;margin-bottom:16px;
+  line-height:1.2}
+#gate p,#nojs p{color:var(--bone-dim);line-height:1.65;font-size:15px;margin-bottom:11px}
+/* The way out of every dead end on this page. Ice, never ember: Law 02 keeps
+   warm light for people, and a link is not a person. */
+a.go{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ice);text-decoration:none;border-bottom:1px solid var(--ice-dim);
+  padding-bottom:4px}
+a.go:hover{border-bottom-color:var(--ice)}
+/* No JS: the gate never runs, so this one is plain CSS and is always on. */
+#nojs{position:fixed;inset:0;z-index:31;background:var(--void);display:grid;
+  place-content:center;padding:40px}
+
+#runway{height:2600vh}
+
+/* -- ?still=1 : kill every transition ------------------------------------
+   A baked still must not catch a sentence half way through a 0.9s fade. With
+   this on, a frame drawn by EMBER.renderAt(t) is FINISHED the moment it
+   returns, which is what makes the atlas's stills reproducible and what makes
+   a screenshot mean the same thing twice. */
+body.still #voice .l,
+body.still #record{transition:none !important}
+</style>
+</head>
+<body>
+
+<canvas id="earth"></canvas>
+<canvas id="over"></canvas>
+
+<div id="head">
+  <div class="no" id="h-no">BEAT 05 &middot; ACT II &middot; 60,000 &mdash; 50,000 BP</div>
+  <div class="ti" id="h-ti">The line that held</div>
+</div>
+
+<div id="copy">
+  <div id="voice"></div>
+  <div id="record"></div>
+</div>
+
+<div id="state" class="mono"></div>
+<div id="ruler">
+  <svg id="rsvg" viewBox="0 0 1000 38" preserveAspectRatio="none"></svg>
+  <div id="rlab" class="mono">
+    <span id="r-yr" style="color:var(--bone)"></span>
+    <span>LINEAR TIME ABOVE &middot; SCROLL BELOW</span>
+    <span id="r-str"></span>
+  </div>
+</div>
+<div id="hint" class="mono">press i</div>
+
+<div id="panel">
+  <h4>State &mdash; everything is a function of t</h4>
+  <div class="r"><span>t &middot; global</span><b id="p-t">&mdash;</b></div>
+  <div class="r"><span>scroll raw / damped</span><b id="p-damp">&mdash;</b></div>
+  <div class="r"><span>year BP</span><b id="p-yr">&mdash;</b></div>
+  <div class="r"><span>sea level</span><b id="p-sea">&mdash;</b></div>
+  <div class="r"><span>NGRIP proxy</span><b id="p-temp">&mdash;</b></div>
+  <div class="r"><span>register</span><b id="p-reg">&mdash;</b></div>
+  <div class="r"><span>camera lon/lat</span><b id="p-cam">&mdash;</b></div>
+  <div class="r"><span>altitude &middot; pitch</span><b id="p-alt">&mdash;</b></div>
+  <div class="r"><span>route head</span><b id="p-head">&mdash;</b></div>
+  <div class="r"><span>plume &middot; beat 07 head</span><b id="p-plume" style="font-size:9.5px">&mdash;</b></div>
+  <div class="r"><span>pale light</span><b id="p-pale" style="font-size:9.5px">&mdash;</b></div>
+  <div class="r"><span>frame tile</span><b id="p-tile">&mdash;</b></div>
+  <h4>Frame time &mdash; measured here, on this screen</h4>
+  <div class="r"><span>median / p95 / worst</span><b id="p-frame">&mdash;</b></div>
+  <div class="r"><span>rate</span><b id="p-fps">&mdash;</b></div>
+  <div class="r"><span>earth pass, on the GPU</span><b id="p-gpums" style="font-size:9.5px">&mdash;</b></div>
+  <div class="r"><span>overlay, on the CPU</span><b id="p-ovms" style="font-size:9.5px">&mdash;</b></div>
+  <div class="r"><span>renderer</span><b id="p-gpu" style="font-size:9px;text-align:right">&mdash;</b></div>
+  <pre id="o-frame" style="margin-top:6px">The earth pass is the SHADER; the overlay is the 2D canvas. Everything Phase 5 added - the plume, the pale field - is overlay work, and the GPU timer cannot see any of it. Two numbers, because one of them would have been honest and useless.
+
+Scroll for a few seconds first. The worst frame is what matters: one 40 ms hitch is felt, a slightly low average is not. Green under 20 ms at p95.
+
+Only meaningful in a VISIBLE window. A hidden tab or a headless browser throttles the frame loop and will report a whole second per frame.</pre>
+  <h4>Law 01 &mdash; one number governs everything</h4>
+  <button id="t-purity">Run purity test</button>
+  <pre id="o-purity">Hashes the full state at 401 points scrubbing forward, then again backward, and diffs them.</pre>
+  <h4>Law 07 &mdash; copy checked against the data</h4>
+  <button id="t-copy">Run copy check</button>
+  <pre id="o-copy">Diffs every on-screen line against the qualifiers its own event carries in timeline.json.</pre>
+  <h4>Law 06 &mdash; epistemic, not causal</h4>
+  <button id="t-law06">Run law 06 test</button>
+  <pre id="o-law06">The Campanian Ignimbrite is on screen because it is how we know when beat 07 happened, not because it did anything. Proves both halves: that it is drawn, and that no world channel notices it.</pre>
+  <h4>Permanent absence &mdash; a colour leaves the film</h4>
+  <button id="t-absence">Run absence test</button>
+  <pre id="o-absence">When the pale light goes out it must stay out for the remaining seven beats. Walks t to 1.0 &mdash; through beats that are not built &mdash; and then walks it backwards.</pre>
+  <h4>The only true hold</h4>
+  <button id="t-hold">Count the holds</button>
+  <pre id="o-hold">Beat 05 is the film's only locked camera. Counts the spans where the camera is bit-identical and fails on more than one.</pre>
+  <h4>Time the draw path</h4>
+  <button id="t-bench">Run the benchmark</button>
+  <pre id="o-bench">A frame interval reads 16.7 ms whether the work took 1 ms or 15, so it says nothing about headroom. This draws six real shots 160 times each, synchronously, and divides. It blocks for about a second.</pre>
+  <h4>Measured on the raster</h4>
+  <pre id="o-meas">&mdash;</pre>
+</div>
+
+<div id="load">
+  <div class="mono">ONE EMBER &middot; BEATS 05 &ndash; 07</div>
+  <div class="bar"><i id="lbar"></i></div>
+  <div class="mono" id="lmsg" style="opacity:.55">reading the earth</div>
+  <div id="ldetail"></div>
+</div>
+
+<div id="gate"><div>
+  <h2>This beat is the film, and the film is desktop.</h2>
+  <p>One Ember needs 1280&times;800 and motion. On a narrow screen, or with reduced
+     motion turned on, the same beat is told as a static atlas &mdash; the same art
+     and the same writing, without the scroll.</p>
+  <p style="margin-top:22px"><a class="go" href="atlas.html">Read beat 06 as the atlas</a></p>
+</div></div>
+
+<div id="runway"></div>
+
+<noscript>
+  <div id="nojs"><div>
+    <h2>The film is JavaScript and WebGL. This is neither.</h2>
+    <p>The same beat is written as a static atlas &mdash; the same art, baked from the
+       same shader, and every word of the same writing as text.</p>
+    <p style="margin-top:22px"><a class="go" href="atlas.html">Read beat 06 as the atlas</a></p>
+  </div></div>
+</noscript>
+
+<script src="film.js"></script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+{
+ "tile": {
+  "file": "bathy_europe.png",
+  "lon0": -12.0,
+  "lon1": 60.0,
+  "lat0": 30.0,
+  "lat1": 61.0,
+  "w": 4320,
+  "h": 1860,
+  "kmPerPx": 1.853,
+  "maxDecodeErrorM": 0.3052,
+  "scale": 0.30518043793392846,
+  "offset": -11000.0,
+  "checks": [
+   {
+    "seaM": 0.0,
+    "landFracBox": 68.07
+   },
+   {
+    "seaM": -68.3,
+    "landFracBox": 77.05
+   },
+   {
+    "seaM": -73.9,
+    "landFracBox": 77.61
+   },
+   {
+    "seaM": -84.7,
+    "landFracBox": 78.57
+   },
+   {
+    "seaM": -85.7,
+    "landFracBox": 78.65
+   },
+   {
+    "seaM": -90.3,
+    "landFracBox": 79.02
+   },
+   {
+    "seaM": -131.0,
+    "landFracBox": 81.76
+   }
+  ]
+ }
+}

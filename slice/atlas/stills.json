@@ -1,0 +1,1338 @@
+{
+ "_readme": "Baked by slice/build_atlas.py from slice/index.html. Positions are CSS pixels against bakedAt.w/h. Every string here came out of film.js's copy tables, which copyCheck diffs against timeline.json - this file authors nothing.",
+ "bakedAt": {
+  "w": 1440,
+  "h": 810,
+  "dpr": 2,
+  "saved": [
+   1920,
+   1080
+  ],
+  "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
+  "when": "2026-09-08"
+ },
+ "tests": {
+  "purity": {
+   "pass": true,
+   "head": "PASS — 401 samples."
+  },
+  "copyCheck": {
+   "pass": true,
+   "head": "PASS — 44 lines."
+  },
+  "law06": {
+   "pass": true,
+   "head": "PASS"
+  },
+  "absence": {
+   "pass": true,
+   "head": "PASS"
+  },
+  "hold": {
+   "pass": true,
+   "head": "PASS — exactly one."
+  }
+ },
+ "stills": [
+  {
+   "t": 0.3,
+   "yr": 50000,
+   "sea": -68.3,
+   "beat": 5,
+   "cut": 0,
+   "register": "orbital",
+   "lon": 103,
+   "lat": 7,
+   "alt": 0.72,
+   "pitch": 26,
+   "bearing": 24,
+   "tile": "sunda",
+   "hash": "0.30000|50000.00|-68.3000|-40.1100|5|0.00000|103.0000|7.0000|0.72000|26.0000|24.0000|1.00000|0.35200|0.18000|208,180,152|1.00000|0.00000|sunda|0.52137",
+   "w": 1440,
+   "h": 810,
+   "dpr": 2,
+   "voice": null,
+   "record": null,
+   "state": [
+    "<span class=\"k\">SEA LEVEL</span> -68.3 M",
+    "<span class=\"k\">DRY LAND</span> +28% ON TODAY, 92&ndash;156&deg;E"
+   ],
+   "text": [],
+   "labels": [],
+   "gap": null,
+   "reserved": null,
+   "file": "06-01.webp",
+   "bytes": 151418
+  },
+  {
+   "t": 0.308,
+   "yr": 49300,
+   "sea": -72.11,
+   "beat": 6,
+   "cut": 0,
+   "register": "orbital",
+   "lon": 106.704,
+   "lat": 3.296,
+   "alt": 0.5422,
+   "pitch": 33.41,
+   "bearing": 29.93,
+   "tile": "sunda",
+   "hash": "0.30800|49300.00|-72.1150|-41.6900|6|0.00000|106.7037|3.2963|0.54222|33.4074|29.9259|1.00000|0.38953|0.18000|208,180,152|1.00000|0.00000|sunda|0.55050",
+   "w": 1440,
+   "h": 810,
+   "dpr": 2,
+   "voice": null,
+   "record": null,
+   "state": [
+    "<span class=\"k\">SEA LEVEL</span> -72.1 M",
+    "<span class=\"k\">DRY LAND</span> +30% ON TODAY, 92&ndash;156&deg;E"
+   ],
+   "text": [
+    {
+     "s": "SUNDA",
+     "x": 1384,
+     "y": 119,
+     "align": "right",
+     "cls": "lab-k",
+     "a": 1
+    },
+    {
+     "s": "BORNEO, SUMATRA AND JAVA, JOINED TO THE MAINLAND",
+     "x": 1384,
+     "y": 134,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.88
+    },
+    {
+     "s": "THE PALE GROUND",
+     "x": 1384,
+     "y": 165,
+     "align": "right",
+     "cls": "lab-k",
+     "a": 0.741
+    },
+    {
+     "s": "LAND THAT IS UNDER WATER TODAY",
+     "x": 1384,
+     "y": 180,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.652
+    }
+   ],
+   "labels": [
+    {
+     "k": "SUNDA",
+     "v": "BORNEO, SUMATRA AND JAVA, JOINED TO THE MAINLAND",
+     "a": 1,
+     "ring": 0,
+     "lon": 107,
+     "lat": 2,
+     "mx": 756.4,
+     "my": 428,
+     "ex": 1152,
+     "tx": 1384,
+     "ty": 128
+    },
+    {
+     "k": "THE PALE GROUND",
+     "v": "LAND THAT IS UNDER WATER TODAY",
+     "a": 0.741,
+     "ring": 0,
+     "lon": 110.5,
+     "lat": -3.5,
+     "mx": 1005.2,
+     "my": 525.7,
+     "ex": 1152,
+     "tx": 1384,
+     "ty": 174
+    }
+   ],
+   "gap": null,
+   "reserved": null,
+   "file": "06-02.webp",
+   "bytes": 132332
+  },
+  {
+   "t": 0.322,
+   "yr": 48075,
+   "sea": -76.49,
+   "beat": 6,
+   "cut": 0,
+   "register": "orbital",
+   "lon": 113.612,
+   "lat": -0.806,
+   "alt": 0.3998,
+   "pitch": 41.61,
+   "bearing": 56.05,
+   "tile": "sunda",
+   "hash": "0.32200|48075.00|-76.4880|-43.5825|6|0.00000|113.6122|-0.8061|0.39983|41.6122|56.0525|1.00000|0.54341|0.18000|208,180,152|1.00000|0.00000|sunda|0.58388",
+   "w": 1440,
+   "h": 810,
+   "dpr": 2,
+   "voice": null,
+   "record": null,
+   "state": [
+    "<span class=\"k\">SEA LEVEL</span> -76.5 M",
+    "<span class=\"k\">DRY LAND</span> +31% ON TODAY, 92&ndash;156&deg;E"
+   ],
+   "text": [
+    {
+     "s": "SUNDA",
+     "x": 1384,
+     "y": 119,
+     "align": "right",
+     "cls": "lab-k",
+     "a": 1
+    },
+    {
+     "s": "BORNEO, SUMATRA AND JAVA, JOINED TO THE MAINLAND",
+     "x": 1384,
+     "y": 134,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.88
+    },
+    {
+     "s": "THE PALE GROUND",
+     "x": 1384,
+     "y": 165,
+     "align": "right",
+     "cls": "lab-k",
+     "a": 1
+    },
+    {
+     "s": "LAND THAT IS UNDER WATER TODAY",
+     "x": 1384,
+     "y": 180,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.88
+    }
+   ],
+   "labels": [
+    {
+     "k": "SUNDA",
+     "v": "BORNEO, SUMATRA AND JAVA, JOINED TO THE MAINLAND",
+     "a": 1,
+     "ring": 0,
+     "lon": 107,
+     "lat": 2,
+     "mx": 416.2,
+     "my": 474.2,
+     "ex": 1152,
+     "tx": 1384,
+     "ty": 128
+    },
+    {
+     "k": "THE PALE GROUND",
+     "v": "LAND THAT IS UNDER WATER TODAY",
+     "a": 1,
+     "ring": 0,
+     "lon": 110.5,
+     "lat": -3.5,
+     "mx": 738.7,
+     "my": 488.7,
+     "ex": 1152,
+     "tx": 1384,
+     "ty": 174
+    }
+   ],
+   "gap": null,
+   "reserved": null,
+   "file": "06-03.webp",
+   "bytes": 100928
+  },
+  {
+   "t": 0.335,
+   "yr": 46938,
+   "sea": -73.83,
+   "beat": 6,
+   "cut": 0,
+   "register": "orbital",
+   "lon": 121,
+   "lat": -3,
+   "alt": 0.32,
+   "pitch": 45,
+   "bearing": 95,
+   "tile": "sunda",
+   "hash": "0.33500|46937.50|-73.8300|-42.8237|6|0.00000|121.0000|-3.0000|0.32000|45.0000|95.0000|1.00000|0.62233|0.18000|208,180,152|1.00000|0.00000|sunda|0.56359",
+   "w": 1440,
+   "h": 810,
+   "dpr": 2,
+   "voice": {
+    "i": 1,
+    "lines": [
+     "They could not see it.",
+     "They went anyway."
+    ],
+    "a": 1
+   },
+   "record": null,
+   "state": [
+    "<span class=\"k\">SEA LEVEL</span> -73.8 M",
+    "<span class=\"k\">DRY LAND</span> +30% ON TODAY, 92&ndash;156&deg;E"
+   ],
+   "text": [
+    {
+     "s": "WALLACEA",
+     "x": 1384,
+     "y": 119,
+     "align": "right",
+     "cls": "lab-k",
+     "a": 0.926
+    },
+    {
+     "s": "NEVER BRIDGED, AT ANY SEA LEVEL IN THE RECORD",
+     "x": 1384,
+     "y": 134,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.815
+    },
+    {
+     "s": "THE PALE GROUND",
+     "x": 1384,
+     "y": 165,
+     "align": "right",
+     "cls": "lab-k",
+     "a": 1
+    },
+    {
+     "s": "LAND THAT IS UNDER WATER TODAY",
+     "x": 1384,
+     "y": 180,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.88
+    },
+    {
+     "s": "70.5 KM",
+     "x": 683.2,
+     "y": 294.3,
+     "align": "right",
+     "cls": "dim-k",
+     "a": 0.5
+    },
+    {
+     "s": "THE WIDEST HOP ANY ROUTE MUST INCLUDE",
+     "x": 683.2,
+     "y": 312.3,
+     "align": "right",
+     "cls": "dim-v",
+     "a": 0.425
+    }
+   ],
+   "labels": [
+    {
+     "k": "WALLACEA",
+     "v": "NEVER BRIDGED, AT ANY SEA LEVEL IN THE RECORD",
+     "a": 0.926,
+     "ring": 0,
+     "lon": 124,
+     "lat": -1.5,
+     "mx": 634.7,
+     "my": 357.4,
+     "ex": 1152,
+     "tx": 1384,
+     "ty": 128
+    },
+    {
+     "k": "THE PALE GROUND",
+     "v": "LAND THAT IS UNDER WATER TODAY",
+     "a": 1,
+     "ring": 0,
+     "lon": 110.5,
+     "lat": -3.5,
+     "mx": 821.5,
+     "my": 749,
+     "ex": 1152,
+     "tx": 1384,
+     "ty": 174
+    }
+   ],
+   "gap": {
+    "a": 0.5,
+    "km": 70.5,
+    "seaM": -73.9,
+    "minIslandKm2": 34.4,
+    "ax": 706.4,
+    "ay": 329.9,
+    "bx": 677.1,
+    "by": 330.6,
+    "mx": 691.8,
+    "my": 330.3,
+    "lx": 691.2,
+    "ly": 304.3,
+    "align": "right"
+   },
+   "reserved": null,
+   "file": "06-04.webp",
+   "bytes": 100606
+  },
+  {
+   "t": 0.345,
+   "yr": 46063,
+   "sea": -75.65,
+   "beat": 6,
+   "cut": 0,
+   "register": "orbital",
+   "lon": 128.047,
+   "lat": -6.047,
+   "alt": 0.2969,
+   "pitch": 44.84,
+   "bearing": 115.13,
+   "tile": "sunda",
+   "hash": "0.34500|46062.50|-75.6500|-39.1575|6|0.00000|128.0469|-6.0469|0.29688|44.8438|115.1250|1.00000|0.76111|0.18000|208,180,152|1.00000|0.00000|sunda|0.57748",
+   "w": 1440,
+   "h": 810,
+   "dpr": 2,
+   "voice": {
+    "i": 1,
+    "lines": [
+     "They could not see it.",
+     "They went anyway."
+    ],
+    "a": 1
+   },
+   "record": {
+    "i": 2,
+    "html": "The rock under Madjedbebe reads sixty&#8209;five thousand years. The genomes read fifty to forty&#8209;three. Both are careful, both are published, and nobody has resolved it &mdash; so neither does the film.<span class=\"src\">MADJEDBEBE &middot; 65,000&ndash;59,000 BP &middot; OSL<br>ARRIVAL &middot; 50,000&ndash;43,000 BP &middot; GENETIC<br>DRAWN ON THE TIME RAIL, NOT ON THE MAP</span>",
+    "a": 0.259
+   },
+   "state": [
+    "<span class=\"k\">SEA LEVEL</span> -75.7 M",
+    "<span class=\"k\">DRY LAND</span> +31% ON TODAY, 92&ndash;156&deg;E"
+   ],
+   "text": [
+    {
+     "s": "SAHUL",
+     "x": 1384,
+     "y": 119,
+     "align": "right",
+     "cls": "lab-k",
+     "a": 1
+    },
+    {
+     "s": "AUSTRALIA, NEW GUINEA AND TASMANIA: ONE CONTINENT",
+     "x": 1384,
+     "y": 134,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.88
+    },
+    {
+     "s": "WALLACEA",
+     "x": 1384,
+     "y": 165,
+     "align": "right",
+     "cls": "lab-k",
+     "a": 1
+    },
+    {
+     "s": "NEVER BRIDGED, AT ANY SEA LEVEL IN THE RECORD",
+     "x": 1384,
+     "y": 180,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.88
+    },
+    {
+     "s": "70.5 KM",
+     "x": 595.2,
+     "y": 510.2,
+     "align": "left",
+     "cls": "dim-k",
+     "a": 1
+    },
+    {
+     "s": "THE WIDEST HOP ANY ROUTE MUST INCLUDE",
+     "x": 595.2,
+     "y": 528.2,
+     "align": "left",
+     "cls": "dim-v",
+     "a": 0.85
+    }
+   ],
+   "labels": [
+    {
+     "k": "SAHUL",
+     "v": "AUSTRALIA, NEW GUINEA AND TASMANIA: ONE CONTINENT",
+     "a": 1,
+     "ring": 0,
+     "lon": 137,
+     "lat": -15,
+     "mx": 915,
+     "my": 258.7,
+     "ex": 1152,
+     "tx": 1384,
+     "ty": 128
+    },
+    {
+     "k": "WALLACEA",
+     "v": "NEVER BRIDGED, AT ANY SEA LEVEL IN THE RECORD",
+     "a": 1,
+     "ring": 0,
+     "lon": 124,
+     "lat": -1.5,
+     "mx": 547.5,
+     "my": 585.5,
+     "ex": 1152,
+     "tx": 1384,
+     "ty": 174
+    }
+   ],
+   "gap": {
+    "a": 1,
+    "km": 70.5,
+    "seaM": -77,
+    "minIslandKm2": 34.4,
+    "ax": 599.3,
+    "ay": 489.8,
+    "bx": 561.2,
+    "by": 500.5,
+    "mx": 580.2,
+    "my": 495.2,
+    "lx": 587.2,
+    "ly": 520.2,
+    "align": "left"
+   },
+   "reserved": null,
+   "file": "06-05.webp",
+   "bytes": 114486
+  },
+  {
+   "t": 0.352,
+   "yr": 45450,
+   "sea": -75.07,
+   "beat": 6,
+   "cut": 0,
+   "register": "orbital",
+   "lon": 132.9,
+   "lat": -11.8,
+   "alt": 0.26,
+   "pitch": 43,
+   "bearing": 152,
+   "tile": "sunda",
+   "hash": "0.35200|45450.00|-75.0705|-39.4400|6|0.00000|132.9000|-11.8000|0.26000|43.0000|152.0000|1.00000|0.85744|0.18000|208,180,152|1.00000|0.00000|sunda|0.57306",
+   "w": 1440,
+   "h": 810,
+   "dpr": 2,
+   "voice": {
+    "i": 1,
+    "lines": [
+     "They could not see it.",
+     "They went anyway."
+    ],
+    "a": 1
+   },
+   "record": {
+    "i": 2,
+    "html": "The rock under Madjedbebe reads sixty&#8209;five thousand years. The genomes read fifty to forty&#8209;three. Both are careful, both are published, and nobody has resolved it &mdash; so neither does the film.<span class=\"src\">MADJEDBEBE &middot; 65,000&ndash;59,000 BP &middot; OSL<br>ARRIVAL &middot; 50,000&ndash;43,000 BP &middot; GENETIC<br>DRAWN ON THE TIME RAIL, NOT ON THE MAP</span>",
+    "a": 1
+   },
+   "state": [
+    "<span class=\"k\">SEA LEVEL</span> -75.1 M",
+    "<span class=\"k\">DRY LAND</span> +30% ON TODAY, 92&ndash;156&deg;E"
+   ],
+   "text": [
+    {
+     "s": "SAHUL",
+     "x": 1384,
+     "y": 119,
+     "align": "right",
+     "cls": "lab-k",
+     "a": 1
+    },
+    {
+     "s": "AUSTRALIA, NEW GUINEA AND TASMANIA: ONE CONTINENT",
+     "x": 1384,
+     "y": 134,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.88
+    },
+    {
+     "s": "MADJEDBEBE",
+     "x": 1384,
+     "y": 165,
+     "align": "right",
+     "cls": "lab-k",
+     "a": 1
+    },
+    {
+     "s": "65,000 – 59,000 BP  ·  OSL  ·  CONTESTED",
+     "x": 1384,
+     "y": 180,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.88
+    },
+    {
+     "s": "70.5 KM",
+     "x": 896.4,
+     "y": 1183.6,
+     "align": "right",
+     "cls": "dim-k",
+     "a": 1
+    },
+    {
+     "s": "THE WIDEST HOP ANY ROUTE MUST INCLUDE",
+     "x": 896.4,
+     "y": 1201.6,
+     "align": "right",
+     "cls": "dim-v",
+     "a": 0.85
+    }
+   ],
+   "labels": [
+    {
+     "k": "SAHUL",
+     "v": "AUSTRALIA, NEW GUINEA AND TASMANIA: ONE CONTINENT",
+     "a": 1,
+     "ring": 0,
+     "lon": 137,
+     "lat": -15,
+     "mx": 596.6,
+     "my": 262.9,
+     "ex": 1152,
+     "tx": 1384,
+     "ty": 128
+    },
+    {
+     "k": "MADJEDBEBE",
+     "v": "65,000 – 59,000 BP  ·  OSL  ·  CONTESTED",
+     "a": 1,
+     "ring": 2,
+     "lon": 132.87,
+     "lat": -12.4,
+     "mx": 742.8,
+     "my": 386.2,
+     "ex": 1152,
+     "tx": 1384,
+     "ty": 174
+    }
+   ],
+   "gap": {
+    "a": 1,
+    "km": 70.5,
+    "seaM": -73.9,
+    "minIslandKm2": 34.4,
+    "ax": 941.6,
+    "ay": 1168.1,
+    "bx": 915.9,
+    "by": 1237.2,
+    "mx": 928.7,
+    "my": 1202.7,
+    "lx": 904.4,
+    "ly": 1193.6,
+    "align": "right"
+   },
+   "reserved": null,
+   "file": "06-06.webp",
+   "bytes": 108788
+  },
+  {
+   "t": 0.361,
+   "yr": 44663,
+   "sea": -75.06,
+   "beat": 6,
+   "cut": 0.3164,
+   "register": "match cut",
+   "lon": 121.333,
+   "lat": -2.315,
+   "alt": 0.4533,
+   "pitch": 3.81,
+   "bearing": 125.26,
+   "tile": "sunda",
+   "hash": "0.36100|44662.50|-75.0604|-40.3713|6|0.31641|121.3333|-2.3148|0.45333|3.8148|125.2593|1.00000|1.00000|0.18000|208,180,152|1.00000|0.00000|sunda|0.57298",
+   "w": 1440,
+   "h": 810,
+   "dpr": 2,
+   "voice": null,
+   "record": null,
+   "state": [
+    "<span class=\"k\">SEA LEVEL</span> -75.1 M"
+   ],
+   "text": [],
+   "labels": [],
+   "gap": null,
+   "reserved": null,
+   "file": "06-07.webp",
+   "bytes": 94634
+  },
+  {
+   "t": 0.38,
+   "yr": 43000,
+   "sea": -73.91,
+   "beat": 6,
+   "cut": 1,
+   "register": "ground",
+   "lon": 120.16,
+   "lat": -2.08,
+   "alt": 0.4,
+   "pitch": 0,
+   "bearing": 118,
+   "tile": "sunda",
+   "hash": "0.38000|43000.00|-73.9100|-38.3400|6|1.00000|120.1600|-2.0800|0.40000|0.0000|118.0000|1.00000|1.00000|0.18000|208,180,152|1.00000|0.00000|sunda|0.56420",
+   "w": 1440,
+   "h": 810,
+   "dpr": 2,
+   "voice": null,
+   "record": {
+    "i": 3,
+    "html": "We cannot identify the hand directly. The authors believe it was ours. If they are right, the northern sea route was being travelled far earlier than the map once allowed.<span class=\"src\">LIANG METANDUNO &middot; MUNA ISLAND<br>AT LEAST 67,800 BP &middot; U&#8209;SERIES ON CALCITE</span>",
+    "a": 1
+   },
+   "state": [
+    "<span class=\"k\">SEA LEVEL</span> -73.9 M"
+   ],
+   "text": [
+    {
+     "s": "GROUND REGISTER  ·  PRESENT TENSE",
+     "x": 1384,
+     "y": 128,
+     "align": "right",
+     "cls": "lab-k",
+     "a": 1
+    },
+    {
+     "s": "FINGERTIPS WORKED TO POINTS, LIKE CLAWS",
+     "x": 1384,
+     "y": 145,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.9
+    },
+    {
+     "s": "ORIGINAL DIAGRAM, NOT A PHOTOGRAPH OF THE SITE",
+     "x": 1384,
+     "y": 161,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.9
+    },
+    {
+     "s": "LEANG KARAMPUANG  ·  ≥51,200 BP",
+     "x": 1366,
+     "y": 216,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.8
+    },
+    {
+     "s": "OLDEST NARRATIVE SCENE",
+     "x": 1366,
+     "y": 234,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.8
+    },
+    {
+     "s": "PLATE RESERVED  ·  PERMISSION PENDING",
+     "x": 1366,
+     "y": 254,
+     "align": "right",
+     "cls": "lab-v",
+     "a": 0.8
+    }
+   ],
+   "labels": [],
+   "gap": null,
+   "reserved": {
+    "a": 1,
+    "x": 1084,
+    "y": 186,
+    "w": 300,
+    "h": 98
+   },
+   "file": "06-08.webp",
+   "bytes": 41696
+  }
+ ],
+ "atlas": {
+  "kicker": "THE STATIC ATLAS",
+  "lede": [
+   "Somewhere between fifty and forty&#8209;three thousand years ago &mdash; and the rocks argue for older &mdash; people put out onto open water toward land they could not see, and reached a continent nobody had ever stood on. This is beat 06 of <i>One Ember</i>.",
+   "This page is the film&rsquo;s other half. The film is desktop, scroll and WebGL; this is the same beat as eight still frames, baked from the same shader at the same eight values of the film&rsquo;s single time variable, so the two artifacts cannot disagree about what the world looked like. Every word on this page is text, not pixels.",
+   "It is also the mobile experience, the reduced&#8209;motion fallback, the no&#8209;JavaScript fallback, the crawler content, and the answer for a browser that has switched WebGL off."
+  ],
+  "shots": [
+   {
+    "t": 0.3,
+    "id": "01",
+    "ev": [],
+    "cap": "The camera comes in over Sundaland as beat 05 lets go. The sea stands sixty&#8209;eight metres below today&rsquo;s, and Borneo, Sumatra and Java are not islands in this frame: they share one piece of land with the Asian mainland."
+   },
+   {
+    "t": 0.308,
+    "id": "02",
+    "ev": [],
+    "cap": "The pale ground is the shelf &mdash; land standing dry here that is under water today. Across the beat, dry land inside the box the film measures, ninety&#8209;two to a hundred and fifty&#8209;six degrees east, grows from 23.75 per cent to 30.88 per cent: a gain of thirty per cent on today."
+   },
+   {
+    "t": 0.322,
+    "id": "03",
+    "ev": [],
+    "cap": "The light travels east across a shelf that is standing dry. The head is a population and not a person; warm light in this film is only ever people, the earth they cross is slate, ice and bone, and no word on either artifact is drawn in a people&#8209;colour."
+   },
+   {
+    "t": 0.335,
+    "id": "04",
+    "ev": [
+     "wallacea-crossing"
+    ],
+    "cap": "Seventy point five kilometres. Not the narrowest crossing in Wallacea &mdash; the widest single hop that any island&#8209;hopping route from Sunda to Sahul must include, minimised over every route there is. The sea falls a hundred and thirty&#8209;one metres from here to the lowstand and that floor moves to seventy point four."
+   },
+   {
+    "t": 0.345,
+    "id": "05",
+    "ev": [
+     "madjedbebe",
+     "sahul-arrival"
+    ],
+    "cap": "The rocks and the genomes disagree about when this happened, and the film does not adjudicate. Madjedbebe reads sixty&#8209;five to fifty&#8209;nine thousand years from the sediment; the genomes read fifty to forty&#8209;three. The disagreement is drawn on the time rail and never on the map, because it is a claim about years and not about where anybody was."
+   },
+   {
+    "t": 0.352,
+    "id": "06",
+    "ev": [
+     "sahul-arrival",
+     "madjedbebe"
+    ],
+    "cap": "Landfall on Sahul &mdash; Australia, New Guinea and Tasmania are one continent at this sea level. The dashed ring is Madjedbebe, drawn where the site is. Its date is not drawn here at all: the ring marks a place, and the years it disagrees about are on the rail at the top of this page."
+   },
+   {
+    "t": 0.361,
+    "id": "07",
+    "ev": [],
+    "cap": "The islands hold their arrangement and become a hand. Orbital is then, and rides the time axis; the ground is now, the object as we hold it &mdash; which is why a cut to the ground can never run the film&rsquo;s single time variable backwards."
+   },
+   {
+    "t": 0.38,
+    "id": "08",
+    "ev": [
+     "liang-metanduno",
+     "leang-karampuang"
+    ],
+    "cap": "The hand is Liang Metanduno&rsquo;s: at least sixty&#8209;seven thousand eight hundred years old, the oldest securely dated rock art anywhere, with the fingertips deliberately worked to points. The authors cannot identify the maker directly and attribute it to our own species. What is drawn here is an original diagram, labelled as one on screen, and not a photograph of the site &mdash; and the plate this beat still owes, Leang Karampuang, the oldest known narrative scene at least fifty&#8209;one thousand two hundred years, is the dashed rectangle marked permission pending. That material sits with custodians whose permission is a courtesy and often a legal requirement, so the layout carries the hole rather than hiding it."
+   }
+  ],
+  "close": [
+   "A sequence of stills is beat 06 because beat 06 is a journey: something is in a different place in each frame, and the frames in order are the beat.",
+   "That is not true of the beats either side of it. Beat 05 is ten thousand years in which nothing happens, and it says so by spending scroll &mdash; the camera is bit&#8209;identical across a quarter of the film&rsquo;s running artifact. Beat 07 ends by taking a colour out of the palette for the remaining seven beats. Neither is a journey, neither survives being cut into frames, and neither has an atlas yet.",
+   "Every dated claim on this page, with its range, its confidence and its citation, is in <code>timeline.json</code>. Nothing is on screen that is not in it."
+  ]
+ },
+ "beats": [
+  {
+   "id": 1,
+   "y0": 300000,
+   "y1": 260000,
+   "w": 4,
+   "title": "The dark earth",
+   "act": 1,
+   "t0": 0,
+   "t1": 0.04
+  },
+  {
+   "id": 2,
+   "y0": 260000,
+   "y1": 200000,
+   "w": 6,
+   "title": "Shimmer",
+   "act": 1,
+   "t0": 0.04,
+   "t1": 0.1
+  },
+  {
+   "id": 3,
+   "y0": 200000,
+   "y1": 76000,
+   "w": 7,
+   "title": "The failed doors",
+   "act": 1,
+   "t0": 0.1,
+   "t1": 0.17
+  },
+  {
+   "id": 4,
+   "y0": 76000,
+   "y1": 60000,
+   "w": 6,
+   "title": "Toba",
+   "act": 2,
+   "t0": 0.17,
+   "t1": 0.23
+  },
+  {
+   "id": 5,
+   "y0": 60000,
+   "y1": 50000,
+   "w": 7,
+   "title": "The line that held",
+   "act": 2,
+   "t0": 0.23,
+   "t1": 0.3
+  },
+  {
+   "id": 6,
+   "y0": 50000,
+   "y1": 43000,
+   "w": 8,
+   "title": "The crossing to Sahul",
+   "act": 2,
+   "t0": 0.3,
+   "t1": 0.38
+  },
+  {
+   "id": 7,
+   "y0": 43000,
+   "y1": 39000,
+   "w": 6,
+   "title": "The others",
+   "act": 2,
+   "t0": 0.38,
+   "t1": 0.44
+  },
+  {
+   "id": 8,
+   "y0": 39000,
+   "y1": 26500,
+   "w": 10,
+   "title": "The world gets smaller",
+   "act": 3,
+   "t0": 0.44,
+   "t1": 0.54
+  },
+  {
+   "id": 9,
+   "y0": 26500,
+   "y1": 23000,
+   "w": 7,
+   "title": "Mammoth steppe",
+   "act": 3,
+   "t0": 0.54,
+   "t1": 0.61
+  },
+  {
+   "id": 10,
+   "y0": 23000,
+   "y1": 14000,
+   "w": 7,
+   "title": "The sweep",
+   "act": 3,
+   "t0": 0.61,
+   "t1": 0.68
+  },
+  {
+   "id": 11,
+   "y0": 14000,
+   "y1": 8000,
+   "w": 10,
+   "title": "The doors close",
+   "act": 4,
+   "t0": 0.68,
+   "t1": 0.78
+  },
+  {
+   "id": 12,
+   "y0": 8000,
+   "y1": 5000,
+   "w": 7,
+   "title": "Seeds",
+   "act": 4,
+   "t0": 0.78,
+   "t1": 0.85
+  },
+  {
+   "id": 13,
+   "y0": 5000,
+   "y1": 800,
+   "w": 8,
+   "title": "Sails",
+   "act": 4,
+   "t0": 0.85,
+   "t1": 0.93
+  },
+  {
+   "id": 14,
+   "y0": 800,
+   "y1": 0,
+   "w": 7,
+   "title": "You",
+   "act": 4,
+   "t0": 0.93,
+   "t1": 1
+  }
+ ],
+ "spec": {
+  "title": "The crossing to Sahul",
+  "yearsBP": [
+   50000,
+   43000
+  ],
+  "motion": 4,
+  "onScreen": "They could not see it. They went anyway.",
+  "slug": "the-crossing-to-sahul",
+  "act": 2,
+  "tentpole": false
+ },
+ "compressionRatio": 155,
+ "events": [
+  {
+   "id": "ooa-dispersal",
+   "type": "dispersal",
+   "label": "The successful dispersal",
+   "region": "Africa to Eurasia",
+   "coordinates": null,
+   "dateRange": [
+    60000,
+    50000
+   ],
+   "dateNote": "REVISED. Formerly written as 60–50 ka broadly; the 2024 admixture genomes tighten the successful exit to shortly before the single Neanderthal gene-flow event at ~50.5–43.5 ka, so the crossing sits nearer 50 ka than 60 ka.",
+   "confidence": "supported",
+   "sourceIds": [
+    "sumer2024",
+    "iasi2024"
+   ],
+   "beat": 5,
+   "why": "The emotional core of the film. Everyone alive outside Africa is downstream of this."
+  },
+  {
+   "id": "dispersal-route",
+   "type": "route",
+   "label": "Southern route or Sinai",
+   "region": "Bab-el-Mandeb / Sinai",
+   "coordinates": [
+    43.32,
+    12.58
+   ],
+   "dateRange": [
+    60000,
+    50000
+   ],
+   "dateNote": "Route unresolved.",
+   "confidence": "band",
+   "sourceIds": [
+    "sumer2024"
+   ],
+   "beat": 5,
+   "why": "MUST render as a diffuse plume, never a line. Where the science has a band, the film draws a band."
+  },
+  {
+   "id": "neanderthal-admixture",
+   "type": "genetic",
+   "label": "Neanderthal gene flow",
+   "region": "Eurasia",
+   "coordinates": null,
+   "dateRange": [
+    50500,
+    43500
+   ],
+   "dateNote": "MAJOR REVISION. A single extended gene-flow period centred ~47 ka lasting ~7,000 years, shared by all non-Africans. Formerly written in the storyboard as ~50–60 ka. 1.5–2% Neanderthal ancestry in present-day non-Africans.",
+   "confidence": "solid",
+   "sourceIds": [
+    "sumer2024",
+    "iasi2024"
+   ],
+   "beat": 5,
+   "why": "Moved from beat 07 to beat 05. The genetics now says leaving Africa and meeting the others were one continuous event, not two."
+  },
+  {
+   "id": "sahul-arrival",
+   "type": "dispersal",
+   "label": "Arrival in Sahul",
+   "region": "Australia and New Guinea",
+   "coordinates": [
+    132,
+    -12
+   ],
+   "dateRange": [
+    50000,
+    43000
+   ],
+   "dateNote": "Genetic-constrained window: must postdate the shared Neanderthal admixture. Most Sahul archaeological sites fall 54–43 ka.",
+   "confidence": "contested",
+   "sourceIds": [
+    "sumer2024",
+    "allen-oconnell2020",
+    "clarkson2017"
+   ],
+   "beat": 6,
+   "why": "RESOLVED — the film does not adjudicate. The ember arrives as a range spanning 65 to 43 ka and the beat says out loud that the rocks and the genomes disagree. This is what the dashed grammar was built for in beat 03, and it is more interesting than either number.",
+   "dispute": {
+    "objection": "Madjedbebe's 65 ka is irreconcilable with a post-47 ka admixture in populations that all carry Neanderthal ancestry.",
+    "alternative": [
+     65000,
+     59000
+    ],
+    "status": "Geneticists and archaeologists openly disagree. Neither line is definitive."
+   }
+  },
+  {
+   "id": "madjedbebe",
+   "type": "site",
+   "label": "Madjedbebe",
+   "region": "Northern Territory, Australia",
+   "coordinates": [
+    132.87,
+    -12.4
+   ],
+   "dateRange": [
+    65000,
+    59000
+   ],
+   "dateNote": "OSL on 28,500 individual quartz grains from 56 samples.",
+   "confidence": "contested",
+   "sourceIds": [
+    "clarkson2017",
+    "allen-oconnell2020",
+    "sumer2024"
+   ],
+   "beat": 6,
+   "why": "Show both dates with equal weight. Neither is the film's answer; the disagreement is.",
+   "dispute": {
+    "objection": "Allen and O'Connell argue the sand body is disturbed and younger artefacts have moved downward. They place Sahul colonisation at 47–50 ka. The 2024 admixture genomes independently push the same way.",
+    "alternative": [
+     50000,
+     47000
+    ],
+    "status": "Contested from two directions at once, and now defended from a third: the 67.8 ka Liang Metanduno stencils put someone in Wallacea before 65 ka."
+   }
+  },
+  {
+   "id": "wallacea-crossing",
+   "type": "geographic",
+   "label": "Wallacea never bridged",
+   "region": "Wallacea",
+   "coordinates": [
+    122,
+    -4
+   ],
+   "dateRange": null,
+   "dateNote": "Minimum open-water crossing of roughly 70–100 km at any Pleistocene sea level. Sunda and Sahul were each continuous land; the gap between them never closed.",
+   "confidence": "solid",
+   "sourceIds": [
+    "bird2018"
+   ],
+   "beat": 6,
+   "why": "The whole point of the beat. Deliberate watercraft, toward land that could not be seen."
+  },
+  {
+   "id": "liang-metanduno",
+   "type": "art",
+   "label": "Liang Metanduno hand stencils",
+   "region": "Muna Island, Sulawesi region",
+   "coordinates": [
+    122.6,
+    -4.95
+   ],
+   "dateRange": [
+    67800,
+    67800
+   ],
+   "dateNote": "NEW — published January 2026. Laser-ablation U-series on overlying calcite gives 71.6 ± 3.8 ka, a minimum age of 67.8 ka for the stencil beneath. The oldest securely dated rock art anywhere. Red pigment blown over a hand, with the fingertips deliberately reshaped to points, like claws.",
+   "confidence": "supported",
+   "sourceIds": [
+    "sulawesi2026"
+   ],
+   "beat": 6,
+   "why": "CHANGES BEAT 06. The oldest securely dated rock art on earth is in Wallacea, on the road to Sahul, at 67,800 years. The authors read it as strengthening the NORTHERN route through Sulawesi and the Spice Islands into New Guinea - not as a puzzle, as a corridor.\n\nON-SCREEN FRAMING: 'We cannot identify the hand directly. The authors believe it was ours. If they are right, the northern sea route was being travelled far earlier than the map once allowed.' That keeps the charge without misrepresenting the paper.",
+   "authorship": {
+    "attribution": "Homo sapiens, per the authors",
+    "note": "CORRECTED. The earlier framing led with 'we do not know whose hand it was', which inverted the paper's own emphasis. The authors acknowledge the maker cannot be identified directly, but they attribute it to Homo sapiens and present it as the oldest direct evidence for modern humans on the northern corridor into Sahul. Denisovans in the region remain a caveat, not the headline."
+   }
+  },
+  {
+   "id": "leang-karampuang",
+   "type": "art",
+   "label": "Leang Karampuang narrative scene",
+   "region": "Sulawesi",
+   "coordinates": [
+    119.67,
+    -4.98
+   ],
+   "dateRange": [
+    51200,
+    51200
+   ],
+   "dateNote": "≥51.2 ka. Laser-ablation U-series. Oldest known narrative/representational art.",
+   "confidence": "solid",
+   "sourceIds": [
+    "oktaviana2024"
+   ],
+   "beat": 6,
+   "why": "NEW, and better than what the storyboard had. Humans, a pig, a scene — storytelling itself, on the migration route, older than the art in Europe. Strongest ground-cut candidate in Act II."
+  },
+  {
+   "id": "leang-tedongnge",
+   "type": "art",
+   "label": "Leang Tedongnge warty pig",
+   "region": "Sulawesi",
+   "coordinates": [
+    119.65,
+    -4.95
+   ],
+   "dateRange": [
+    45500,
+    45500
+   ],
+   "dateNote": "≥45.5 ka. Previously the oldest known figurative art.",
+   "confidence": "solid",
+   "sourceIds": [
+    "brumm2021",
+    "aubert2014"
+   ],
+   "beat": 6,
+   "why": "The Maros-Pangkep hand stencils (Leang Timpuseng, ≥39.9 ka) supply the match cut: Wallacean islands strung across water hold their arrangement and become splayed fingers. Under the amended Law 04 the stencil's own age no longer has to match the beat, so the shape can be chosen for the cut rather than the calendar. Within the ground shot the camera then finds the Karampuang scene beside it."
+  },
+  {
+   "id": "denisovan-admixture",
+   "type": "genetic",
+   "label": "Denisovan gene flow",
+   "region": "Island Southeast Asia and Sahul",
+   "coordinates": null,
+   "dateRange": [
+    50000,
+    40000
+   ],
+   "dateNote": "Up to ~5% Denisovan ancestry in Papuans. At least two deeply divergent Denisovan lineages contributed.",
+   "confidence": "solid",
+   "sourceIds": [
+    "jacobs2019"
+   ],
+   "beat": 6,
+   "why": "Moved here from beat 07 — it is geographically an Island Southeast Asia event, not a European one."
+  },
+  {
+   "id": "neanderthal-extinction",
+   "type": "extinction",
+   "label": "Neanderthals disappear",
+   "region": "Europe and West Asia",
+   "coordinates": [
+    8,
+    45
+   ],
+   "dateRange": [
+    41000,
+    39000
+   ],
+   "dateNote": "Last securely dated Neanderthal occupation.",
+   "confidence": "supported",
+   "sourceIds": [
+    "higham2014"
+   ],
+   "beat": 7,
+   "why": "Act II now closes on this rather than on the meeting — the admixture moved to beat 05, the loss stayed here. Structure preserved, chronology fixed."
+  },
+  {
+   "id": "denisova-11",
+   "type": "fossil",
+   "label": "Denisova 11 — \"Denny\"",
+   "region": "Altai, Siberia",
+   "coordinates": [
+    84.68,
+    51.4
+   ],
+   "dateRange": [
+    90000,
+    90000
+   ],
+   "dateNote": "First-generation offspring of a Neanderthal mother and a Denisovan father. Note: predates this beat by ~50,000 years.",
+   "confidence": "solid",
+   "sourceIds": [
+    "slon2018"
+   ],
+   "beat": 7,
+   "why": "RESOLVED — Denny stays in beat 07. Law 04 was amended: the ground layer is present tense, the evidence as we hold it now, and only the orbital layer rides the time axis. A 90,000-year-old fragment can therefore be exhibited at any beat without breaking Law 01. The clearest case of Law 04 in the film: a first-generation child of two different kinds of human, surviving as one bone."
+  },
+  {
+   "id": "campanian-ignimbrite",
+   "type": "volcanic",
+   "label": "Campanian Ignimbrite",
+   "region": "Campi Flegrei, Italy",
+   "coordinates": [
+    14.14,
+    40.83
+   ],
+   "dateRange": [
+    39850,
+    39850
+   ],
+   "dateNote": "Largest European eruption of the last 200,000 years.",
+   "confidence": "solid",
+   "sourceIds": [
+    "giaccio2017"
+   ],
+   "beat": 7,
+   "why": "DEMOTED. Previously labelled causal for the Neanderthal disappearance and staged as greying the sky 'exactly as their light fails'. Recent work finds no lasting consequence for either Neanderthals or early modern humans, so the causal claim fails - and under Law 06 an event that changes nothing should be cut.\n\nIT SURVIVES ON A DIFFERENT FOOTING: at 39.85 +/- 0.14 ka it is the best-dated tephra horizon in European prehistory. It is HOW WE KNOW the timing of this beat. Under the amended Law 04 the film already has a register for how we know things, and the CI belongs in it. FLAG: this is a genuine Law 06 stress test - the law says causal for what happened, and this is causal for what we can see. Decide whether Law 06 admits epistemic causation or whether the CI gets cut."
+  }
+ ],
+ "sources": {
+  "sumer2024": {
+   "cite": "Sümer, A. P. et al. (2024). Earliest modern human genomes constrain timing of Neanderthal admixture. Nature 638.",
+   "checked": "web-2026-09-04",
+   "note": "The single most consequential source in this file. It moved the dispersal date, moved the admixture into beat 05, and put Madjedbebe under pressure."
+  },
+  "iasi2024": {
+   "cite": "Iasi, L. N. M. et al. (2024). Neanderthal ancestry through time. Science.",
+   "checked": "web-2026-09-04",
+   "note": "Companion to sumer2024. Single extended gene flow ~47 ka lasting ~7,000 years."
+  },
+  "allen-oconnell2020": {
+   "cite": "Allen, J. & O'Connell, J. F. (2020). A different paradigm for the initial colonisation of Sahul. Archaeology in Oceania 55, 1–14.",
+   "checked": "web-2026-09-04"
+  },
+  "clarkson2017": {
+   "cite": "Clarkson, C. et al. (2017). Human occupation of northern Australia by 65,000 years ago. Nature 547, 306–310.",
+   "checked": "web-2026-09-04"
+  },
+  "bird2018": {
+   "cite": "Bird, M. I. et al. (2018). Palaeogeography and voyage modeling indicates early human colonization of Australia was likely from Timor-Roti. Quaternary Science Reviews 191, 431–439.",
+   "checked": "book-standard",
+   "note": "Book or monograph: the citation is correct, but the content has not been re-checked against the physical text."
+  },
+  "sulawesi2026": {
+   "cite": "Oktaviana, A. A., Joannes-Boyau, R., Hakim, B. et al. (2026). Rock art from at least 67,800 years ago in Sulawesi. Nature 650, 652-656.",
+   "doi": "10.1038/s41586-025-09968-y",
+   "checked": "web-2026-09-04",
+   "note": "Published 21 January 2026. Volume and pages verified. Laser-ablation U-series, 71.6 +/- 3.8 ka on overlying calcite, minimum age 67.8 ka for the stencil beneath."
+  },
+  "oktaviana2024": {
+   "cite": "Oktaviana, A. A. et al. (2024). Narrative cave art in Indonesia by 51,200 years ago. Nature 631.",
+   "checked": "web-2026-09-04"
+  },
+  "brumm2021": {
+   "cite": "Brumm, A. et al. (2021). Oldest cave art found in Sulawesi. Science Advances 7.",
+   "checked": "web-2026-09-04"
+  },
+  "aubert2014": {
+   "cite": "Aubert, M. et al. (2014). Pleistocene cave art from Sulawesi, Indonesia. Nature 514, 223–227.",
+   "checked": "web-2026-09-04",
+   "note": "Leang Timpuseng hand stencil, minimum age 39.9 ka. Maros-Pangkep stencils range 39.9–17.4 ka."
+  },
+  "jacobs2019": {
+   "cite": "Jacobs, G. S. et al. (2019). Multiple deeply divergent Denisovan ancestries in Papuans. Cell 177, 1010–1021.",
+   "checked": "web-2026-09-04"
+  },
+  "higham2014": {
+   "cite": "Higham, T., Douka, K., Wood, R. et al. (2014). The timing and spatiotemporal patterning of Neanderthal disappearance. Nature 512, 306–309.",
+   "checked": "web-2026-09-04"
+  },
+  "slon2018": {
+   "cite": "Slon, V. et al. (2018). The genome of the offspring of a Neanderthal mother and a Denisovan father. Nature 561, 113–116.",
+   "checked": "web-2026-09-04"
+  },
+  "giaccio2017": {
+   "cite": "Giaccio, B. et al. (2017). High-precision 14C and 40Ar/39Ar dating of the Campanian Ignimbrite (Y-5) reconciles the time-scales of climatic-cultural processes at 40 ka. Scientific Reports 7, 45940.",
+   "checked": "web-2026-09-04",
+   "note": "40Ar/39Ar: 39.85 ± 0.14 ka at 95% confidence. The film's figure is exact."
+  }
+ },
+ "tSpan": [
+  0.215,
+  0.455
+ ]
+}

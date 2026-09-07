@@ -1,0 +1,2965 @@
+{
+ "_readme": {
+  "purpose": "Single source of truth for Ember and Ice. Every claim that appears on screen must exist here with a date range, a confidence level and at least one source id. Nothing gets built from a number that isn't in this file.",
+  "law01": "Deep time is one float t in [0,1]. t is DERIVED, never stored per event. beats[] defines the mapping: each beat owns a yearsBP span and a scrollWeight, and the piecewise-linear map between them IS the non-linear time curve of Law 05. To retune pacing, change scrollWeight; to retune history, change yearsBP. Never both to fix one problem.",
+  "monotonic": "Beat yearsBP spans are strictly monotonic and non-overlapping, because t must increase with scroll. Real processes that outlast one beat carry spansBeats[] instead of being split.",
+  "coordinates": "[longitude, latitude], GeoJSON order. Not [lat, lon].",
+  "dateRange": "[older, younger] in calibrated years before present (BP, present = 1950). Single-year historical dates use yearCE instead.",
+  "confidence": "See confidenceLevels. This drives the on-screen line grammar directly — solid vs dashed vs plume. If a claim has no confidence it cannot be drawn.",
+  "checked": "Each source carries a checked field. 'web-2026-09-04' = citation confirmed against published sources during Phase 1 research. 'unverified' = written from memory, still needs a library check before it can ship. Do not put an unverified claim on screen.",
+  "notInThisFile": "Continuous curves — sea level, ice sheet extent, bathymetry — are numeric series from published datasets and live in their own files (Phase 1b). This file names which datasets and stores only discrete events.",
+  "routes": "ADDED after the cartography spike. The data file had 42 points and zero paths - a film about movement with no movement in it. Points say where; routes say how it travelled. Confidence still lives on the events; a route is drawing guidance, not a claim."
+ },
+ "meta": {
+  "project": "One Ember",
+  "phase": "Narrative Phase 1 complete. Environmental-data acquisition and scientific copy edit still open.",
+  "schemaVersion": "1.0.0",
+  "created": "2026-09-04",
+  "spanYearsBP": [
+   300000,
+   0
+  ],
+  "beatCount": 14,
+  "actCount": 4,
+  "compressionRatio": "155:1 — beat 03 covers 124,000 years in 7% of scroll; beat 14 covers 800 years in the same 7%. This number is what Law 05's ruler has to make visible.",
+  "workingTitleNote": "Settled 2026-09-04. Was 'Ember and Ice', which named the palette rather than the argument. 'One Ember' is beat 05's image and the thesis in two words: everyone alive descends from a single line that stayed lit. Slug: one-ember.",
+  "scope": "The peopling of the habitable world: 300,000 BP to roughly 1300 CE, when the last major landmass was settled, followed by a bridge across the last 700 years and a present-day close.",
+  "thesis": "Every one of us is African. One line that left did not stop, and its descendants now live everywhere else.",
+  "thesisNote": "CORRECTED. The previous thesis - 'everyone alive descends from a few thousand people who walked out of Africa and did not stop' - was literally false and made Africans spectators in a story about everyone. This file already said so: beat 05's evidence reads 'all NON-AFRICAN ancestry'. The copy over-claimed against its own data. See law07."
+ },
+ "confidenceLevels": {
+  "solid": {
+   "meaning": "Multiple independent lines of evidence, no substantial live dispute in the literature.",
+   "grammar": "Solid line, full opacity."
+  },
+  "supported": {
+   "meaning": "Well evidenced and broadly accepted, but the precise value is still being refined.",
+   "grammar": "Solid line, soft edge."
+  },
+  "contested": {
+   "meaning": "Actively disputed in print. A specific published objection exists and is named in dispute.",
+   "grammar": "Dashed line. Both values shown."
+  },
+  "band": {
+   "meaning": "The evidence supports a region or a range, not a path or a point.",
+   "grammar": "Diffuse plume. Never a line."
+  },
+  "superseded": {
+   "meaning": "Formerly standard, now rejected. Present only where correcting the reader is the point of the beat.",
+   "grammar": "Shown greyed and struck, or not shown at all."
+  }
+ },
+ "earthStateDatasets": {
+  "seaLevel": {
+   "status": "COMPLETE",
+   "file": "data/sealevel_merged.json",
+   "builder": "data/build_sealevel.py",
+   "primary": [
+    "spratt2016",
+    "ice6g"
+   ],
+   "coverage": "300 ka to 0. 1 ka resolution before 26 ka, 0.5 ka through the deglacial. 322 points.",
+   "splice": "300-26 ka Spratt & Lisiecki; 26-0 ka derived from ICE-6G_C Topo_Diff over far-field deep tropical ocean; linear crossfade 30-24 ka (gap 17.0 m).",
+   "checks": {
+    "lowstand_m": -131.0,
+    "lowstand_yrBP": 26000,
+    "lambeckPublished_m": -134.0,
+    "agreement_m": 3.0,
+    "present_m": 0.0,
+    "sprattArtifactRemoved_m": 8.49,
+    "mwp1a": "-92.06 m at 14.5 ka to -68.68 m at 14.0 ka = 23.4 m in 500 yr. Deschamps gives 12-22 m in under 350 yr, so the magnitude is at the top of the published range and the duration is smoothed by the slice spacing."
+   },
+   "note": "LAMBECK NO LONGER NEEDED. Its supplementary table is bot-blocked, but ICE-6G_C already encodes relative sea level in Topo_Diff. Deriving it there is BETTER than a Lambeck splice would have been: sea level and the ice atlas now come from one model, so the coastline and the ice cannot contradict each other. It also removes the Spratt +8.5 m Holocene artifact at source rather than by clamping.",
+   "checked": "built-2026-09-06"
+  },
+  "bathymetry": {
+   "status": "DOWNLOADING",
+   "primary": "ETOPO 2022, 60 arc-second bedrock elevation (NOAA NCEI)",
+   "url": "https://www.ngdc.noaa.gov/thredds/fileServer/global/ETOPO2022/60s/60s_bed_elev_netcdf/ETOPO_2022_v1_60s_N90W180_bed.nc",
+   "format": "netCDF4, 15 arc-second, 43200 x 86400, 3.73 billion points",
+   "size": "4 GB compressed, 7.5 GB uncompressed",
+   "note": "CHANGED FROM GEBCO. The target texture is 4096x2048; GEBCO_2024 is 86400x43200 and 4.2 GB, which is roughly ten times more resolution than the film can display and a download that cannot run in-session. ETOPO 2022 at 60 arc-second is 21600x10800, still 5x oversampled for the target, and about a tenth the size. Bedrock rather than ice-surface, so ICE-6G can be drawn on top without double-counting.",
+   "checked": "web-2026-09-04",
+   "sourceIds": [
+    "etopo2022"
+   ]
+  },
+  "iceSheets": {
+   "status": "ACQUIRED",
+   "file": "data/ice_atlas.png + data/ice_index.json",
+   "primary": "ice6g",
+   "source": "ICE-6G_C (VM5a), Peltier et al., 1-degree per-epoch netCDF",
+   "coverage": "48 time slices, 26 ka to 0, 1-degree grid, packed as an 8-column atlas",
+   "variable": "sftgif — percent ice cover. stgit (thickness) also available in the raw slices.",
+   "check": "18.1% global ice cover at 26 ka against 11.2% at present. The 7-point difference is Laurentide plus Fennoscandian, which is the correct signal.",
+   "note": "Replaces the latitude-band stand-in the spike used. Crossfade adjacent tiles on t.",
+   "checked": "downloaded-2026-09-06",
+   "sourceIds": [
+    "ice6g"
+   ]
+  },
+  "vegetation": {
+   "primary": "African Humid Period reconstructions",
+   "note": "Still a one-line placeholder, and beats 02 and 12 both depend on it - the green Sahara and the Sahel agricultural centre. Needs a named dataset and a resolution, the way sea level and temperature now have. Outstanding.",
+   "file": "data/sahara.png (Phase 1b, not yet built)",
+   "status": "NOT SPECIFIED TO PRODUCTION LEVEL"
+  },
+  "temperature": {
+   "status": "ACQUIRED",
+   "file": "data/temperature.json",
+   "primary": "gicc05",
+   "coverage": "60 ka to present, 20-year resolution, 2,998 points, with maximum counting error",
+   "why": "THE FILM'S SECOND CHANNEL. Sea level is slow and drives coastlines; temperature is fast and drives sky, ice and mood. Conflating them was an architectural error, not a resolution problem: the 8.2 ka event barely moves sea level at all, so no amount of higher-resolution sea-level data would ever have rendered it. At 20 years it is eight points. Meltwater Pulse 1A is eighteen.",
+   "caution": "d18O is a PROXY. Never put degrees Celsius on screen from it. Normalise and drive colour, haze and the drone.",
+   "gap": "Covers beats 05-14 only. Beats 01-04, including Toba at 74 ka, fall back to sea level alone. Extending to 123 ka needs full NGRIP; beyond that needs an ocean-core proxy, since no Greenland core reaches 300 ka."
+  }
+ },
+ "beats": [
+  {
+   "id": 1,
+   "act": 1,
+   "slug": "the-dark-earth",
+   "title": "The dark earth",
+   "yearsBP": [
+    300000,
+    260000
+   ],
+   "scrollWeight": 4,
+   "motion": 2,
+   "tentpole": false,
+   "onScreen": "Four billion years. Nothing here ever needed to be told where to go.",
+   "events": []
+  },
+  {
+   "id": 2,
+   "act": 1,
+   "slug": "shimmer",
+   "title": "Shimmer",
+   "yearsBP": [
+    260000,
+    200000
+   ],
+   "scrollWeight": 6,
+   "motion": 2,
+   "tentpole": false,
+   "onScreen": "We did not begin in a place. We began in a pattern.",
+   "events": [
+    "jebel-irhoud",
+    "florisbad",
+    "omo-kibish",
+    "bizmoune-beads",
+    "single-origin-model"
+   ]
+  },
+  {
+   "id": 3,
+   "act": 1,
+   "slug": "the-failed-doors",
+   "title": "The failed doors",
+   "yearsBP": [
+    200000,
+    76000
+   ],
+   "scrollWeight": 7,
+   "motion": 3,
+   "tentpole": false,
+   "onScreen": "We got out far earlier than you think. It didn't take.",
+   "events": [
+    "misliya",
+    "skhul-qafzeh",
+    "qafzeh-11",
+    "apidima",
+    "no-surviving-lineage"
+   ]
+  },
+  {
+   "id": 4,
+   "act": 2,
+   "slug": "toba",
+   "title": "Toba",
+   "yearsBP": [
+    76000,
+    60000
+   ],
+   "scrollWeight": 6,
+   "motion": 5,
+   "tentpole": true,
+   "onScreen": "You've heard we almost died here. The ash says otherwise.",
+   "events": [
+    "toba-eruption",
+    "pinnacle-point",
+    "jwalapuram",
+    "toba-bottleneck"
+   ]
+  },
+  {
+   "id": 5,
+   "act": 2,
+   "slug": "the-line-that-held",
+   "title": "The line that held",
+   "yearsBP": [
+    60000,
+    50000
+   ],
+   "scrollWeight": 7,
+   "motion": 0,
+   "tentpole": true,
+   "onScreen": "This one did not go out.",
+   "events": [
+    "ooa-dispersal",
+    "dispersal-route",
+    "neanderthal-admixture"
+   ]
+  },
+  {
+   "id": 6,
+   "act": 2,
+   "slug": "the-crossing-to-sahul",
+   "title": "The crossing to Sahul",
+   "yearsBP": [
+    50000,
+    43000
+   ],
+   "scrollWeight": 8,
+   "motion": 4,
+   "tentpole": false,
+   "onScreen": "They could not see it. They went anyway.",
+   "events": [
+    "sahul-arrival",
+    "madjedbebe",
+    "wallacea-crossing",
+    "liang-metanduno",
+    "leang-karampuang",
+    "leang-tedongnge",
+    "denisovan-admixture"
+   ]
+  },
+  {
+   "id": 7,
+   "act": 2,
+   "slug": "the-others",
+   "title": "The others",
+   "yearsBP": [
+    43000,
+    39000
+   ],
+   "scrollWeight": 6,
+   "motion": 2,
+   "tentpole": false,
+   "onScreen": "If your ancestors left Africa, two percent of you is them.",
+   "events": [
+    "neanderthal-extinction",
+    "denisova-11",
+    "campanian-ignimbrite"
+   ],
+   "copyNote": "CHANGED. 'Two percent of you is them' is not universal. Made conditional rather than academic, so it keeps the intimacy."
+  },
+  {
+   "id": 8,
+   "act": 3,
+   "slug": "the-world-gets-smaller",
+   "title": "The world gets smaller",
+   "yearsBP": [
+    39000,
+    26500
+   ],
+   "scrollWeight": 10,
+   "motion": 5,
+   "tentpole": true,
+   "onScreen": "The world got smaller. We spent ten thousand hours on beads for a child's grave.",
+   "events": [
+    "sungir",
+    "yana-rhs",
+    "lgm-onset"
+   ]
+  },
+  {
+   "id": 9,
+   "act": 3,
+   "slug": "mammoth-steppe",
+   "title": "Mammoth steppe",
+   "yearsBP": [
+    26500,
+    23000
+   ],
+   "scrollWeight": 7,
+   "motion": 3,
+   "tentpole": false,
+   "onScreen": "Not a bridge. A country.",
+   "events": [
+    "lgm",
+    "lgm-sea-level",
+    "mammoth-steppe",
+    "beringian-standstill"
+   ]
+  },
+  {
+   "id": 10,
+   "act": 3,
+   "slug": "the-sweep",
+   "title": "The sweep",
+   "yearsBP": [
+    23000,
+    14000
+   ],
+   "scrollWeight": 7,
+   "motion": 5,
+   "tentpole": false,
+   "onScreen": [
+    "Someone was already here. We do not know what became of them.",
+    "Then a hemisphere in a thousand years. Behind them, the big animals stopped."
+   ],
+   "onScreenNote": "Two frames. The beat now opens still and closes fast — the White Sands people at 23 ka, the long silence, then the sweep at 15 ka.",
+   "events": [
+    "white-sands",
+    "americas-gap",
+    "monte-verde",
+    "entry-route",
+    "megafauna-extinction"
+   ]
+  },
+  {
+   "id": 11,
+   "act": 4,
+   "slug": "the-doors-close",
+   "title": "The doors close",
+   "yearsBP": [
+    14000,
+    8000
+   ],
+   "scrollWeight": 10,
+   "motion": 3,
+   "tentpole": true,
+   "onScreen": "The roads we came in on went under. There was no going back the way we came.",
+   "events": [
+    "bolling-allerod",
+    "mwp-1a",
+    "younger-dryas",
+    "holocene-onset",
+    "beringia-submerged",
+    "event-8200",
+    "doggerland-storegga",
+    "fertile-crescent",
+    "gobekli-tepe"
+   ],
+   "copyNote": "CHANGED. Was 'We were where we were going to be', which contradicted beats 12 and 13 - the largest migrations in the story happen immediately after. The beat was never about people stopping; it is about the routes becoming irreversible. Beringia, Doggerland and Sunda closed permanently. Irreversibility survives Yamnaya, Bantu and Austronesian intact."
+  },
+  {
+   "id": 12,
+   "act": 4,
+   "slug": "seeds",
+   "title": "Seeds",
+   "yearsBP": [
+    8000,
+    5000
+   ],
+   "scrollWeight": 7,
+   "motion": 1,
+   "tentpole": false,
+   "onScreen": "In at least six places, with no contact between them, we arrived at the same answer.",
+   "events": [
+    "china-rice-millet",
+    "kuk-swamp",
+    "mesoamerica-maize",
+    "domestication-centres"
+   ]
+  },
+  {
+   "id": 13,
+   "act": 4,
+   "slug": "sails",
+   "title": "Sails",
+   "yearsBP": [
+    5000,
+    800
+   ],
+   "scrollWeight": 8,
+   "motion": 4,
+   "tentpole": false,
+   "onScreen": "Now the ocean became a road.",
+   "events": [
+    "austronesian-expansion",
+    "lapita",
+    "yamnaya",
+    "bantu-expansion",
+    "madagascar",
+    "rapa-nui",
+    "lanse-aux-meadows",
+    "aotearoa"
+   ],
+   "copyNote": "CHANGED. Was 'Now we left because we chose to', which directly contradicted beat 06, where people sail toward land they cannot see. The real distinction is not choice but navigation - repeatable, systematic voyaging over open ocean."
+  },
+  {
+   "id": 14,
+   "act": 4,
+   "slug": "you",
+   "title": "You",
+   "yearsBP": [
+    800,
+    0
+   ],
+   "scrollWeight": 7,
+   "motion": 2,
+   "tentpole": true,
+   "onScreen": [
+    "The last five hundred years moved more people than the fifty thousand before them. Most did not choose it.",
+    "Roughly two thousand generations stand between you and the one that held."
+   ],
+   "events": [
+    "colonial-forced-migration",
+    "generation-depth",
+    "ancestral-fan"
+   ],
+   "onScreenNote": "Two frames. Frame 1 is the bridge across 1300 CE to now - it occupies a transition the film has to make anyway, so it costs almost no runtime. Frame 2 is the fan. The bridge is load-bearing, not garnish: it is what lets the personal ending be honest, because for many viewers part of that fan was moved by force."
+  }
+ ],
+ "events": [
+  {
+   "id": "jebel-irhoud",
+   "beat": 2,
+   "type": "fossil",
+   "label": "Jebel Irhoud",
+   "region": "Morocco",
+   "coordinates": [
+    -8.87,
+    31.85
+   ],
+   "dateRange": [
+    315000,
+    315000
+   ],
+   "dateNote": "~315 ka, thermoluminescence on heated flints",
+   "confidence": "supported",
+   "sourceIds": [
+    "hublin2017"
+   ],
+   "why": "North-west Africa. One of three corners of the continent that makes the pan-African argument visually, without narration."
+  },
+  {
+   "id": "florisbad",
+   "beat": 2,
+   "type": "fossil",
+   "label": "Florisbad",
+   "region": "South Africa",
+   "coordinates": [
+    26.07,
+    -28.77
+   ],
+   "dateRange": [
+    259000,
+    259000
+   ],
+   "dateNote": "259 ± 35 ka, ESR on a hominin molar.",
+   "confidence": "supported",
+   "sourceIds": [
+    "grun1996"
+   ],
+   "why": "Southern corner."
+  },
+  {
+   "id": "omo-kibish",
+   "beat": 2,
+   "type": "fossil",
+   "label": "Omo Kibish (Omo I)",
+   "region": "Ethiopia",
+   "coordinates": [
+    35.95,
+    5.4
+   ],
+   "dateRange": [
+    233000,
+    233000
+   ],
+   "dateNote": "Minimum age ≥233 ka. Redated 2022 from a previous ~195 ka via geochemical fingerprinting of an overlying Shala volcanic ash.",
+   "confidence": "solid",
+   "sourceIds": [
+    "vidal2022"
+   ],
+   "why": "Eastern corner. The 2022 redating is itself a good micro-story: the fossil got 36,000 years older because someone identified the ash above it."
+  },
+  {
+   "id": "bizmoune-beads",
+   "beat": 2,
+   "type": "artefact",
+   "label": "Bizmoune Cave shell beads",
+   "region": "Morocco",
+   "coordinates": [
+    -9.6,
+    30.35
+   ],
+   "dateRange": [
+    150000,
+    142000
+   ],
+   "dateNote": "≥142 ka",
+   "confidence": "supported",
+   "sourceIds": [
+    "sehasseh2021"
+   ],
+   "why": "Symbolic behaviour at 142 ka. Optional ground-cut candidate for beat 02 if the descent is moved earlier."
+  },
+  {
+   "id": "single-origin-model",
+   "beat": 2,
+   "type": "model",
+   "label": "Single East African origin",
+   "region": "—",
+   "coordinates": null,
+   "dateRange": null,
+   "dateNote": "n/a",
+   "confidence": "superseded",
+   "sourceIds": [
+    "hublin2017",
+    "vidal2022"
+   ],
+   "why": "The thing the beat exists to take away. Shown only as the reader's incoming assumption."
+  },
+  {
+   "id": "misliya",
+   "beat": 3,
+   "type": "fossil",
+   "label": "Misliya-1",
+   "region": "Israel",
+   "coordinates": [
+    34.97,
+    32.75
+   ],
+   "dateRange": [
+    194000,
+    177000
+   ],
+   "dateNote": "Maxilla. U-series, ESR and TL.",
+   "confidence": "contested",
+   "sourceIds": [
+    "hershkovitz2018",
+    "sharp2018"
+   ],
+   "dispute": {
+    "objection": "Sharp and Paces argue the uranium-series data are misinterpreted and support a minimum age of only ~60–70 ka.",
+    "alternative": [
+     70000,
+     60000
+    ],
+    "status": "Original authors maintain the older date. Unresolved."
+   },
+   "why": "RESOLVED — no longer carries the ground cut. Named on screen as one of the attempts, drawn dashed, but the descent now lands on Qafzeh 11 instead."
+  },
+  {
+   "id": "skhul-qafzeh",
+   "beat": 3,
+   "type": "fossil",
+   "label": "Skhul and Qafzeh",
+   "region": "Israel",
+   "coordinates": [
+    35.3,
+    32.68
+   ],
+   "dateRange": [
+    135000,
+    90000
+   ],
+   "dateNote": "At least 15 individuals across the two caves. Grün 2005 puts the Skhul burials at 100–135 ka; Qafzeh thermoluminescence gives ~90–100 ka. CORRECTED UPWARD in Phase 1c.",
+   "confidence": "solid",
+   "sourceIds": [
+    "grun2005",
+    "valladas1988"
+   ],
+   "why": "The best-evidenced failed excursion, and now the anchor for the beat."
+  },
+  {
+   "id": "qafzeh-11",
+   "beat": 3,
+   "type": "burial",
+   "label": "Qafzeh 11",
+   "region": "Israel",
+   "coordinates": [
+    35.31,
+    32.7
+   ],
+   "dateRange": [
+    100000,
+    90000
+   ],
+   "dateNote": "An adolescent of about 12 or 13, laid flexed in a cut rock recess, with the severed antlers of a fallow deer placed across the chest and hands. Sediment around the body heavily saturated with imported red ochre.",
+   "confidence": "solid",
+   "sourceIds": [
+    "valladas1988",
+    "vandermeersch1981"
+   ],
+   "why": "THE FILM'S FIRST GROUND CUT, replacing Misliya. Match: the arc of the Levantine coastline holds and becomes the arc of the antlers. Better than a jaw on every axis — solidly dated, and it is a burial, so it says these people lived here properly, buried their children with care, and then were gone. That is the beat's whole argument in one object."
+  },
+  {
+   "id": "apidima",
+   "beat": 3,
+   "type": "fossil",
+   "label": "Apidima 1",
+   "region": "Greece",
+   "coordinates": [
+    22.45,
+    36.63
+   ],
+   "dateRange": [
+    210000,
+    210000
+   ],
+   "dateNote": "Claimed ≥210 ka.",
+   "confidence": "contested",
+   "sourceIds": [
+    "harvati2019",
+    "hershkovitz-comment"
+   ],
+   "dispute": {
+    "objection": "Fragmentary, heavily reconstructed. Both the sapiens attribution and the date are questioned; Hershkovitz among others calls the evidence weak.",
+    "alternative": null,
+    "status": "Live dispute."
+   },
+   "why": "Where the film introduces its dashed grammar. Showing it as contested is what makes the solid claims readable as solid."
+  },
+  {
+   "id": "no-surviving-lineage",
+   "beat": 3,
+   "type": "genetic",
+   "label": "No surviving lineage from the early excursions",
+   "region": "—",
+   "coordinates": null,
+   "dateRange": null,
+   "dateNote": "n/a",
+   "confidence": "solid",
+   "sourceIds": [
+    "sumer2024"
+   ],
+   "why": "The payload of the whole beat. All non-African ancestry traces to the later dispersal; these people left no descendants."
+  },
+  {
+   "id": "toba-eruption",
+   "beat": 4,
+   "type": "volcanic",
+   "label": "Youngest Toba Tuff eruption",
+   "region": "Sumatra",
+   "coordinates": [
+    98.83,
+    2.68
+   ],
+   "dateRange": [
+    74000,
+    74000
+   ],
+   "dateNote": "VEI 8. Erupted volume DISPUTED: Chesner 1991 gives 2,500–3,000 km³, Costa 2014 gives ~5,300 km³ DRE. Cite the range, never a single figure. Largest eruption of the last 2 million years on any estimate.",
+   "confidence": "solid",
+   "sourceIds": [
+    "chesner1991",
+    "costa2014"
+   ],
+   "why": "The earth's first act of aggression in the film."
+  },
+  {
+   "id": "pinnacle-point",
+   "beat": 4,
+   "type": "site",
+   "label": "Pinnacle Point",
+   "region": "South Africa",
+   "coordinates": [
+    22.09,
+    -34.21
+   ],
+   "dateRange": [
+    80000,
+    60000
+   ],
+   "dateNote": "Occupation continuous across the Toba cryptotephra horizon.",
+   "confidence": "supported",
+   "sourceIds": [
+    "smith2018"
+   ],
+   "why": "Witness one against the bottleneck."
+  },
+  {
+   "id": "jwalapuram",
+   "beat": 4,
+   "type": "site",
+   "label": "Jwalapuram",
+   "region": "India",
+   "coordinates": [
+    78.2,
+    15.3
+   ],
+   "dateRange": [
+    80000,
+    65000
+   ],
+   "dateNote": "Near-identical Levallois assemblages immediately below and above the Toba ash.",
+   "confidence": "supported",
+   "sourceIds": [
+    "petraglia2007",
+    "jwalapuram2025"
+   ],
+   "why": "Witness two, and closer to the eruption. The stronger of the pair."
+  },
+  {
+   "id": "toba-bottleneck",
+   "beat": 4,
+   "type": "model",
+   "label": "Toba volcanic winter bottleneck",
+   "region": "—",
+   "coordinates": null,
+   "dateRange": null,
+   "dateNote": "n/a",
+   "confidence": "superseded",
+   "sourceIds": [
+    "petraglia2007",
+    "smith2018"
+   ],
+   "why": "The most widely believed wrong thing in popular prehistory. CAUTION: the eruption's global climate impact is real and still actively studied — the film rejects the bottleneck attribution, not the eruption's severity. Do not overclaim."
+  },
+  {
+   "id": "ooa-dispersal",
+   "beat": 5,
+   "type": "dispersal",
+   "label": "The successful dispersal",
+   "region": "Africa to Eurasia",
+   "coordinates": null,
+   "dateRange": [
+    60000,
+    50000
+   ],
+   "dateNote": "REVISED. Formerly written as 60–50 ka broadly; the 2024 admixture genomes tighten the successful exit to shortly before the single Neanderthal gene-flow event at ~50.5–43.5 ka, so the crossing sits nearer 50 ka than 60 ka.",
+   "confidence": "supported",
+   "sourceIds": [
+    "sumer2024",
+    "iasi2024"
+   ],
+   "why": "The emotional core of the film. Everyone alive outside Africa is downstream of this."
+  },
+  {
+   "id": "dispersal-route",
+   "beat": 5,
+   "type": "route",
+   "label": "Southern route or Sinai",
+   "region": "Bab-el-Mandeb / Sinai",
+   "coordinates": [
+    43.32,
+    12.58
+   ],
+   "dateRange": [
+    60000,
+    50000
+   ],
+   "dateNote": "Route unresolved.",
+   "confidence": "band",
+   "sourceIds": [
+    "sumer2024"
+   ],
+   "why": "MUST render as a diffuse plume, never a line. Where the science has a band, the film draws a band."
+  },
+  {
+   "id": "neanderthal-admixture",
+   "beat": 5,
+   "type": "genetic",
+   "label": "Neanderthal gene flow",
+   "region": "Eurasia",
+   "coordinates": null,
+   "dateRange": [
+    50500,
+    43500
+   ],
+   "dateNote": "MAJOR REVISION. A single extended gene-flow period centred ~47 ka lasting ~7,000 years, shared by all non-Africans. Formerly written in the storyboard as ~50–60 ka. 1.5–2% Neanderthal ancestry in present-day non-Africans.",
+   "confidence": "solid",
+   "sourceIds": [
+    "sumer2024",
+    "iasi2024"
+   ],
+   "why": "Moved from beat 07 to beat 05. The genetics now says leaving Africa and meeting the others were one continuous event, not two."
+  },
+  {
+   "id": "sahul-arrival",
+   "beat": 6,
+   "type": "dispersal",
+   "label": "Arrival in Sahul",
+   "region": "Australia and New Guinea",
+   "coordinates": [
+    132.0,
+    -12.0
+   ],
+   "dateRange": [
+    50000,
+    43000
+   ],
+   "dateNote": "Genetic-constrained window: must postdate the shared Neanderthal admixture. Most Sahul archaeological sites fall 54–43 ka.",
+   "confidence": "contested",
+   "sourceIds": [
+    "sumer2024",
+    "allen-oconnell2020",
+    "clarkson2017"
+   ],
+   "dispute": {
+    "objection": "Madjedbebe's 65 ka is irreconcilable with a post-47 ka admixture in populations that all carry Neanderthal ancestry.",
+    "alternative": [
+     65000,
+     59000
+    ],
+    "status": "Geneticists and archaeologists openly disagree. Neither line is definitive."
+   },
+   "why": "RESOLVED — the film does not adjudicate. The ember arrives as a range spanning 65 to 43 ka and the beat says out loud that the rocks and the genomes disagree. This is what the dashed grammar was built for in beat 03, and it is more interesting than either number."
+  },
+  {
+   "id": "madjedbebe",
+   "beat": 6,
+   "type": "site",
+   "label": "Madjedbebe",
+   "region": "Northern Territory, Australia",
+   "coordinates": [
+    132.87,
+    -12.4
+   ],
+   "dateRange": [
+    65000,
+    59000
+   ],
+   "dateNote": "OSL on 28,500 individual quartz grains from 56 samples.",
+   "confidence": "contested",
+   "sourceIds": [
+    "clarkson2017",
+    "allen-oconnell2020",
+    "sumer2024"
+   ],
+   "dispute": {
+    "objection": "Allen and O'Connell argue the sand body is disturbed and younger artefacts have moved downward. They place Sahul colonisation at 47–50 ka. The 2024 admixture genomes independently push the same way.",
+    "alternative": [
+     50000,
+     47000
+    ],
+    "status": "Contested from two directions at once, and now defended from a third: the 67.8 ka Liang Metanduno stencils put someone in Wallacea before 65 ka."
+   },
+   "why": "Show both dates with equal weight. Neither is the film's answer; the disagreement is."
+  },
+  {
+   "id": "wallacea-crossing",
+   "beat": 6,
+   "type": "geographic",
+   "label": "Wallacea never bridged",
+   "region": "Wallacea",
+   "coordinates": [
+    122.0,
+    -4.0
+   ],
+   "dateRange": null,
+   "dateNote": "Minimum open-water crossing of roughly 70–100 km at any Pleistocene sea level. Sunda and Sahul were each continuous land; the gap between them never closed.",
+   "confidence": "solid",
+   "sourceIds": [
+    "bird2018"
+   ],
+   "why": "The whole point of the beat. Deliberate watercraft, toward land that could not be seen."
+  },
+  {
+   "id": "liang-metanduno",
+   "beat": 6,
+   "type": "art",
+   "label": "Liang Metanduno hand stencils",
+   "region": "Muna Island, Sulawesi region",
+   "coordinates": [
+    122.6,
+    -4.95
+   ],
+   "dateRange": [
+    67800,
+    67800
+   ],
+   "dateNote": "NEW — published January 2026. Laser-ablation U-series on overlying calcite gives 71.6 ± 3.8 ka, a minimum age of 67.8 ka for the stencil beneath. The oldest securely dated rock art anywhere. Red pigment blown over a hand, with the fingertips deliberately reshaped to points, like claws.",
+   "confidence": "supported",
+   "sourceIds": [
+    "sulawesi2026"
+   ],
+   "authorship": {
+    "attribution": "Homo sapiens, per the authors",
+    "note": "CORRECTED. The earlier framing led with 'we do not know whose hand it was', which inverted the paper's own emphasis. The authors acknowledge the maker cannot be identified directly, but they attribute it to Homo sapiens and present it as the oldest direct evidence for modern humans on the northern corridor into Sahul. Denisovans in the region remain a caveat, not the headline."
+   },
+   "why": "CHANGES BEAT 06. The oldest securely dated rock art on earth is in Wallacea, on the road to Sahul, at 67,800 years. The authors read it as strengthening the NORTHERN route through Sulawesi and the Spice Islands into New Guinea - not as a puzzle, as a corridor.\n\nON-SCREEN FRAMING: 'We cannot identify the hand directly. The authors believe it was ours. If they are right, the northern sea route was being travelled far earlier than the map once allowed.' That keeps the charge without misrepresenting the paper."
+  },
+  {
+   "id": "leang-karampuang",
+   "beat": 6,
+   "type": "art",
+   "label": "Leang Karampuang narrative scene",
+   "region": "Sulawesi",
+   "coordinates": [
+    119.67,
+    -4.98
+   ],
+   "dateRange": [
+    51200,
+    51200
+   ],
+   "dateNote": "≥51.2 ka. Laser-ablation U-series. Oldest known narrative/representational art.",
+   "confidence": "solid",
+   "sourceIds": [
+    "oktaviana2024"
+   ],
+   "why": "NEW, and better than what the storyboard had. Humans, a pig, a scene — storytelling itself, on the migration route, older than the art in Europe. Strongest ground-cut candidate in Act II."
+  },
+  {
+   "id": "leang-tedongnge",
+   "beat": 6,
+   "type": "art",
+   "label": "Leang Tedongnge warty pig",
+   "region": "Sulawesi",
+   "coordinates": [
+    119.65,
+    -4.95
+   ],
+   "dateRange": [
+    45500,
+    45500
+   ],
+   "dateNote": "≥45.5 ka. Previously the oldest known figurative art.",
+   "confidence": "solid",
+   "sourceIds": [
+    "brumm2021",
+    "aubert2014"
+   ],
+   "why": "The Maros-Pangkep hand stencils (Leang Timpuseng, ≥39.9 ka) supply the match cut: Wallacean islands strung across water hold their arrangement and become splayed fingers. Under the amended Law 04 the stencil's own age no longer has to match the beat, so the shape can be chosen for the cut rather than the calendar. Within the ground shot the camera then finds the Karampuang scene beside it."
+  },
+  {
+   "id": "denisovan-admixture",
+   "beat": 6,
+   "type": "genetic",
+   "label": "Denisovan gene flow",
+   "region": "Island Southeast Asia and Sahul",
+   "coordinates": null,
+   "dateRange": [
+    50000,
+    40000
+   ],
+   "dateNote": "Up to ~5% Denisovan ancestry in Papuans. At least two deeply divergent Denisovan lineages contributed.",
+   "confidence": "solid",
+   "sourceIds": [
+    "jacobs2019"
+   ],
+   "why": "Moved here from beat 07 — it is geographically an Island Southeast Asia event, not a European one."
+  },
+  {
+   "id": "neanderthal-extinction",
+   "beat": 7,
+   "type": "extinction",
+   "label": "Neanderthals disappear",
+   "region": "Europe and West Asia",
+   "coordinates": [
+    8.0,
+    45.0
+   ],
+   "dateRange": [
+    41000,
+    39000
+   ],
+   "dateNote": "Last securely dated Neanderthal occupation.",
+   "confidence": "supported",
+   "sourceIds": [
+    "higham2014"
+   ],
+   "why": "Act II now closes on this rather than on the meeting — the admixture moved to beat 05, the loss stayed here. Structure preserved, chronology fixed."
+  },
+  {
+   "id": "denisova-11",
+   "beat": 7,
+   "type": "fossil",
+   "label": "Denisova 11 — \"Denny\"",
+   "region": "Altai, Siberia",
+   "coordinates": [
+    84.68,
+    51.4
+   ],
+   "dateRange": [
+    90000,
+    90000
+   ],
+   "dateNote": "First-generation offspring of a Neanderthal mother and a Denisovan father. Note: predates this beat by ~50,000 years.",
+   "confidence": "solid",
+   "sourceIds": [
+    "slon2018"
+   ],
+   "why": "RESOLVED — Denny stays in beat 07. Law 04 was amended: the ground layer is present tense, the evidence as we hold it now, and only the orbital layer rides the time axis. A 90,000-year-old fragment can therefore be exhibited at any beat without breaking Law 01. The clearest case of Law 04 in the film: a first-generation child of two different kinds of human, surviving as one bone."
+  },
+  {
+   "id": "campanian-ignimbrite",
+   "beat": 7,
+   "type": "volcanic",
+   "label": "Campanian Ignimbrite",
+   "region": "Campi Flegrei, Italy",
+   "coordinates": [
+    14.14,
+    40.83
+   ],
+   "dateRange": [
+    39850,
+    39850
+   ],
+   "dateNote": "Largest European eruption of the last 200,000 years.",
+   "confidence": "solid",
+   "sourceIds": [
+    "giaccio2017"
+   ],
+   "why": "DEMOTED. Previously labelled causal for the Neanderthal disappearance and staged as greying the sky 'exactly as their light fails'. Recent work finds no lasting consequence for either Neanderthals or early modern humans, so the causal claim fails - and under Law 06 an event that changes nothing should be cut.\n\nIT SURVIVES ON A DIFFERENT FOOTING: at 39.85 +/- 0.14 ka it is the best-dated tephra horizon in European prehistory. It is HOW WE KNOW the timing of this beat. Under the amended Law 04 the film already has a register for how we know things, and the CI belongs in it. FLAG: this is a genuine Law 06 stress test - the law says causal for what happened, and this is causal for what we can see. Decide whether Law 06 admits epistemic causation or whether the CI gets cut."
+  },
+  {
+   "id": "sungir",
+   "beat": 8,
+   "type": "burial",
+   "label": "Sungir burials",
+   "region": "Vladimir, Russia",
+   "coordinates": [
+    40.5,
+    56.18
+   ],
+   "dateRange": [
+    34000,
+    34000
+   ],
+   "dateNote": "Two children buried with more than 10,000 mammoth-ivory beads, 20+ armbands, ~300 pierced fox teeth, 16 ivory spears.",
+   "confidence": "solid",
+   "sourceIds": [
+    "trinkaus2014"
+   ],
+   "why": "The Act III ground cut. In the worst conditions our species faced, thousands of hours of labour for a dead child."
+  },
+  {
+   "id": "yana-rhs",
+   "beat": 8,
+   "type": "site",
+   "label": "Yana Rhinoceros Horn Site",
+   "region": "Siberia, 71°N",
+   "coordinates": [
+    135.42,
+    70.72
+   ],
+   "dateRange": [
+    33000,
+    31000
+   ],
+   "dateNote": "Humans inside the Arctic Circle.",
+   "confidence": "solid",
+   "sourceIds": [
+    "pitulko2004"
+   ],
+   "why": "Moved from beat 09 to beat 08 for monotonicity — it is the northward push into the cold, not the Beringian standstill."
+  },
+  {
+   "id": "lgm-onset",
+   "beat": 8,
+   "type": "climate",
+   "label": "Descent into the Last Glacial Maximum",
+   "region": "global",
+   "coordinates": null,
+   "dateRange": [
+    33000,
+    26500
+   ],
+   "dateNote": "Two-step sea-level fall toward the lowstand.",
+   "confidence": "solid",
+   "sourceIds": [
+    "lambeck2014",
+    "clark2009"
+   ],
+   "why": "The visual tentpole. Ice grows, every coastline redraws at once."
+  },
+  {
+   "id": "lgm",
+   "beat": 9,
+   "type": "climate",
+   "label": "Last Glacial Maximum",
+   "region": "global",
+   "coordinates": null,
+   "dateRange": [
+    26500,
+    19000
+   ],
+   "dateNote": "spansBeats — the LGM outlasts beat 09 and continues under beat 10.",
+   "spansBeats": [
+    9,
+    10
+   ],
+   "confidence": "solid",
+   "sourceIds": [
+    "clark2009"
+   ],
+   "why": "The antagonist at full strength."
+  },
+  {
+   "id": "lgm-sea-level",
+   "beat": 9,
+   "type": "climate",
+   "label": "Glacial lowstand",
+   "region": "global",
+   "coordinates": null,
+   "dateRange": [
+    29000,
+    21000
+   ],
+   "dateNote": "Slow fall to the lowstand between 29 and 21 ka. Maximum grounded ice volume ~52e6 km3. TWO PUBLISHED LOWSTANDS: Lambeck 2014 gives -134 m; the Spratt stack now in data/sealevel.json gives -130 m at 24 ka. Both sit inside the stack's 9-12 m uncertainty. Use the curve, cite the disagreement, never a single hard figure.",
+   "confidence": "solid",
+   "sourceIds": [
+    "lambeck2014",
+    "spratt2016"
+   ],
+   "why": "The number that generates Doggerland, Sundaland, Beringia and the Persian Gulf, all from one raster and one float."
+  },
+  {
+   "id": "mammoth-steppe",
+   "beat": 9,
+   "type": "biome",
+   "label": "Mammoth steppe",
+   "region": "Iberia to Yukon",
+   "coordinates": [
+    -165.0,
+    65.0
+   ],
+   "dateRange": [
+    100000,
+    12000
+   ],
+   "dateNote": "Largest terrestrial biome of the Late Pleistocene. Cold and dry, not glaciated.",
+   "confidence": "solid",
+   "sourceIds": [
+    "guthrie2001"
+   ],
+   "why": "Where Law 06 lets the animals in. The steppe is why Beringia was survivable, so the megafauna are causal."
+  },
+  {
+   "id": "beringian-standstill",
+   "beat": 9,
+   "type": "genetic",
+   "label": "Beringian standstill",
+   "region": "Beringia",
+   "coordinates": [
+    -168.0,
+    64.0
+   ],
+   "dateRange": [
+    23000,
+    15000
+   ],
+   "dateNote": "spansBeats. Duration heavily disputed: Raghavan et al. give isolation beginning no earlier than 23 ka and lasting no more than 8,000 years; Y-chromosome models give as little as 2,700–4,600 years.",
+   "spansBeats": [
+    9,
+    10
+   ],
+   "confidence": "contested",
+   "sourceIds": [
+    "raghavan2015",
+    "pinotti2019"
+   ],
+   "dispute": {
+    "objection": "Estimates range from ~2,700 to ~15,000 years depending on marker and model.",
+    "alternative": [
+     23000,
+     19500
+    ],
+    "status": "Unresolved."
+   },
+   "why": "KILLS THE ON-SCREEN LINE. The storyboard says 'two hundred generations' (~5,000 yr). That is inside the range but presents a contested number as fact. Line changed to 'Not a bridge. A country.' — the duration claim is dropped from screen and moved to hover."
+  },
+  {
+   "id": "white-sands",
+   "beat": 10,
+   "type": "site",
+   "label": "White Sands footprints",
+   "region": "New Mexico",
+   "coordinates": [
+    -106.28,
+    32.78
+   ],
+   "dateRange": [
+    23000,
+    21000
+   ],
+   "dateNote": "STATUS CHANGED. Now supported by three independent materials — Ruppia seeds (2021), terrestrial pollen and OSL (2023), and palustrine mud from two independent labs (2025). 55 radiocarbon dates in total.",
+   "confidence": "supported",
+   "sourceIds": [
+    "bennett2021",
+    "pigati2023",
+    "holliday2025"
+   ],
+   "why": "RESOLVED — it holds, and it now opens beat 10 rather than sitting inside it. Humans were in North America during the Last Glacial Maximum. The ground cut stays: a woman carrying a child, setting them down, picking them up again, over more than a kilometre of gypsum."
+  },
+  {
+   "id": "americas-gap",
+   "beat": 10,
+   "type": "model",
+   "label": "The record falls silent",
+   "region": "North America",
+   "coordinates": null,
+   "dateRange": [
+    21000,
+    16000
+   ],
+   "dateNote": "Roughly 5,000 years between the White Sands footprints and the securely dated southward expansion, with no currently accepted continuity between them. This is a gap in the RECORD. It is not evidence of a vanished population.",
+   "confidence": "band",
+   "sourceIds": [
+    "holliday2025",
+    "raghavan2015",
+    "pinotti2019"
+   ],
+   "why": "REVISED. The earlier framing asserted two peopling events and an extinction, which the evidence does not support - absence of accepted evidence is not evidence of absence, and this file's own note already said not to assert it. The frame description contradicted the note anyway.\n\nCORRECT TREATMENT: the ember does not go out. It becomes obscured - uncertain, archaeologically invisible, still possibly there. On screen: 'After this, the record falls silent.' Keep 'We do not know what became of them.' That is honest and it is the more haunting of the two readings. The failed-doors motif from beat 03 still pays a second time; what recurs is the silence, not a death."
+  },
+  {
+   "id": "monte-verde",
+   "beat": 10,
+   "type": "site",
+   "label": "Monte Verde II",
+   "region": "Chile",
+   "coordinates": [
+    -73.2,
+    -41.51
+   ],
+   "dateRange": [
+    14800,
+    14500
+   ],
+   "dateNote": "The site that broke the Clovis-first consensus.",
+   "confidence": "solid",
+   "sourceIds": [
+    "dillehay1997"
+   ],
+   "why": "Southern end of the sweep."
+  },
+  {
+   "id": "entry-route",
+   "beat": 10,
+   "type": "route",
+   "label": "Coastal route or ice-free corridor",
+   "region": "North America",
+   "coordinates": null,
+   "dateRange": [
+    23000,
+    14000
+   ],
+   "dateNote": "CORRECTED. The interior corridor opened ~15–14 cal kyr BP, but sedimentary ancient DNA shows it was not biologically viable — no steppe vegetation, bison or mammoth — until ~12.6 cal kyr BP. That is far too late for White Sands and too late for Monte Verde. The Pacific coastal route is the only remaining candidate for the earliest entries.",
+   "confidence": "contested",
+   "sourceIds": [
+    "pedersen2016",
+    "holliday2025"
+   ],
+   "dispute": {
+    "objection": "Neither route has direct archaeological confirmation of an entry event.",
+    "alternative": null,
+    "status": "Open."
+   },
+   "why": "Render both — solid coastal, dashed corridor. The film does not pick a winner the evidence hasn't picked."
+  },
+  {
+   "id": "megafauna-extinction",
+   "beat": 10,
+   "type": "extinction",
+   "label": "North American megafaunal extinction",
+   "region": "North America",
+   "coordinates": null,
+   "dateRange": [
+    13000,
+    11000
+   ],
+   "dateNote": "~35 genera lost. Cause disputed between overhunting, climate change, and their interaction.",
+   "confidence": "supported",
+   "sourceIds": [
+    "barnosky2004"
+   ],
+   "dispute": {
+    "objection": "Relative weight of human versus climatic causes.",
+    "alternative": null,
+    "status": "Long-running, unresolved."
+   },
+   "why": "Where the film declines to make us the hero. Show the extinction as solid, the cause as dashed."
+  },
+  {
+   "id": "bolling-allerod",
+   "beat": 11,
+   "type": "climate",
+   "label": "Bølling–Allerød warming",
+   "region": "global",
+   "coordinates": null,
+   "dateRange": [
+    14700,
+    12900
+   ],
+   "dateNote": "Abrupt warming out of the glacial.",
+   "confidence": "solid",
+   "sourceIds": [
+    "rasmussen2014",
+    "gicc05"
+   ],
+   "why": "The false dawn before the Younger Dryas."
+  },
+  {
+   "id": "mwp-1a",
+   "beat": 11,
+   "type": "climate",
+   "label": "Meltwater Pulse 1A",
+   "region": "global",
+   "coordinates": null,
+   "dateRange": [
+    14650,
+    14300
+   ],
+   "dateNote": "Sea-level rise of roughly 14–18 m in under 350 years.",
+   "confidence": "supported",
+   "sourceIds": [
+    "deschamps2012"
+   ],
+   "why": "The fastest the water moves in the whole film."
+  },
+  {
+   "id": "younger-dryas",
+   "beat": 11,
+   "type": "climate",
+   "label": "Younger Dryas",
+   "region": "North Atlantic and beyond",
+   "coordinates": null,
+   "dateRange": [
+    12900,
+    11700
+   ],
+   "dateNote": "Return to near-glacial conditions for ~1,200 years.",
+   "confidence": "solid",
+   "sourceIds": [
+    "rasmussen2014",
+    "walker2009",
+    "gicc05"
+   ],
+   "why": "The reversal inside the reversal."
+  },
+  {
+   "id": "holocene-onset",
+   "beat": 11,
+   "type": "climate",
+   "label": "Holocene begins",
+   "region": "global",
+   "coordinates": null,
+   "dateRange": [
+    11700,
+    11700
+   ],
+   "dateNote": "Formally defined GSSP boundary, NGRIP ice core.",
+   "confidence": "solid",
+   "sourceIds": [
+    "walker2009",
+    "gicc05"
+   ],
+   "why": "The only formally ratified boundary in the film. Worth marking on the ruler."
+  },
+  {
+   "id": "beringia-submerged",
+   "beat": 11,
+   "type": "geographic",
+   "label": "Beringia goes under",
+   "region": "Bering Strait",
+   "coordinates": [
+    -168.0,
+    65.5
+   ],
+   "dateRange": [
+    11000,
+    11000
+   ],
+   "dateNote": "Approximate final marine inundation of the land bridge.",
+   "confidence": "supported",
+   "sourceIds": [
+    "lambeck2014"
+   ],
+   "why": "The first door to close on screen."
+  },
+  {
+   "id": "event-8200",
+   "beat": 11,
+   "type": "climate",
+   "label": "The 8.2 ka event",
+   "region": "North Atlantic",
+   "coordinates": null,
+   "dateRange": [
+    8300,
+    8140
+   ],
+   "dateNote": "160.5 years of abrupt cooling with a 69-year core, driven by the catastrophic drainage of glacial Lake Agassiz. About half the amplitude of the Younger Dryas. A cold snap, not an ice age. Now resolvable: eight points in the 20-year temperature channel.",
+   "confidence": "solid",
+   "sourceIds": [
+    "alley1997",
+    "thomas2007",
+    "gicc05"
+   ],
+   "why": "The precision is the point — the popular version of this is imprecise, and correcting it is cheap."
+  },
+  {
+   "id": "doggerland-storegga",
+   "beat": 11,
+   "type": "geographic",
+   "label": "Doggerland drowns",
+   "region": "North Sea",
+   "coordinates": [
+    2.5,
+    54.5
+   ],
+   "dateRange": [
+    8200,
+    8150
+   ],
+   "dateNote": "Final inundation around 8200 cal BP, coincident with the Storegga Slide tsunami (~8150 cal BP), which displaced ~3,200 km³ of sediment across 80,000 km².",
+   "confidence": "supported",
+   "sourceIds": [
+    "weninger2008",
+    "walker2020"
+   ],
+   "why": "The last road to close, and it closes in a single wave."
+  },
+  {
+   "id": "fertile-crescent",
+   "beat": 11,
+   "type": "domestication",
+   "label": "Fertile Crescent agriculture",
+   "region": "Southwest Asia",
+   "coordinates": [
+    38.0,
+    36.5
+   ],
+   "dateRange": [
+    11500,
+    10000
+   ],
+   "dateNote": "Wheat and barley.",
+   "confidence": "solid",
+   "sourceIds": [
+    "larson2014"
+   ],
+   "why": "MOVED from beat 12. At 11.5 ka it falls inside beat 11 while the sea is still rising — which is a better shot than the storyboard had: the light fixing in place while the water comes."
+  },
+  {
+   "id": "gobekli-tepe",
+   "beat": 11,
+   "type": "site",
+   "label": "Göbekli Tepe",
+   "region": "Southeast Turkey",
+   "coordinates": [
+    38.92,
+    37.22
+   ],
+   "dateRange": [
+    11500,
+    10000
+   ],
+   "dateNote": "Earliest exposed enclosures built 9500–9000 BCE. Monumental construction predating agriculture.",
+   "confidence": "solid",
+   "sourceIds": [
+    "dietrich2013"
+   ],
+   "why": "MOVED from beat 12 with the Fertile Crescent. Inverts the schoolbook order — the monument comes before the farming that was supposed to enable it."
+  },
+  {
+   "id": "china-rice-millet",
+   "beat": 12,
+   "type": "domestication",
+   "label": "Yangtze rice and northern millet",
+   "region": "China",
+   "coordinates": [
+    112.0,
+    30.5
+   ],
+   "dateRange": [
+    9000,
+    8000
+   ],
+   "dateNote": "Two separate centres in one region, different climates.",
+   "confidence": "solid",
+   "sourceIds": [
+    "larson2014"
+   ],
+   "why": "Independent of the Fertile Crescent."
+  },
+  {
+   "id": "kuk-swamp",
+   "beat": 12,
+   "type": "domestication",
+   "label": "Kuk Swamp",
+   "region": "New Guinea highlands",
+   "coordinates": [
+    144.33,
+    -5.78
+   ],
+   "dateRange": [
+    10000,
+    7000
+   ],
+   "dateNote": "Banana and taro cultivation. Firm drainage evidence by ~7 ka.",
+   "confidence": "supported",
+   "sourceIds": [
+    "denham2003"
+   ],
+   "why": "The one nobody expects, and geographically the most isolated."
+  },
+  {
+   "id": "mesoamerica-maize",
+   "beat": 12,
+   "type": "domestication",
+   "label": "Maize domestication",
+   "region": "Balsas valley, Mexico",
+   "coordinates": [
+    -99.5,
+    18.0
+   ],
+   "dateRange": [
+    9000,
+    8700
+   ],
+   "dateNote": "From teosinte.",
+   "confidence": "solid",
+   "sourceIds": [
+    "larson2014"
+   ],
+   "why": "The New World centre."
+  },
+  {
+   "id": "domestication-centres",
+   "beat": 12,
+   "type": "model",
+   "label": "Independent centres of domestication",
+   "region": "global",
+   "coordinates": null,
+   "dateRange": [
+    12000,
+    4000
+   ],
+   "dateNote": "Published counts vary. Six is a common conservative figure; Larson et al. map a larger set of widely accepted independent centres, and finer-grained treatments reach 11–13.",
+   "confidence": "contested",
+   "sourceIds": [
+    "larson2014"
+   ],
+   "dispute": {
+    "objection": "The count depends entirely on how independent and how much of a centre are defined.",
+    "alternative": null,
+    "status": "Definitional, not empirical."
+   },
+   "why": "RESOLVED — the line is now 'in at least six places, with no contact between them, we arrived at the same answer.' The wow was never the count, it was the independence; naming the isolation explicitly recovers everything the smaller figure loses, and six cannot be attacked."
+  },
+  {
+   "id": "austronesian-expansion",
+   "beat": 13,
+   "type": "dispersal",
+   "label": "Austronesian expansion",
+   "region": "Taiwan outward",
+   "coordinates": [
+    121.0,
+    23.7
+   ],
+   "dateRange": [
+    5000,
+    3500
+   ],
+   "dateNote": "Departure from Taiwan.",
+   "confidence": "solid",
+   "sourceIds": [
+    "bellwood2017"
+   ],
+   "why": "The widest single expansion in the story, and it is a shape — so it can be shown rather than told."
+  },
+  {
+   "id": "lapita",
+   "beat": 13,
+   "type": "culture",
+   "label": "Lapita dispersal",
+   "region": "Bismarck Archipelago to Remote Oceania",
+   "coordinates": [
+    150.0,
+    -5.0
+   ],
+   "dateRange": [
+    3400,
+    2500
+   ],
+   "dateNote": "Rapid colonisation of the southwestern Pacific.",
+   "confidence": "solid",
+   "sourceIds": [
+    "bellwood2017"
+   ],
+   "why": "The mechanism behind the arc."
+  },
+  {
+   "id": "yamnaya",
+   "beat": 13,
+   "type": "dispersal",
+   "label": "Steppe expansion",
+   "region": "Pontic-Caspian steppe into Europe",
+   "coordinates": [
+    40.0,
+    48.0
+   ],
+   "dateRange": [
+    5000,
+    4500
+   ],
+   "dateNote": "Yamnaya complex appears ~3300 BCE, reaching maximum extent by ~3000 BCE. Associated with a major and relatively sudden genetic turnover in Europe.",
+   "confidence": "solid",
+   "sourceIds": [
+    "haak2015"
+   ],
+   "why": "The largest genetic turnover in European prehistory. Runs behind the Pacific arc."
+  },
+  {
+   "id": "bantu-expansion",
+   "beat": 13,
+   "type": "dispersal",
+   "label": "Bantu expansion",
+   "region": "Cameroon/Nigeria borderlands outward",
+   "coordinates": [
+    11.5,
+    6.0
+   ],
+   "dateRange": [
+    5000,
+    1650
+   ],
+   "dateNote": "CORRECTED. Grollemund 2015 places the start at ~5,000 BP, not the ~3,000 commonly quoted; a 2023 genetic study of 1,487 speakers gives ~4,000. Reaches southern Africa ~300 CE.",
+   "confidence": "supported",
+   "sourceIds": [
+    "grollemund2015",
+    "bantu2023"
+   ],
+   "why": "Africa is not left behind in Act IV. Structurally important — the film's last act must not be a story that happens only outside the continent it started in."
+  },
+  {
+   "id": "madagascar",
+   "beat": 13,
+   "type": "settlement",
+   "label": "Madagascar settled",
+   "region": "Madagascar",
+   "coordinates": [
+    46.9,
+    -18.9
+   ],
+   "dateRange": [
+    2000,
+    1000
+   ],
+   "dateNote": "Austronesian arrival commonly placed ~1,500 BP, with a wide published range and continuing debate over earlier ephemeral presence.",
+   "confidence": "contested",
+   "sourceIds": [
+    "bellwood2017"
+   ],
+   "dispute": {
+    "objection": "Estimates span roughly 2,000 to 1,000 BP depending on evidence type.",
+    "alternative": null,
+    "status": "Open."
+   },
+   "why": "Western end of the arc. Same seafaring tradition as Rapa Nui — the astonishing fact of the beat."
+  },
+  {
+   "id": "rapa-nui",
+   "beat": 13,
+   "type": "settlement",
+   "label": "Rapa Nui settled",
+   "region": "Easter Island",
+   "coordinates": [
+    -109.35,
+    -27.11
+   ],
+   "dateRange": [
+    800,
+    750
+   ],
+   "dateNote": "~1200 CE under the high-precision East Polynesian chronology. Earlier dates of ~500 CE are no longer supported by chronometric-hygiene reanalysis.",
+   "confidence": "supported",
+   "sourceIds": [
+    "wilmshurst2011"
+   ],
+   "why": "Eastern end of the arc. No longer the film's closer - Aotearoa is."
+  },
+  {
+   "id": "lanse-aux-meadows",
+   "beat": 13,
+   "type": "settlement",
+   "label": "L'Anse aux Meadows",
+   "region": "Newfoundland",
+   "coordinates": [
+    -55.53,
+    51.6
+   ],
+   "yearCE": 1021,
+   "dateRange": [
+    929,
+    929
+   ],
+   "dateNote": "Exactly 1021 CE. Fixed by the 993 CE cosmic-ray spike in tree rings, found 29 growth rings inside the bark edge on three separate wooden objects.",
+   "confidence": "solid",
+   "sourceIds": [
+    "kuitems2021"
+   ],
+   "why": "The only single-year date in 300,000 years. After an entire film of ± thousands, the last migration lands on one exact year — worth building the ruler to show that collapse of uncertainty."
+  },
+  {
+   "id": "generation-depth",
+   "beat": 14,
+   "type": "derived",
+   "label": "Generations since the dispersal",
+   "region": "—",
+   "coordinates": null,
+   "dateRange": null,
+   "dateNote": "RESOLVED with a real citation. Wang et al. 2023 give a mean human generation interval of 26.9 ± 3.4 years across the past 250,000 years. At a ~50 ka dispersal that is ~1,860 generations. On screen: 'roughly two thousand'. Computed at build time from ooa-dispersal, never hardcoded.",
+   "confidence": "supported",
+   "sourceIds": [
+    "sumer2024",
+    "wang2023"
+   ],
+   "why": "The last line of the film. Must be derived from ooa-dispersal and the generation interval at build time, never hardcoded — if the dispersal date moves, this moves."
+  },
+  {
+   "id": "aotearoa",
+   "beat": 13,
+   "type": "settlement",
+   "label": "Aotearoa settled",
+   "region": "New Zealand",
+   "coordinates": [
+    174.0,
+    -41.0
+   ],
+   "dateRange": [
+    700,
+    650
+   ],
+   "dateNote": "~1280 CE, from radiocarbon on commensal Pacific rat remains and rat-gnawed seeds.",
+   "confidence": "supported",
+   "sourceIds": [
+    "wilmshurst2008",
+    "wilmshurst2011"
+   ],
+   "why": "ADDED. The last major landmass on earth to be settled, and therefore the true end of the peopling story - a better closer than L'Anse aux Meadows. Keep both: Aotearoa is the last PLACE, L'Anse aux Meadows is the exact YEAR. The film ends its expansion on the last door closing behind us, at the far end of the same Austronesian arc that started in Taiwan."
+  },
+  {
+   "id": "colonial-forced-migration",
+   "beat": 14,
+   "type": "dispersal",
+   "label": "The last five hundred years",
+   "region": "global",
+   "coordinates": null,
+   "dateRange": [
+    450,
+    0
+   ],
+   "dateNote": "Transatlantic slave trade 1501-1867: about 12.5 million people embarked, about 10.7 million landed. Plus colonial settlement, indentured labour, industrial migration and modern displacement.",
+   "confidence": "solid",
+   "sourceIds": [
+    "slavevoyages"
+   ],
+   "why": "ADDED, AND LOAD-BEARING. The film previously claimed 300,000 BP to now while stopping at 1021 CE, which left the largest forced migration in history inside a silent gap. Ending on 'here is your line back to Africa' while saying nothing about the last 500 years is not a scope problem, it breaks the ending - for millions of viewers that line is not a story of frontier.\n\nNOT A BEAT AND NOT A DISCLAIMER. It is a 20-30 second bridge in the transition from 1300 CE to now, which the film has to make anyway. Movement of a completely different character: dense, directed, not chosen. One line. No number on screen."
+  },
+  {
+   "id": "ancestral-fan",
+   "beat": 14,
+   "type": "derived",
+   "label": "The fan",
+   "region": "global",
+   "coordinates": null,
+   "dateRange": null,
+   "dateNote": "Ancestor count doubles each generation until it exceeds every human who has ever lived, so ancestral lines must fold back on each other. Everyone's ancestry fans out and then merges.",
+   "confidence": "solid",
+   "sourceIds": [
+    "wang2023"
+   ],
+   "why": "REPLACES THE SINGLE LINE. Drawing one thread from the viewer back to Africa is false for everyone and especially wrong for anyone of African or mixed ancestry.\n\nTHE SHOT: start with one line - intimate, personal, the mirror intact. As the camera pulls back through the beats it splits: two, four, eight, widening. Then in the deep past it stops widening and starts MERGING, because the lines run out of separate people to belong to. It converges on Africa. Then the reveal: the same fan is the fan of the person sitting next to you.\n\nMore accurate AND a better image. And it dissolves the exclusion problem - if your ancestry is entirely African, your fan simply never leaves, and it is still the same fan. Geolocation stays optional; the shot must work when it is declined."
+  }
+ ],
+ "sources": {
+  "hublin2017": {
+   "cite": "Hublin, J.-J. et al. (2017). New fossils from Jebel Irhoud, Morocco and the pan-African origin of Homo sapiens. Nature 546, 289–292.",
+   "checked": "web-2026-09-04"
+  },
+  "vidal2022": {
+   "cite": "Vidal, C. M. et al. (2022). Age of the oldest known Homo sapiens from eastern Africa. Nature 601, 579–583.",
+   "checked": "web-2026-09-04"
+  },
+  "grun1996": {
+   "cite": "Grün, R., Brink, J. S. et al. (1996). Direct dating of Florisbad hominid. Nature 382, 500–501.",
+   "checked": "web-2026-09-04",
+   "note": "ESR on a hominin molar: 259 ± 35 ka."
+  },
+  "sehasseh2021": {
+   "cite": "Sehasseh, E. M. et al. (2021). Early Middle Stone Age personal ornaments from Bizmoune Cave, Essaouira, Morocco. Science Advances 7, eabi8620.",
+   "checked": "web-2026-09-04",
+   "note": "33 perforated Tritia gibbosula shells, ≥142 ka. Oldest shell beads yet recovered."
+  },
+  "hershkovitz2018": {
+   "cite": "Hershkovitz, I. et al. (2018). The earliest modern humans outside Africa. Science 359, 456–459.",
+   "checked": "web-2026-09-04"
+  },
+  "sharp2018": {
+   "cite": "Sharp, W. D. & Paces, J. B. (2018). Comment on \"The earliest modern humans outside Africa\". Science 362.",
+   "checked": "web-2026-09-04"
+  },
+  "grun2005": {
+   "cite": "Grün, R. et al. (2005). U-series and ESR analyses of bones and teeth relating to the human burials from Skhul. Journal of Human Evolution 49, 316–334.",
+   "checked": "web-2026-09-04",
+   "note": "Best age estimate for the Skhul burials is 100–135 ka — older than this file previously carried."
+  },
+  "harvati2019": {
+   "cite": "Harvati, K. et al. (2019). Apidima Cave fossils provide earliest evidence of Homo sapiens in Eurasia. Nature 571, 500–504.",
+   "checked": "web-2026-09-04"
+  },
+  "hershkovitz-comment": {
+   "cite": "Reported scepticism of the Apidima 1 attribution and date, including from I. Hershkovitz. Science news coverage, 2019.",
+   "checked": "web-2026-09-04",
+   "note": "Needs replacing with a peer-reviewed critique before it can back an on-screen claim."
+  },
+  "chesner1991": {
+   "cite": "Chesner, C. A., Rose, W. I. et al. (1991). Eruptive history of Earth's largest Quaternary caldera (Toba, Indonesia) clarified. Geology 19, 200–203.",
+   "checked": "web-2026-09-04",
+   "note": "40Ar/39Ar on sanidine: 73 ± 4 ka. Youngest Toba Tuff volume given as 2,500–3,000 km³."
+  },
+  "costa2014": {
+   "cite": "Costa, A., Smith, V. C. et al. (2014). The magnitude and impact of the Youngest Toba Tuff super-eruption. Frontiers in Earth Science 2, 16.",
+   "checked": "web-2026-09-04",
+   "note": "CORRECTION: gives ~5,300 km³ DRE, not 2,800. The erupted-volume figure is genuinely disputed across methods — see the toba-eruption dateNote."
+  },
+  "petraglia2007": {
+   "cite": "Petraglia, M. et al. (2007). Middle Paleolithic assemblages from the Indian subcontinent before and after the Toba super-eruption. Science 317, 114–116.",
+   "checked": "web-2026-09-04"
+  },
+  "jwalapuram2025": {
+   "cite": "Seasonally resolved stratigraphy at Jwalapuram, India shows regional surface warming after the Toba volcanic super-eruption. PNAS Nexus 4(4), pgaf109 (2025).",
+   "checked": "web-2026-09-04"
+  },
+  "smith2018": {
+   "cite": "Smith, E. I. et al. (2018). Humans thrived in South Africa through the Toba eruption about 74,000 years ago. Nature 555, 511–515.",
+   "checked": "web-2026-09-04",
+   "note": "Toba cryptotephra shards identified at Pinnacle Point 5-6, carried ~9,000 km from source, in occupied deposits."
+  },
+  "sumer2024": {
+   "cite": "Sümer, A. P. et al. (2024). Earliest modern human genomes constrain timing of Neanderthal admixture. Nature 638.",
+   "checked": "web-2026-09-04",
+   "note": "The single most consequential source in this file. It moved the dispersal date, moved the admixture into beat 05, and put Madjedbebe under pressure."
+  },
+  "iasi2024": {
+   "cite": "Iasi, L. N. M. et al. (2024). Neanderthal ancestry through time. Science.",
+   "checked": "web-2026-09-04",
+   "note": "Companion to sumer2024. Single extended gene flow ~47 ka lasting ~7,000 years."
+  },
+  "clarkson2017": {
+   "cite": "Clarkson, C. et al. (2017). Human occupation of northern Australia by 65,000 years ago. Nature 547, 306–310.",
+   "checked": "web-2026-09-04"
+  },
+  "allen-oconnell2020": {
+   "cite": "Allen, J. & O'Connell, J. F. (2020). A different paradigm for the initial colonisation of Sahul. Archaeology in Oceania 55, 1–14.",
+   "checked": "web-2026-09-04"
+  },
+  "oktaviana2024": {
+   "cite": "Oktaviana, A. A. et al. (2024). Narrative cave art in Indonesia by 51,200 years ago. Nature 631.",
+   "checked": "web-2026-09-04"
+  },
+  "brumm2021": {
+   "cite": "Brumm, A. et al. (2021). Oldest cave art found in Sulawesi. Science Advances 7.",
+   "checked": "web-2026-09-04"
+  },
+  "bird2018": {
+   "cite": "Bird, M. I. et al. (2018). Palaeogeography and voyage modeling indicates early human colonization of Australia was likely from Timor-Roti. Quaternary Science Reviews 191, 431–439.",
+   "checked": "book-standard",
+   "note": "Book or monograph: the citation is correct, but the content has not been re-checked against the physical text."
+  },
+  "jacobs2019": {
+   "cite": "Jacobs, G. S. et al. (2019). Multiple deeply divergent Denisovan ancestries in Papuans. Cell 177, 1010–1021.",
+   "checked": "web-2026-09-04"
+  },
+  "slon2018": {
+   "cite": "Slon, V. et al. (2018). The genome of the offspring of a Neanderthal mother and a Denisovan father. Nature 561, 113–116.",
+   "checked": "web-2026-09-04"
+  },
+  "higham2014": {
+   "cite": "Higham, T., Douka, K., Wood, R. et al. (2014). The timing and spatiotemporal patterning of Neanderthal disappearance. Nature 512, 306–309.",
+   "checked": "web-2026-09-04"
+  },
+  "giaccio2017": {
+   "cite": "Giaccio, B. et al. (2017). High-precision 14C and 40Ar/39Ar dating of the Campanian Ignimbrite (Y-5) reconciles the time-scales of climatic-cultural processes at 40 ka. Scientific Reports 7, 45940.",
+   "checked": "web-2026-09-04",
+   "note": "40Ar/39Ar: 39.85 ± 0.14 ka at 95% confidence. The film's figure is exact."
+  },
+  "trinkaus2014": {
+   "cite": "Trinkaus, E. et al. (2014). The People of Sunghir: Burials, Bodies and Behavior in the Earlier Upper Paleolithic. Oxford University Press.",
+   "checked": "web-2026-09-04",
+   "note": "Bead count (>10,000) and the two-children burial confirmed in secondary sources."
+  },
+  "pitulko2004": {
+   "cite": "Pitulko, V. V. et al. (2004). The Yana RHS site: humans in the Arctic before the Last Glacial Maximum. Science 303, 52–56.",
+   "checked": "web-2026-09-04"
+  },
+  "clark2009": {
+   "cite": "Clark, P. U. et al. (2009). The Last Glacial Maximum. Science 325, 710–714.",
+   "checked": "web-2026-09-04"
+  },
+  "lambeck2014": {
+   "cite": "Lambeck, K. et al. (2014). Sea level and global ice volumes from the Last Glacial Maximum to the Holocene. PNAS 111, 15296–15303.",
+   "checked": "web-2026-09-04",
+   "note": "The curve that drives every coastline in the film."
+  },
+  "guthrie2001": {
+   "cite": "Guthrie, R. D. (2001). Origin and causes of the mammoth steppe: a story of cloud cover, woolly mammal tooth pits, buckles, and inside-out Beringia. Quaternary Science Reviews 20, 549–574.",
+   "checked": "web-2026-09-04"
+  },
+  "raghavan2015": {
+   "cite": "Raghavan, M. et al. (2015). Genomic evidence for the Pleistocene and recent population history of Native Americans. Science 349.",
+   "checked": "web-2026-09-04"
+  },
+  "pinotti2019": {
+   "cite": "Pinotti, T. et al. (2019). Y chromosome sequences reveal a short Beringian standstill, rapid expansion, and early population structure of Native American founders. Current Biology 29, 149–157.",
+   "checked": "web-2026-09-04"
+  },
+  "bennett2021": {
+   "cite": "Bennett, M. R. et al. (2021). Evidence of humans in North America during the Last Glacial Maximum. Science 373, 1528–1531.",
+   "checked": "web-2026-09-04"
+  },
+  "pigati2023": {
+   "cite": "Pigati, J. S. et al. (2023). Independent age estimates resolve the controversy of ancient human footprints at White Sands. Science 382, 73–75.",
+   "checked": "web-2026-09-04"
+  },
+  "holliday2025": {
+   "cite": "Holliday, V. T. et al. (2025). Paleolake geochronology supports Last Glacial Maximum (LGM) age for human tracks at White Sands, New Mexico. Science Advances 11(25), eadv4951.",
+   "checked": "web-2026-09-04",
+   "note": "Third independent material. This is what changed White Sands from contested to supported."
+  },
+  "dillehay1997": {
+   "cite": "Dillehay, T. D. (1997). Monte Verde: A Late Pleistocene Settlement in Chile, Volume 2: The Archaeological Context and Interpretation. Smithsonian Institution Press.",
+   "checked": "book-standard",
+   "note": "Book or monograph: the citation is correct, but the content has not been re-checked against the physical text."
+  },
+  "pedersen2016": {
+   "cite": "Pedersen, M. W. et al. (2016). Postglacial viability and colonization in North America's ice-free corridor. Nature 537, 45–49.",
+   "checked": "web-2026-09-04",
+   "note": "CORRECTION: the corridor opened ~15–14 cal kyr BP but sedimentary aDNA shows steppe vegetation, bison and mammoth only by ~12.6 cal kyr BP — later and far more restrictive than this file previously said."
+  },
+  "barnosky2004": {
+   "cite": "Barnosky, A. D. et al. (2004). Assessing the causes of Late Pleistocene extinctions on the continents. Science 306, 70–75.",
+   "checked": "web-2026-09-04"
+  },
+  "rasmussen2014": {
+   "cite": "Rasmussen, S. O. et al. (2014). A stratigraphic framework for abrupt climatic changes during the Last Glacial period based on three synchronized Greenland ice-core records: refining and extending the INTIMATE event stratigraphy. Quaternary Science Reviews 106, 14–28.",
+   "checked": "web-2026-09-04",
+   "note": "GICC05 chronology across NGRIP, GRIP and GISP2."
+  },
+  "deschamps2012": {
+   "cite": "Deschamps, P. et al. (2012). Ice-sheet collapse and sea-level rise at the Bølling warming 14,600 years ago. Nature 483, 559–564.",
+   "checked": "web-2026-09-04",
+   "note": "MWP-1A began no earlier than 14,650 and ended before 14,310 BP. Rise of 12–22 m, most probable 14–18 m. Tahiti corals, IODP Expedition 310."
+  },
+  "walker2009": {
+   "cite": "Walker, M. et al. (2009). Formal definition and dating of the GSSP (Global Stratotype Section and Point) for the base of the Holocene using the Greenland NGRIP ice core, and selected auxiliary records. Journal of Quaternary Science 24, 3–17.",
+   "checked": "web-2026-09-04",
+   "note": "11,700 calendar yr b2k, maximum counting error 99 yr. The only formally ratified boundary in the film."
+  },
+  "alley1997": {
+   "cite": "Alley, R. B. et al. (1997). Holocene climatic instability: a prominent, widespread event 8200 yr ago. Geology 25, 483–486.",
+   "checked": "web-2026-09-04",
+   "note": "About half the amplitude of the Younger Dryas."
+  },
+  "thomas2007": {
+   "cite": "Thomas, E. R. et al. (2007). The 8.2 ka event from Greenland ice cores. Quaternary Science Reviews 26, 70–81.",
+   "checked": "web-2026-09-04",
+   "note": "A composite of four records gives a 160.5-year cold period, with a central 69-year core during which values stay more than one standard deviation below average."
+  },
+  "weninger2008": {
+   "cite": "Weninger, B. et al. (2008). The catastrophic final flooding of Doggerland by the Storegga Slide tsunami. Documenta Praehistorica 35, 1–24.",
+   "checked": "web-2026-09-04"
+  },
+  "walker2020": {
+   "cite": "Walker, J. et al. (2020). A great wave: the Storegga tsunami and the end of Doggerland? Antiquity 94, 1409–1425.",
+   "checked": "web-2026-09-04"
+  },
+  "larson2014": {
+   "cite": "Larson, G. et al. (2014). Current perspectives and the future of domestication studies. PNAS 111, 6139–6146.",
+   "checked": "web-2026-09-04"
+  },
+  "denham2003": {
+   "cite": "Denham, T. P. et al. (2003). Origins of agriculture at Kuk Swamp in the highlands of New Guinea. Science 301, 189–193.",
+   "checked": "web-2026-09-04"
+  },
+  "dietrich2013": {
+   "cite": "Dietrich, O. et al. Radiocarbon dating the first temples of mankind: comments on 14C-dates from Göbekli Tepe.",
+   "checked": "web-2026-09-04"
+  },
+  "bellwood2017": {
+   "cite": "Bellwood, P. (2017). First Islanders: Prehistory and Human Migration in Island Southeast Asia. Wiley-Blackwell.",
+   "checked": "book-standard",
+   "note": "Book or monograph: the citation is correct, but the content has not been re-checked against the physical text."
+  },
+  "haak2015": {
+   "cite": "Haak, W. et al. (2015). Massive migration from the steppe was a source for Indo-European languages in Europe. Nature 522, 207–211.",
+   "checked": "web-2026-09-04"
+  },
+  "grollemund2015": {
+   "cite": "Grollemund, R., Branford, S., Bostoen, K., Meade, A., Venditti, C. & Pagel, M. (2015). Bantu expansion shows that habitat alters the route and pace of human dispersals. PNAS 112, 13296–13301.",
+   "checked": "web-2026-09-04",
+   "note": "CORRECTION: places the start at ~5,000 BP, not the ~3,000 commonly quoted. Expansion followed savannah corridors opened through the Congo rainforest."
+  },
+  "bantu2023": {
+   "cite": "Genetic study of 1,487 Bantu speakers from 143 populations across 14 African countries (2023), placing the expansion start nearer 4,000 BP.",
+   "checked": "incomplete-citation",
+   "note": "STILL INCOMPLETE. Author list and journal not captured. Grollemund 2015 carries the claim in the meantime; do not put this study's figure on screen until the citation is complete."
+  },
+  "wilmshurst2011": {
+   "cite": "Wilmshurst, J. M., Hunt, T. L., Lipo, C. P. & Anderson, A. J. (2011). High-precision radiocarbon dating shows recent and rapid initial human colonization of East Polynesia. PNAS 108, 1815–1820.",
+   "checked": "web-2026-09-04"
+  },
+  "kuitems2021": {
+   "cite": "Kuitems, M. et al. (2021). Evidence for European presence in the Americas in ad 1021. Nature 601, 388–391.",
+   "checked": "web-2026-09-04"
+  },
+  "wang2023": {
+   "cite": "Wang, R. J. et al. (2023). Human generation times across the past 250,000 years. Science Advances 9, eabm7047.",
+   "checked": "web-2026-09-04",
+   "note": "Mean generation interval 26.9 ± 3.4 yr (male 30.7, female 23.2). Peaked at 29.8 yr around 38 ka; minimum of 24.9 yr around 6.4 ka."
+  },
+  "valladas1988": {
+   "cite": "Valladas, H. et al. (1988). Thermoluminescence dating of Mousterian Proto-Cro-Magnon remains from Israel and the origin of modern man. Nature 331, 614–616.",
+   "checked": "web-2026-09-04"
+  },
+  "vandermeersch1981": {
+   "cite": "Vandermeersch, B. (1981). Les hommes fossiles de Qafzeh (Israël). Cahiers de Paléontologie, Éditions du CNRS, Paris.",
+   "checked": "book-standard",
+   "note": "Primary description of the Qafzeh 11 burial and the deer-antler grave goods. Needs a library check before the ground cut ships. Book or monograph: the citation is correct, but the content has not been re-checked against the physical text."
+  },
+  "aubert2014": {
+   "cite": "Aubert, M. et al. (2014). Pleistocene cave art from Sulawesi, Indonesia. Nature 514, 223–227.",
+   "checked": "web-2026-09-04",
+   "note": "Leang Timpuseng hand stencil, minimum age 39.9 ka. Maros-Pangkep stencils range 39.9–17.4 ka."
+  },
+  "sulawesi2026": {
+   "cite": "Oktaviana, A. A., Joannes-Boyau, R., Hakim, B. et al. (2026). Rock art from at least 67,800 years ago in Sulawesi. Nature 650, 652-656.",
+   "doi": "10.1038/s41586-025-09968-y",
+   "checked": "web-2026-09-04",
+   "note": "Published 21 January 2026. Volume and pages verified. Laser-ablation U-series, 71.6 +/- 3.8 ka on overlying calcite, minimum age 67.8 ka for the stencil beneath."
+  },
+  "spratt2016": {
+   "cite": "Spratt, R. M. & Lisiecki, L. E. (2016). A Late Pleistocene sea level stack. Climate of the Past 12, 1079-1092.",
+   "checked": "web-2026-09-04",
+   "note": "PCA stack of seven sea level reconstructions, 0-430 ka. Mean uncertainty 9-12 m at 1 sigma. Data downloaded 2026-09-04 to data/sealevel.json. THE FILM'S SPINE DATASET."
+  },
+  "wilmshurst2008": {
+   "cite": "Wilmshurst, J. M., Anderson, A. J., Higham, T. F. G. & Worthy, T. H. (2008). Dating the late prehistoric dispersal of Polynesians to New Zealand using the commensal Pacific rat. PNAS 105, 7676-7680.",
+   "checked": "web-2026-09-04",
+   "note": "Places Maori settlement of Aotearoa at ~1280 CE, about 1,000 years later than previously believed. A 2022 PNAS chronology revisits it."
+  },
+  "gicc05": {
+   "cite": "NGRIP members / Rasmussen, S. O. et al. GICC05 chronology, NGRIP d18O resampled to 20-year resolution, 0-60 ka b2k (released 2007).",
+   "checked": "web-2026-09-04",
+   "note": "The film's temperature channel. Downloaded 2026-09-04 to data/temperature.json. Same chronology already cited for the Younger Dryas and the Holocene GSSP, so climate events and climate data share one time scale."
+  },
+  "slavevoyages": {
+   "cite": "Eltis, D. & Richardson, D. Voyages: The Trans-Atlantic Slave Trade Database. Data on ~35,000 voyages, 1501-1867.",
+   "checked": "web-2026-09-04",
+   "note": "About 12.5 million people embarked in Africa; about 10.7 million landed. The largest forced migration in history. No number goes on screen in the bridge - the line carries it without one."
+  },
+  "ice6g": {
+   "cite": "Peltier, W. R., Argus, D. F. & Drummond, R. (2015). Space geodesy constrains ice-age terminal deglaciation: The global ICE-6G_C (VM5a) model. Journal of Geophysical Research: Solid Earth 120, 450-487.",
+   "checked": "downloaded-2026-09-06",
+   "note": "48 one-degree time slices, 26 ka to 0. Downloaded 2026-09-06."
+  },
+  "etopo2022": {
+   "cite": "NOAA National Centers for Environmental Information (2022). ETOPO 2022 15 Arc-Second Global Relief Model. NOAA NCEI.",
+   "checked": "downloaded-2026-09-06",
+   "note": "60 arc-second bedrock subset used. The single raster the film thresholds against sealevel(t)."
+  }
+ },
+ "resolved": [
+  {
+   "id": "oq-white-sands",
+   "severity": "restructures-act",
+   "resolvedOn": "2026-09-04",
+   "question": "White Sands now holds. What does Act III become?",
+   "decision": "Folded into beat 10 rather than given its own beat. Beat 10 now opens still — footprints already in New Mexico during the ice age — holds on the roughly 5,000-year silence, and only then runs the sweep. Two frames of on-screen copy.",
+   "rationale": "Pays off beat 03's failed doors a second time, 180,000 years later. Gives Act III the human reversal it lacked, since it was otherwise ice, steppe, sweep — all external. Costs no runtime. Stays honest because the film shows two dated facts and the gap between them rather than asserting an extinction.",
+   "changes": [
+    "beat 10 onScreen is now two frames",
+    "new event americas-gap",
+    "white-sands moved to the head of the beat"
+   ]
+  },
+  {
+   "id": "oq-madjedbebe",
+   "severity": "reorders-beats",
+   "resolvedOn": "2026-09-04",
+   "question": "Do the rocks lead or do the genomes?",
+   "decision": "Neither. The film does not adjudicate. The ember arrives as a range spanning 65 to 43 ka and beat 06 states plainly that the site evidence and the genetic evidence disagree and nobody has resolved it.",
+   "rationale": "More interesting than either number, it is the honest state of the field, and it is exactly what the dashed grammar was built for in beat 03. It also avoids quietly correcting a figure that carries real cultural weight in Australia.",
+   "reinforcedBy": "The 67.8 ka Liang Metanduno stencils, published January 2026, now put someone in Wallacea before 65 ka — so the archaeological side of the disagreement got stronger, not weaker, after this decision was taken."
+  },
+  {
+   "id": "oq-denny",
+   "severity": "breaks-a-law",
+   "resolvedOn": "2026-09-04",
+   "question": "Denny is 90 ka but is shown in beat 07.",
+   "decision": "Law 04 amended. The orbital layer is then; the ground layer is now — the evidence as we hold it today. Only the orbital layer rides the time axis. Denny stays exactly where she is.",
+   "rationale": "Strengthens Law 04 instead of weakening Law 01, and permanently removes a whole class of future problems: no ground cut can ever break monotonicity again. It immediately paid for itself — the Leang Timpuseng hand stencil at 39.9 ka can now supply beat 06's match cut on shape rather than on date."
+  },
+  {
+   "id": "oq-eleven-places",
+   "severity": "kills-a-line",
+   "resolvedOn": "2026-09-04",
+   "question": "How many independent centres of domestication?",
+   "decision": "\"In at least six places, with no contact between them, we arrived at the same answer.\"",
+   "rationale": "The wow was never the count, it was the independence. Naming the isolation explicitly recovers what the smaller figure loses, and six cannot be attacked from any published position."
+  },
+  {
+   "id": "oq-beat-12",
+   "severity": "kills-a-line",
+   "resolvedOn": "2026-09-04",
+   "question": "Beat 12 needed new copy.",
+   "decision": "Rewritten as above. Beat 12 is now about multiplication, not beginning; the first seeds stay in beat 11 where they belong chronologically.",
+   "rationale": "The shot this forces is better than the one it replaces — the first light fixing in place while the water is still coming for the coasts."
+  },
+  {
+   "id": "oq-misliya",
+   "severity": "changes-grammar",
+   "resolvedOn": "2026-09-04",
+   "question": "Misliya is contested, and it was carrying the film's first ground cut.",
+   "decision": "The ground cut moves to Qafzeh 11 — an adolescent buried flexed in a cut rock recess with fallow-deer antlers across the chest and hands, in ochre-soaked sediment, at 100–90 ka. Misliya stays named and drawn dashed.",
+   "rationale": "Solidly dated, and it is a burial, so it makes the beat's argument in one object: they lived here properly, buried their children with care, and then were gone. The match cut improves too — coastline arc to antler arc beats coastline arc to jaw."
+  },
+  {
+   "id": "oq-generations",
+   "severity": "changes-a-line",
+   "resolvedOn": "2026-09-04",
+   "question": "The final line's number moved.",
+   "decision": "\"Roughly two thousand generations.\" Computed from ooa-dispersal and the generation interval at build time, never hardcoded.",
+   "rationale": "If the dispersal date moves again, the last line of the film moves with it."
+  },
+  {
+   "id": "oq-beat-07-hold",
+   "severity": "open",
+   "resolvedOn": "2026-09-04",
+   "question": "Does beat 07 need a hold of its own?",
+   "decision": "No hold. Beat 07 gets a different device: when the pale light goes out, that colour leaves the film's palette permanently and never returns across the remaining seven beats.",
+   "rationale": "Three holds in twelve minutes reads as a tic, and beat 05's uniqueness is exactly what makes it land - beat 10 already borrows a partial hold for its opening frame. What beat 07 needs is not stillness but absence, and absence can be permanent where a hold can only be momentary. It costs zero runtime and lasts the rest of the film. The two-second dead frame already specified stays as the local beat."
+  },
+  {
+   "id": "oq-title",
+   "severity": "open",
+   "resolvedOn": "2026-09-04",
+   "question": "The title.",
+   "decision": "One Ember. Slug one-ember.",
+   "rationale": "'Ember and Ice' named the palette; ice is only Act III, and the palette is a means rather than the argument. 'One Ember' is beat 05's exact image and the thesis in two words - everyone alive descends from a single line that stayed lit. Two syllables shorter, and it is not a phrase already attached to other work.",
+   "alternate": "The One That Held, from the final line. Kept on file. This is the decision most worth overruling, because it is taste rather than evidence."
+  },
+  {
+   "id": "oq-thesis",
+   "severity": "changes-everything",
+   "question": "The thesis universalised one lineage.",
+   "decision": "Rewritten: 'Every one of us is African. One line that left did not stop, and its descendants now live everywhere else.'",
+   "rationale": "The old thesis was literally false and made Africans spectators. Rejected the flatter alternatives on offer - accuracy without an argument is a summary, not a thesis. This keeps beat 05 answering Act I while making Africans the subject.",
+   "resolvedOn": "2026-09-05"
+  },
+  {
+   "id": "oq-braid",
+   "severity": "changes-the-ending",
+   "question": "The single ancestral line back to Africa.",
+   "decision": "Replaced with a fan that widens and then merges. See event ancestral-fan.",
+   "rationale": "A braid from the start goes visually mushy and loses the intimacy. One line that splits, then folds back, keeps the personal hook, is mathematically true, and delivers kinship as a mechanism rather than a claim.",
+   "resolvedOn": "2026-09-05"
+  },
+  {
+   "id": "oq-epilogue",
+   "severity": "changes-the-ending",
+   "question": "The missing 500 years.",
+   "decision": "A 20-30 second bridge as frame 1 of beat 14, not a beat and not a disclaimer.",
+   "rationale": "A beat would make the last 500 years a chapter in the peopling story, which it is not. A screen reads as a disclaimer. The transition from 1300 CE to now has to exist anyway, so the bridge is nearly free - and it is what makes the fan ending honest.",
+   "resolvedOn": "2026-09-05"
+  },
+  {
+   "id": "oq-title-recheck",
+   "severity": "open",
+   "question": "Does 'One Ember' survive the corrected thesis?",
+   "decision": "Kept. Alternate on file: 'Everywhere Else'.",
+   "rationale": "The single-bloodline objection is weak - a fire is not a person, and beat 05 shows it dividing within seconds. The SHARPER objection, which nobody raised: now that the thesis reads 'one line that LEFT', the title names the departure, which is the non-African half - the same over-universalising error one level up. Kept anyway, because beat 02 puts a whole continent alight and says 'we began in a pattern', so the title is in productive tension the film then resolves. A title that argues with its own second beat is doing work.",
+   "resolvedOn": "2026-09-05"
+  },
+  {
+   "id": "oq-resolution",
+   "severity": "was-misdiagnosed",
+   "question": "1,000-year sampling cannot animate a 350-year meltwater pulse or a 160-year cooling event.",
+   "decision": "Not a resolution problem - a missing channel. Added data/temperature.json.",
+   "rationale": "The 8.2 ka event is a temperature event that barely shows in sea level, so higher-resolution sea-level data would never have rendered it. The film had one environmental channel and was implying sky, cold and mood from a curve that does not carry them. Two channels now, both pure functions of t, neither reading the other - more correct without being more complex.",
+   "resolvedOn": "2026-09-05"
+  },
+  {
+   "id": "oq-scale",
+   "severity": "restructures-a-law",
+   "question": "Two altitudes cannot show simultaneity.",
+   "decision": "Law 03 becomes three registers: planetary atlas, orbital, ground. Match cut remains the only transition verb.",
+   "rationale": "Beat 12 requires six unconnected places at once and beat 08 requires a whole hemisphere; neither works on a globe. The flattened projection was reserved for the finale, which is one use too few. Needed at 08, 12 and 14 at minimum.",
+   "resolvedOn": "2026-09-05"
+  },
+  {
+   "id": "oq-lambeck",
+   "severity": "blocks-building",
+   "resolvedOn": "2026-09-06",
+   "question": "The deglacial sea-level curve, 20 ka to 0.",
+   "decision": "Derived from ICE-6G_C instead of splicing Lambeck. 0.5 ka resolution, present reads 0.00 m, lowstand -131.0 m.",
+   "rationale": "Lambeck is bot-blocked, but it turned out to be unnecessary. ICE-6G_C encodes relative sea level in Topo_Diff; the far-field deep-ocean median recovers the eustatic curve. One model now drives both the coastline and the ice, which removes a whole class of disagreement between them."
+  },
+  {
+   "id": "oq-rasters",
+   "severity": "blocks-building",
+   "resolvedOn": "2026-09-06",
+   "question": "Bathymetry and ice rasters.",
+   "decision": "Both acquired. ETOPO 2022 60 arc-second bedrock -> 4096x2048 terrain-RGB. ICE-6G_C 48 slices -> one 27 KB atlas.",
+   "rationale": "GEBCO was the wrong product - 10x more resolution than a 4096-wide texture can show, at 4.2 GB. ETOPO at 60 arc-second is still 5x oversampled for the target and a tenth the size."
+  },
+  {
+   "id": "oq-law06",
+   "severity": "decision",
+   "resolvedOn": "2026-09-07",
+   "question": "Does Law 06 admit epistemic causation?",
+   "decision": "LAW 06 WIDENS, AND THE REGISTER SAYS WHICH. The law now reads: nothing on screen that isn't causal - for what happened, or for how we know it. The Campanian Ignimbrite stays, on the time rail and in the record voice. It may not touch world state: no ash, no greyed sky, no dimmed light, no camera move. The eruption is drawn and the world does not notice.",
+   "rationale": "The film already built this register and shipped it. Beat 06 draws Madjedbebe's contested 65 ka reading ON THE TIME RAIL, NOT ON THE MAP, precisely so a claim about when cannot move the world - and the copy check already tests that. So the grammar for 'this is epistemic, not causal' exists, is enforced, and works. The narrow reading of Law 06 would cut the best-dated horizon in European prehistory out of the one beat whose whole difficulty is WHEN. A law that makes the film discard its most precise instrument is measuring the wrong thing.",
+   "whyThisIsNotALoosening": "The widening ships with a bar the old law did not have, and the bar is machine-checked rather than promised. An epistemic object may not perturb stateFor(t). The law06 test samples every world channel densely across the eruption instant and fails on any step. Under the old law the CI was cut for a staging - 'it greyed the sky exactly as their light failed' - that no test would have caught. The new law catches exactly that staging.",
+   "changes": [
+    "Law 06 text amended in CLAUDE.md and storyboard.html",
+    "campanian-ignimbrite stays in beat 07, epistemic register only",
+    "new law06 test in the director's panel, alongside purity and copy",
+    "beat 07 record voice states the demotion on screen"
+   ]
+  }
+ ],
+ "openQuestions": [
+  {
+   "id": "oq-vegetation",
+   "severity": "blocks-building",
+   "question": "Vegetation is not specified to production level.",
+   "detail": "Beats 02 and 12 both depend on it and it is still a one-line placeholder. Needs a named dataset and a resolution.",
+   "decision": "Open."
+  },
+  {
+   "id": "oq-deep-temperature",
+   "severity": "open",
+   "question": "No temperature channel before 60 ka.",
+   "detail": "Beats 01-04, including Toba, have no climate data. Full NGRIP reaches ~123 ka; beyond that needs an ocean-core proxy.",
+   "decision": "Open, and low priority - the deep beats are carried by sea level."
+  }
+ ],
+ "law07_copyDiscipline": {
+  "rule": "On-screen copy is diffed against this file's own qualifiers every revision, not just its dates.",
+  "why": "Three separate failures shared one cause. The data said 'all non-Africans' and the copy said 'everyone'. The data said '~1.5-2% in non-Africans' and the copy said 'two percent of you'. The data said 'do not assert an extinction' and the frame description emptied the map. Numbers were being checked; sentences were not.",
+  "check": "For every onScreen line, find the event that backs it and confirm the line does not drop a qualifier the event carries."
+ },
+ "cartographySpike": {
+  "purpose": "Phase 3, one week, ugly and throwaway. The go/no-go on the whole project.",
+  "mustTest": [
+   "Sahul: exposed shelves at -68 to -74 m, with the Wallacean water gaps that never close.",
+   "The Last Glacial Maximum across both hemispheres at once - the hardest case for the atlas register.",
+   "White Sands, then the record falling silent - can obscurity be drawn without reading as extinction?",
+   "The agricultural montage: six unconnected places lit simultaneously. Impossible on a globe; the reason Law 03 has three registers.",
+   "Scrolling BACKWARD through all of the above without breaking causality. A direct test of Law 01 - if any subsystem has come to depend on another's state, this is where it shows.",
+   "The fan ending: one line splitting, then merging, without becoming visual noise."
+  ]
+ },
+ "routes": [
+  {
+   "id": "failed-levant",
+   "label": "The failed doors",
+   "beat": 3,
+   "fate": "dies",
+   "path": [
+    [
+     36,
+     9
+    ],
+    [
+     38,
+     16
+    ],
+    [
+     34,
+     25
+    ],
+    [
+     34.9,
+     31
+    ],
+    [
+     35.3,
+     32.7
+    ],
+    [
+     33,
+     35
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. Routes exist so the film can show movement; where the evidence supports a band rather than a line (see event dispersal-route) the renderer must draw a plume along this spine, never the spine itself."
+  },
+  {
+   "id": "breakout",
+   "label": "The line that held, by Bab-el-Mandeb",
+   "beat": 5,
+   "fate": "holds",
+   "path": [
+    [
+     41,
+     11
+    ],
+    [
+     43.3,
+     12.6
+    ],
+    [
+     47,
+     15
+    ],
+    [
+     52,
+     19
+    ],
+    [
+     57,
+     23
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. The SOUTHERN of the two candidate doors, and for most of this project the only one with geometry - which would have made the renderer choose a route the evidence leaves open. Drawn as a plume alongside breakout-north, at equal weight, neither favoured. See event dispersal-route, confidence 'band'.",
+   "pairedWith": "breakout-north"
+  },
+  {
+   "id": "breakout-north",
+   "label": "The line that held, by Sinai",
+   "beat": 5,
+   "fate": "holds",
+   "path": [
+    [
+     32.0,
+     19.0
+    ],
+    [
+     33.0,
+     24.0
+    ],
+    [
+     33.5,
+     28.0
+    ],
+    [
+     34.3,
+     30.2
+    ],
+    [
+     36.0,
+     33.0
+    ],
+    [
+     42.0,
+     32.0
+    ],
+    [
+     49.0,
+     28.0
+    ],
+    [
+     57.0,
+     23.0
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. The NORTHERN of the two candidate doors. It exists because dispersal-route is confidence 'band' and the film had geometry for only one of the two routes it says are unresolved - which meant the renderer would have chosen. Drawn as a plume alongside breakout, at equal weight, neither favoured.",
+   "convergence": "Both spines end at 57E 23N, where to-sahul begins. That convergence is structural, not evidential: whichever door was used, the line that held went east afterwards, and beat 06 has to be able to pick it up."
+  },
+  {
+   "id": "to-sahul",
+   "label": "East to Sahul",
+   "beat": 6,
+   "fate": "holds",
+   "path": [
+    [
+     57,
+     23
+    ],
+    [
+     68,
+     24
+    ],
+    [
+     78,
+     20
+    ],
+    [
+     88,
+     20
+    ],
+    [
+     97,
+     14
+    ],
+    [
+     103,
+     6
+    ],
+    [
+     108,
+     0
+    ],
+    [
+     116,
+     -3
+    ],
+    [
+     122,
+     -5
+    ],
+    [
+     127,
+     -8
+    ],
+    [
+     132,
+     -10
+    ],
+    [
+     132.9,
+     -12.4
+    ],
+    [
+     140,
+     -8
+    ],
+    [
+     145,
+     -6
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. Routes exist so the film can show movement; where the evidence supports a band rather than a line (see event dispersal-route) the renderer must draw a plume along this spine, never the spine itself."
+  },
+  {
+   "id": "to-europe",
+   "label": "Into Europe",
+   "beat": 7,
+   "fate": "holds",
+   "path": [
+    [
+     35,
+     33
+    ],
+    [
+     32,
+     38
+    ],
+    [
+     26,
+     41
+    ],
+    [
+     19,
+     44
+    ],
+    [
+     12,
+     45
+    ],
+    [
+     5,
+     45
+    ],
+    [
+     -2,
+     42
+    ],
+    [
+     -6,
+     40
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. Routes exist so the film can show movement; where the evidence supports a band rather than a line (see event dispersal-route) the renderer must draw a plume along this spine, never the spine itself."
+  },
+  {
+   "id": "north-asia",
+   "label": "Into the cold",
+   "beat": 8,
+   "fate": "holds",
+   "path": [
+    [
+     40,
+     45
+    ],
+    [
+     55,
+     50
+    ],
+    [
+     70,
+     54
+    ],
+    [
+     85,
+     56
+    ],
+    [
+     100,
+     58
+    ],
+    [
+     115,
+     62
+    ],
+    [
+     128,
+     66
+    ],
+    [
+     135.4,
+     70.7
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. Routes exist so the film can show movement; where the evidence supports a band rather than a line (see event dispersal-route) the renderer must draw a plume along this spine, never the spine itself."
+  },
+  {
+   "id": "beringia",
+   "label": "Into Beringia",
+   "beat": 9,
+   "fate": "holds",
+   "path": [
+    [
+     135,
+     70
+    ],
+    [
+     150,
+     68
+    ],
+    [
+     165,
+     66
+    ],
+    [
+     178,
+     65
+    ],
+    [
+     -172,
+     65
+    ],
+    [
+     -166,
+     64.5
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. Routes exist so the film can show movement; where the evidence supports a band rather than a line (see event dispersal-route) the renderer must draw a plume along this spine, never the spine itself."
+  },
+  {
+   "id": "coastal-americas",
+   "label": "The sweep",
+   "beat": 10,
+   "fate": "holds",
+   "path": [
+    [
+     -166,
+     64
+    ],
+    [
+     -155,
+     58
+    ],
+    [
+     -140,
+     57
+    ],
+    [
+     -128,
+     52
+    ],
+    [
+     -124,
+     45
+    ],
+    [
+     -121,
+     37
+    ],
+    [
+     -115,
+     30
+    ],
+    [
+     -106.3,
+     32.8
+    ],
+    [
+     -100,
+     20
+    ],
+    [
+     -88,
+     14
+    ],
+    [
+     -80,
+     8
+    ],
+    [
+     -77,
+     -5
+    ],
+    [
+     -72,
+     -13
+    ],
+    [
+     -71,
+     -25
+    ],
+    [
+     -73,
+     -35
+    ],
+    [
+     -73.2,
+     -41.5
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. Routes exist so the film can show movement; where the evidence supports a band rather than a line (see event dispersal-route) the renderer must draw a plume along this spine, never the spine itself."
+  },
+  {
+   "id": "austronesian-east",
+   "label": "Austronesian, east",
+   "beat": 13,
+   "fate": "holds",
+   "path": [
+    [
+     121,
+     23.7
+    ],
+    [
+     121,
+     15
+    ],
+    [
+     124,
+     8
+    ],
+    [
+     128,
+     0
+    ],
+    [
+     140,
+     -4
+    ],
+    [
+     150,
+     -5
+    ],
+    [
+     160,
+     -9
+    ],
+    [
+     172,
+     -15
+    ],
+    [
+     -175,
+     -18
+    ],
+    [
+     -160,
+     -18
+    ],
+    [
+     -150,
+     -17
+    ],
+    [
+     -140,
+     -20
+    ],
+    [
+     -125,
+     -24
+    ],
+    [
+     -109.3,
+     -27.1
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. Routes exist so the film can show movement; where the evidence supports a band rather than a line (see event dispersal-route) the renderer must draw a plume along this spine, never the spine itself."
+  },
+  {
+   "id": "austronesian-west",
+   "label": "Austronesian, west",
+   "beat": 13,
+   "fate": "holds",
+   "path": [
+    [
+     112,
+     -3
+    ],
+    [
+     100,
+     -2
+    ],
+    [
+     88,
+     -2
+    ],
+    [
+     76,
+     -4
+    ],
+    [
+     64,
+     -7
+    ],
+    [
+     54,
+     -12
+    ],
+    [
+     48,
+     -16
+    ],
+    [
+     46.9,
+     -18.9
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. Routes exist so the film can show movement; where the evidence supports a band rather than a line (see event dispersal-route) the renderer must draw a plume along this spine, never the spine itself."
+  },
+  {
+   "id": "aotearoa",
+   "label": "To Aotearoa",
+   "beat": 13,
+   "fate": "holds",
+   "path": [
+    [
+     -160,
+     -18
+    ],
+    [
+     -172,
+     -22
+    ],
+    [
+     -178,
+     -30
+    ],
+    [
+     176,
+     -37
+    ],
+    [
+     174,
+     -41
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. Routes exist so the film can show movement; where the evidence supports a band rather than a line (see event dispersal-route) the renderer must draw a plume along this spine, never the spine itself."
+  },
+  {
+   "id": "yamnaya",
+   "label": "Steppe",
+   "beat": 13,
+   "fate": "holds",
+   "path": [
+    [
+     48,
+     48
+    ],
+    [
+     40,
+     48
+    ],
+    [
+     32,
+     48
+    ],
+    [
+     24,
+     48
+    ],
+    [
+     16,
+     49
+    ],
+    [
+     9,
+     50
+    ],
+    [
+     2,
+     49
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. Routes exist so the film can show movement; where the evidence supports a band rather than a line (see event dispersal-route) the renderer must draw a plume along this spine, never the spine itself."
+  },
+  {
+   "id": "bantu",
+   "label": "Bantu",
+   "beat": 13,
+   "fate": "holds",
+   "path": [
+    [
+     11.5,
+     6
+    ],
+    [
+     16,
+     2
+    ],
+    [
+     21,
+     -4
+    ],
+    [
+     25,
+     -11
+    ],
+    [
+     28,
+     -18
+    ],
+    [
+     29,
+     -25
+    ],
+    [
+     28,
+     -30
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. Routes exist so the film can show movement; where the evidence supports a band rather than a line (see event dispersal-route) the renderer must draw a plume along this spine, never the spine itself."
+  },
+  {
+   "id": "norse",
+   "label": "Norse",
+   "beat": 13,
+   "fate": "holds",
+   "path": [
+    [
+     5,
+     60
+    ],
+    [
+     -8,
+     62
+    ],
+    [
+     -20,
+     64
+    ],
+    [
+     -35,
+     63
+    ],
+    [
+     -45,
+     60
+    ],
+    [
+     -55.5,
+     51.6
+    ]
+   ],
+   "note": "Indicative cartographic path, not a sourced trajectory. Routes exist so the film can show movement; where the evidence supports a band rather than a line (see event dispersal-route) the renderer must draw a plume along this spine, never the spine itself."
+  }
+ ],
+ "ranges": [
+  {
+   "id": "neanderthal-extent",
+   "label": "The others",
+   "beat": 7,
+   "kind": "occupied-range",
+   "event": "neanderthal-extinction",
+   "confidence": "band",
+   "polygon": [
+    [
+     -9.0,
+     37.0
+    ],
+    [
+     -8.5,
+     43.0
+    ],
+    [
+     -2.0,
+     47.0
+    ],
+    [
+     -4.0,
+     51.0
+    ],
+    [
+     3.0,
+     53.5
+    ],
+    [
+     12.0,
+     53.0
+    ],
+    [
+     22.0,
+     52.5
+    ],
+    [
+     32.0,
+     52.0
+    ],
+    [
+     44.0,
+     51.0
+    ],
+    [
+     56.0,
+     53.0
+    ],
+    [
+     58.0,
+     48.0
+    ],
+    [
+     52.0,
+     43.5
+    ],
+    [
+     45.0,
+     40.5
+    ],
+    [
+     43.0,
+     36.5
+    ],
+    [
+     38.0,
+     33.5
+    ],
+    [
+     34.5,
+     31.5
+    ],
+    [
+     32.0,
+     36.0
+    ],
+    [
+     27.0,
+     37.5
+    ],
+    [
+     22.0,
+     37.5
+    ],
+    [
+     16.0,
+     39.0
+    ],
+    [
+     14.5,
+     40.5
+    ],
+    [
+     8.0,
+     40.0
+    ],
+    [
+     3.0,
+     41.5
+    ],
+    [
+     -2.0,
+     37.0
+    ]
+   ],
+   "note": "INDICATIVE CARTOGRAPHY, NOT A SOURCED RANGE MAP. A ring drawn to enclose the regions with well-known Neanderthal occupation inside this beat's frame. It is not a distribution, not an isopleth, and not derived from a site database. Confidence is 'band', so the renderer MUST draw it as a diffuse field and never as a boundary line - a hard outline here would claim a frontier that no source supports.",
+   "truncation": "Clipped at 60E to the beat's frame. Neanderthals reached the Altai, some 25 degrees further east; the beat's own ground register is a fossil from there. The clip is framing, not evidence.",
+   "retreatNote": "Higham 2014 finds the disappearance was spatially staggered rather than simultaneous. The renderer must therefore withdraw this field UNEVENLY and must NOT contract it toward a single last refuge - there is no sourced last refuge, and drawing one would invent the most memorable fact in the beat. The order in which patches go out is fixed noise, carries no dates, and is labelled as such on screen."
+  }
+ ]
+}

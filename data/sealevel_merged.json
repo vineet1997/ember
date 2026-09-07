@@ -1,0 +1,1636 @@
+{
+ "_readme": {
+  "what": "Global mean sea level relative to present. The curve that generates every coastline in the film.",
+  "law01": "Read-only input to t. Nothing here is authored.",
+  "splice": "300-26 ka from the Spratt & Lisiecki stack; 26-0 ka derived from ICE-6G_C paleotopography; linear crossfade between 30 and 24 ka.",
+  "whyDerived": "Lambeck 2014's supplementary table is behind a bot block and could not be fetched. It turned out not to be needed: ICE-6G_C already encodes relative sea level in Topo_Diff, and taking its median over far-field deep tropical ocean recovers the eustatic curve at 0.5 ka resolution. Better than a Lambeck splice would have been, because the sea level and the ice sheets now come from ONE model and cannot contradict each other.",
+  "resolutionCaveat": "0.5 ka through the deglacial. Meltwater Pulse 1A lasted about 340 years, so it appears as a steep segment rather than a resolved event. That is acceptable because the film's fast climate signal comes from the 20-year temperature channel; sea level only has to move the coastline.",
+  "units": "yrBP = calendar years before present (1950). m = metres relative to present."
+ },
+ "sources": {
+  "spratt2016": "Spratt, R. M. & Lisiecki, L. E. (2016). A Late Pleistocene sea level stack. Climate of the Past 12, 1079-1092.",
+  "ice6g": "Peltier, W. R., Argus, D. F. & Drummond, R. (2015). ICE-6G_C (VM5a). J. Geophys. Res. Solid Earth 120, 450-487.",
+  "checked": "downloaded-2026-09-06"
+ },
+ "checks": {
+  "lowstand_m": -130.97,
+  "lowstand_yrBP": 26000,
+  "lambeckPublished_m": -134.0,
+  "agreementWithLambeck_m": 3.03,
+  "presentValue_m": -0.0,
+  "sprattPresentArtifact_m": 8.49,
+  "spliceGapAt27ka_m": 17.0
+ },
+ "series": [
+  {
+   "yrBP": 0,
+   "m": -0.0,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 500,
+   "m": 0.02,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 1000,
+   "m": 0.05,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 1500,
+   "m": 0.09,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 2000,
+   "m": 0.13,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 2500,
+   "m": 0.23,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 3000,
+   "m": 0.24,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 3500,
+   "m": 0.32,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 4000,
+   "m": 0.39,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 4500,
+   "m": 0.39,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 5000,
+   "m": 0.45,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 5500,
+   "m": 0.51,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 6000,
+   "m": 0.62,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 6500,
+   "m": 0.4,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 7000,
+   "m": -0.49,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 7500,
+   "m": -2.08,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 8000,
+   "m": -5.05,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 8500,
+   "m": -7.84,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 9000,
+   "m": -11.45,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 9500,
+   "m": -14.96,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 10000,
+   "m": -19.94,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 10500,
+   "m": -25.1,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 11000,
+   "m": -30.45,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 11500,
+   "m": -41.59,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 12000,
+   "m": -47.03,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 12500,
+   "m": -51.19,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 13000,
+   "m": -57.36,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 13500,
+   "m": -61.76,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 14000,
+   "m": -68.68,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 14500,
+   "m": -92.06,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 15000,
+   "m": -96.13,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 15500,
+   "m": -99.53,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 16000,
+   "m": -103.76,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 16500,
+   "m": -105.84,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 17000,
+   "m": -107.73,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 17500,
+   "m": -109.26,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 18000,
+   "m": -110.98,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 18500,
+   "m": -112.5,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 19000,
+   "m": -113.72,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 19500,
+   "m": -114.61,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 20000,
+   "m": -115.71,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 20500,
+   "m": -116.66,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 21000,
+   "m": -117.67,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 22000,
+   "m": -119.3,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 23000,
+   "m": -122.1,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 24000,
+   "m": -125.15,
+   "src": "ice6g"
+  },
+  {
+   "yrBP": 25000,
+   "m": -129.76,
+   "src": "blend"
+  },
+  {
+   "yrBP": 26000,
+   "m": -130.97,
+   "src": "blend"
+  },
+  {
+   "yrBP": 27000,
+   "m": -126.77,
+   "src": "blend"
+  },
+  {
+   "yrBP": 28000,
+   "m": -121.88,
+   "src": "blend"
+  },
+  {
+   "yrBP": 29000,
+   "m": -114.93,
+   "src": "blend"
+  },
+  {
+   "yrBP": 30000,
+   "m": -105.78,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 31000,
+   "m": -103.5,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 32000,
+   "m": -100.63,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 33000,
+   "m": -97.48,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 34000,
+   "m": -97.37,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 35000,
+   "m": -98.83,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 36000,
+   "m": -99.39,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 37000,
+   "m": -95.27,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 38000,
+   "m": -93.1,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 39000,
+   "m": -90.3,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 40000,
+   "m": -85.9,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 41000,
+   "m": -79.76,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 42000,
+   "m": -75.76,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 43000,
+   "m": -73.91,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 44000,
+   "m": -76.18,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 45000,
+   "m": -74.49,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 46000,
+   "m": -75.78,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 47000,
+   "m": -73.7,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 48000,
+   "m": -76.71,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 49000,
+   "m": -73.75,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 50000,
+   "m": -68.3,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 51000,
+   "m": -63.11,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 52000,
+   "m": -67.88,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 53000,
+   "m": -68.85,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 54000,
+   "m": -70.05,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 55000,
+   "m": -72.26,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 56000,
+   "m": -78.03,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 57000,
+   "m": -82.74,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 58000,
+   "m": -85.71,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 59000,
+   "m": -82.94,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 60000,
+   "m": -84.73,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 61000,
+   "m": -86.56,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 62000,
+   "m": -84.32,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 63000,
+   "m": -84.75,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 64000,
+   "m": -83.48,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 65000,
+   "m": -82.72,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 66000,
+   "m": -82.47,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 67000,
+   "m": -79.37,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 68000,
+   "m": -71.06,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 69000,
+   "m": -68.11,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 70000,
+   "m": -65.39,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 71000,
+   "m": -51.43,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 72000,
+   "m": -46.71,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 73000,
+   "m": -43.84,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 74000,
+   "m": -36.18,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 75000,
+   "m": -33.06,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 76000,
+   "m": -31.58,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 77000,
+   "m": -27.69,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 78000,
+   "m": -28.8,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 79000,
+   "m": -32.95,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 80000,
+   "m": -30.85,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 81000,
+   "m": -31.36,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 82000,
+   "m": -29.64,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 83000,
+   "m": -25.57,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 84000,
+   "m": -30.66,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 85000,
+   "m": -29.99,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 86000,
+   "m": -38.77,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 87000,
+   "m": -43.09,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 88000,
+   "m": -46.6,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 89000,
+   "m": -43.44,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 90000,
+   "m": -43.63,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 91000,
+   "m": -40.3,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 92000,
+   "m": -41.67,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 93000,
+   "m": -42.16,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 94000,
+   "m": -40.52,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 95000,
+   "m": -34.24,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 96000,
+   "m": -27.74,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 97000,
+   "m": -22.19,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 98000,
+   "m": -21.19,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 99000,
+   "m": -17.26,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 100000,
+   "m": -19.49,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 101000,
+   "m": -17.72,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 102000,
+   "m": -25.03,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 103000,
+   "m": -29.47,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 104000,
+   "m": -31.71,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 105000,
+   "m": -34.36,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 106000,
+   "m": -40.33,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 107000,
+   "m": -45.01,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 108000,
+   "m": -44.48,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 109000,
+   "m": -45.95,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 110000,
+   "m": -46.36,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 111000,
+   "m": -47.08,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 112000,
+   "m": -43.18,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 113000,
+   "m": -38.93,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 114000,
+   "m": -33.84,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 115000,
+   "m": -26.17,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 116000,
+   "m": -22.5,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 117000,
+   "m": -14.09,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 118000,
+   "m": -7.56,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 119000,
+   "m": -4.0,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 120000,
+   "m": 2.68,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 121000,
+   "m": 3.13,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 122000,
+   "m": 2.27,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 123000,
+   "m": 1.2,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 124000,
+   "m": -1.18,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 125000,
+   "m": -6.65,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 126000,
+   "m": -12.72,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 127000,
+   "m": -27.1,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 128000,
+   "m": -36.13,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 129000,
+   "m": -52.95,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 130000,
+   "m": -73.72,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 131000,
+   "m": -82.93,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 132000,
+   "m": -102.14,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 133000,
+   "m": -114.38,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 134000,
+   "m": -120.26,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 135000,
+   "m": -123.76,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 136000,
+   "m": -123.95,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 137000,
+   "m": -123.61,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 138000,
+   "m": -122.72,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 139000,
+   "m": -120.94,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 140000,
+   "m": -118.88,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 141000,
+   "m": -113.45,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 142000,
+   "m": -110.78,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 143000,
+   "m": -106.75,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 144000,
+   "m": -102.4,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 145000,
+   "m": -100.34,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 146000,
+   "m": -100.71,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 147000,
+   "m": -99.52,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 148000,
+   "m": -99.18,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 149000,
+   "m": -96.94,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 150000,
+   "m": -90.79,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 151000,
+   "m": -86.92,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 152000,
+   "m": -85.9,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 153000,
+   "m": -85.22,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 154000,
+   "m": -86.91,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 155000,
+   "m": -89.71,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 156000,
+   "m": -92.51,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 157000,
+   "m": -92.67,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 158000,
+   "m": -88.91,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 159000,
+   "m": -87.94,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 160000,
+   "m": -86.95,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 161000,
+   "m": -85.29,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 162000,
+   "m": -78.74,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 163000,
+   "m": -77.08,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 164000,
+   "m": -74.42,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 165000,
+   "m": -71.66,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 166000,
+   "m": -65.29,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 167000,
+   "m": -61.69,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 168000,
+   "m": -61.52,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 169000,
+   "m": -58.16,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 170000,
+   "m": -55.34,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 171000,
+   "m": -57.68,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 172000,
+   "m": -64.45,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 173000,
+   "m": -63.15,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 174000,
+   "m": -62.14,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 175000,
+   "m": -61.42,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 176000,
+   "m": -63.68,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 177000,
+   "m": -62.61,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 178000,
+   "m": -66.03,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 179000,
+   "m": -68.55,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 180000,
+   "m": -68.12,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 181000,
+   "m": -68.54,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 182000,
+   "m": -68.59,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 183000,
+   "m": -68.86,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 184000,
+   "m": -70.31,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 185000,
+   "m": -71.5,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 186000,
+   "m": -67.51,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 187000,
+   "m": -64.13,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 188000,
+   "m": -58.98,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 189000,
+   "m": -55.74,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 190000,
+   "m": -50.97,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 191000,
+   "m": -44.91,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 192000,
+   "m": -37.3,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 193000,
+   "m": -32.83,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 194000,
+   "m": -32.43,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 195000,
+   "m": -26.14,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 196000,
+   "m": -21.7,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 197000,
+   "m": -13.48,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 198000,
+   "m": -10.09,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 199000,
+   "m": -7.72,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 200000,
+   "m": -11.24,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 201000,
+   "m": -19.54,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 202000,
+   "m": -21.5,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 203000,
+   "m": -26.54,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 204000,
+   "m": -23.73,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 205000,
+   "m": -14.39,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 206000,
+   "m": -9.84,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 207000,
+   "m": -14.1,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 208000,
+   "m": -10.13,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 209000,
+   "m": -10.6,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 210000,
+   "m": -11.47,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 211000,
+   "m": -9.45,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 212000,
+   "m": -7.38,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 213000,
+   "m": -6.78,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 214000,
+   "m": -7.05,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 215000,
+   "m": -9.18,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 216000,
+   "m": -13.1,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 217000,
+   "m": -23.51,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 218000,
+   "m": -29.26,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 219000,
+   "m": -36.81,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 220000,
+   "m": -49.33,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 221000,
+   "m": -61.75,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 222000,
+   "m": -67.03,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 223000,
+   "m": -73.68,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 224000,
+   "m": -72.15,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 225000,
+   "m": -74.35,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 226000,
+   "m": -70.68,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 227000,
+   "m": -66.88,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 228000,
+   "m": -65.45,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 229000,
+   "m": -65.06,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 230000,
+   "m": -59.11,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 231000,
+   "m": -51.45,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 232000,
+   "m": -41.76,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 233000,
+   "m": -31.59,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 234000,
+   "m": -26.47,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 235000,
+   "m": -21.38,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 236000,
+   "m": -15.03,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 237000,
+   "m": -9.44,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 238000,
+   "m": -14.82,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 239000,
+   "m": -21.09,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 240000,
+   "m": -26.31,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 241000,
+   "m": -35.14,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 242000,
+   "m": -44.9,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 243000,
+   "m": -53.72,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 244000,
+   "m": -58.16,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 245000,
+   "m": -54.47,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 246000,
+   "m": -73.1,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 247000,
+   "m": -80.67,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 248000,
+   "m": -86.71,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 249000,
+   "m": -88.3,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 250000,
+   "m": -91.78,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 251000,
+   "m": -94.31,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 252000,
+   "m": -94.5,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 253000,
+   "m": -95.65,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 254000,
+   "m": -91.97,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 255000,
+   "m": -86.9,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 256000,
+   "m": -90.3,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 257000,
+   "m": -93.53,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 258000,
+   "m": -93.71,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 259000,
+   "m": -89.89,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 260000,
+   "m": -81.06,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 261000,
+   "m": -78.3,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 262000,
+   "m": -77.68,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 263000,
+   "m": -77.5,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 264000,
+   "m": -85.38,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 265000,
+   "m": -84.54,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 266000,
+   "m": -82.09,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 267000,
+   "m": -82.77,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 268000,
+   "m": -93.08,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 269000,
+   "m": -97.2,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 270000,
+   "m": -98.21,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 271000,
+   "m": -89.95,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 272000,
+   "m": -80.22,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 273000,
+   "m": -76.12,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 274000,
+   "m": -74.38,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 275000,
+   "m": -67.56,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 276000,
+   "m": -61.85,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 277000,
+   "m": -56.75,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 278000,
+   "m": -53.52,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 279000,
+   "m": -50.13,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 280000,
+   "m": -46.06,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 281000,
+   "m": -39.89,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 282000,
+   "m": -37.94,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 283000,
+   "m": -36.69,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 284000,
+   "m": -35.06,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 285000,
+   "m": -35.22,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 286000,
+   "m": -36.57,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 287000,
+   "m": -37.85,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 288000,
+   "m": -42.69,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 289000,
+   "m": -51.85,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 290000,
+   "m": -56.69,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 291000,
+   "m": -58.53,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 292000,
+   "m": -56.55,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 293000,
+   "m": -54.88,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 294000,
+   "m": -53.23,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 295000,
+   "m": -52.4,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 296000,
+   "m": -48.95,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 297000,
+   "m": -48.35,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 298000,
+   "m": -47.6,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 299000,
+   "m": -45.33,
+   "src": "spratt"
+  },
+  {
+   "yrBP": 300000,
+   "m": -42.88,
+   "src": "spratt"
+  }
+ ]
+}

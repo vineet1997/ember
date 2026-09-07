@@ -1,0 +1,45 @@
+{
+ "tile": {
+  "file": "bathy_redsea.png",
+  "lon0": 28.0,
+  "lon1": 62.0,
+  "lat0": 4.0,
+  "lat1": 36.0,
+  "w": 2040,
+  "h": 1920,
+  "kmPerPx": 1.853,
+  "maxDecodeErrorM": 0.3052,
+  "scale": 0.30518043793392846,
+  "offset": -11000.0,
+  "checks": [
+   {
+    "seaM": 0.0,
+    "landFracBox": 72.03
+   },
+   {
+    "seaM": -68.3,
+    "landFracBox": 75.79
+   },
+   {
+    "seaM": -73.9,
+    "landFracBox": 75.97
+   },
+   {
+    "seaM": -84.7,
+    "landFracBox": 76.23
+   },
+   {
+    "seaM": -85.7,
+    "landFracBox": 76.25
+   },
+   {
+    "seaM": -90.3,
+    "landFracBox": 76.33
+   },
+   {
+    "seaM": -131.0,
+    "landFracBox": 76.67
+   }
+  ]
+ }
+}

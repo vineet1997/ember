@@ -1,0 +1,188 @@
+/* ==========================================================================
+   ONE EMBER · THE ATLAS · beat 06
+   Included verbatim into slice/atlas.html by slice/build_atlas.py.
+
+   THE SAME TYPE SYSTEM AS THE FILM, and it has to be, because the atlas is the
+   film for most of the people who will ever see it.
+
+     THE FILM VOICE   Fraunces 300. The line the beat is about. Once, never
+                      more. Bone. The only large thing on the page.
+     THE RECORD       Plex Sans 300. What the evidence says, qualifiers intact.
+                      Law 07 lives here. Bone-dim, hairline rule.
+     INSTRUMENTATION  Plex Mono, uppercase, tracked. Places, dates,
+                      measurements, the ruler. Ice-dim. Never bone.
+     Law 02 holds here as it holds there: ember is for people. There is no
+     ember in this stylesheet.
+
+   ONE LAYOUT DECISION IS THE WHOLE PAGE. At or above 1280px - the film's own
+   desktop gate - a still is shown large with the film's words placed back onto
+   it at the exact positions the bake recorded, so the frame is the film's
+   frame and its leaders end in real type. Below that, the same DOM reflows:
+   the still becomes an illustration and every word that was standing on it
+   moves underneath it, in reading order. Nothing is duplicated and nothing is
+   hidden - a phone, a crawler and a screen reader get the identical text a
+   desktop gets, in a different place.
+
+   WHICH IS WHY THIS FILE IS MOBILE-FIRST, and that is not a habit, it is a bug
+   fix. The overlay's type is sized in cqw - per cent of the figure - so that a
+   10.5px margin label in the film is 10.5px here on a 1440 figure. Put those
+   sizes in the base rules and every one of them needs a px counterpart in the
+   narrow branch; miss one and it renders at 0.7% of a phone, which is three
+   pixels. That happened, to exactly one rule, and it was invisible until a
+   390px screenshot. So the flow layout is the default and every cqw lives
+   inside the min-width block, where it cannot reach a phone at all.
+   ========================================================================== */
+:root{
+  --void:#04060A;
+  --rule:#1A2130;
+  --bone:#E6E2D8;
+  --bone-dim:#A9A498;
+  --ice:#8FA8C4;
+  --ice-dim:#5F7794;
+  --display:"Fraunces","Iowan Old Style",Georgia,serif;
+  --body:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
+  --col:64ch;
+  --pad:24px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--void);-webkit-text-size-adjust:100%}
+body{
+  background:var(--void);color:var(--bone);font-family:var(--body);font-weight:300;
+  -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
+  line-height:1.62;
+}
+main{padding:0 0 110px}
+.col,.top,.close,.over{
+  max-width:var(--col);margin-left:auto;margin-right:auto;padding:0 var(--pad);
+}
+a{color:var(--ice)}
+code{font-family:var(--mono);font-size:.88em;color:var(--ice)}
+
+/* -- the mono voice ------------------------------------------------------- */
+.kicker,.dates,.shotmeta,.state,.railfig figcaption,.colophon,.lab,.tx,.ev,.go{
+  font-family:var(--mono);letter-spacing:.14em;text-transform:uppercase;
+  font-size:10.5px;font-weight:400;color:var(--ice-dim);line-height:1.9;
+}
+
+/* -- head ----------------------------------------------------------------- */
+.top{padding-top:56px;padding-bottom:8px}
+.kicker{color:var(--ice)}
+h1{font-family:var(--display);font-optical-sizing:auto;font-weight:300;
+  font-size:clamp(30px,4.4vw,46px);line-height:1.12;letter-spacing:-.015em;
+  margin:14px 0 12px;color:var(--bone)}
+h1 em{font-style:normal;color:var(--bone-dim)}
+.dates{margin-bottom:34px}
+/* Scoped to .lede, because the kicker and the date line are paragraphs too and
+   they belong to the mono voice. A rule on "every p in the header" quietly
+   promoted both of them to body copy. */
+.lede p{margin-bottom:18px;color:var(--bone-dim);font-size:17px}
+.lede p:first-child{color:var(--bone);font-size:19.5px;line-height:1.58}
+.lede i{font-style:italic}
+
+/* -- the ruler (Law 05) --------------------------------------------------- */
+.railfig{margin:26px auto 64px;max-width:1180px;padding:0 var(--pad)}
+.railfig svg{width:100%;height:74px;overflow:visible;display:block}
+/* The caption belongs to the RAIL's width, not to the essay column - three
+   instrument phrases wrapped mid-sentence in a 64ch measure. */
+.railfig figcaption{display:flex;flex-wrap:wrap;gap:6px 30px;margin-top:16px}
+
+/* -- a shot: the flow layout, which is the default ------------------------ */
+.shot{margin:0 0 78px}
+/* Capped at 1680 so the frame never upscales past the file it was saved at,
+   and so the overlay type - sized in cqw above 1280 - stays near the size the
+   film draws it at. */
+.plate{position:relative;max-width:1680px;margin:0 auto;background:var(--void)}
+.plate img{width:100%;height:auto;display:block}
+
+.labs{list-style:none;margin-top:28px;border-top:1px solid var(--rule)}
+.lab{padding:11px 0;border-bottom:1px solid var(--rule)}
+.lab b{display:block;font-weight:500;color:var(--ice);margin-bottom:2px}
+.lab span{display:block;color:var(--ice-dim)}
+.tx{padding:11px 0;border-bottom:1px solid var(--rule);color:var(--ice-dim)}
+.tx.dim-k{font-size:15px;color:var(--bone);border-bottom:0;padding-bottom:2px}
+.tx.dim-v{color:var(--ice)}
+.tx.lab-k{color:var(--ice)}
+
+.copy{margin-top:30px}
+.voice{font-family:var(--display);font-optical-sizing:auto;font-weight:300;
+  font-size:clamp(26px,6.4vw,34px);line-height:1.14;letter-spacing:-.015em;
+  color:var(--bone);max-width:24ch;text-wrap:balance}
+.voice span{display:block}
+.record{margin-top:22px;max-width:42ch;font-size:15.5px;line-height:1.62;
+  color:var(--bone-dim);border-left:1px solid var(--rule);padding-left:16px}
+.record b{color:var(--bone);font-weight:500}
+.record .src{display:block;margin-top:13px;font-family:var(--mono);font-size:9.5px;
+  letter-spacing:.13em;text-transform:uppercase;color:var(--ice-dim);line-height:1.85}
+.state{margin-top:22px;font-variant-numeric:tabular-nums}
+.state .k{color:var(--ice)}
+
+/* -- the caption ---------------------------------------------------------- */
+.col{margin-top:30px}
+.shotmeta{display:flex;flex-wrap:wrap;gap:4px 20px;margin-bottom:14px}
+.shotmeta .no{color:var(--bone);font-weight:500}
+.cap{font-size:17px;color:var(--bone-dim);max-width:56ch}
+.cap b{color:var(--bone);font-weight:500}
+
+/* -- evidence ------------------------------------------------------------- */
+table.ev{width:100%;border-collapse:collapse;margin-top:26px;text-align:left}
+table.ev caption{text-align:left;color:var(--ice);letter-spacing:.18em;padding-bottom:6px}
+table.ev th,table.ev td{border-top:1px solid var(--rule);padding:8px 14px 8px 0;
+  vertical-align:top;font-weight:400}
+table.ev th{color:var(--bone-dim);width:30%}
+table.ev td{color:var(--ice-dim)}
+table.ev .cite{text-transform:none;letter-spacing:.01em;font-family:var(--body);
+  font-size:12.5px;line-height:1.5;color:var(--ice-dim)}
+.c-solid{color:#7FBF8F}
+.c-contested,.c-band{color:var(--bone)}
+
+/* -- footer --------------------------------------------------------------- */
+.close{border-top:1px solid var(--rule);padding-top:46px;margin-top:36px}
+.back{display:flex;flex-wrap:wrap;gap:14px 26px;margin:34px 0 26px}
+a.go{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ice);text-decoration:none;border-bottom:1px solid var(--rule);
+  padding-bottom:4px}
+a.go:hover{border-bottom-color:var(--ice)}
+.colophon{font-size:9.5px;line-height:1.9;color:var(--ice-dim)}
+.colophon code{text-transform:none;letter-spacing:0}
+
+@media (max-width:640px){
+  :root{--pad:18px}
+  .cap{font-size:16px}
+  .lede p:first-child{font-size:18px}
+  table.ev th{width:auto;display:block;padding-bottom:2px}
+  table.ev td{display:block;border-top:0;padding-top:0}
+  table.ev tr{display:block;border-top:1px solid var(--rule);padding:10px 0}
+}
+
+/* ==========================================================================
+   AT THE FILM'S OWN GATE AND ABOVE, the overlay becomes an overlay: every word
+   goes back to the position the bake recorded for it, on the end of a leader
+   the still has already drawn. Everything sized in cqw lives in here and
+   nowhere else - see the note at the top of this file for why.
+   ========================================================================== */
+@media (min-width:1280px){
+  main{padding-bottom:120px}
+  .top{padding-top:96px}
+  .shot{margin-bottom:104px}
+  .railfig{margin-bottom:92px}
+
+  .over{position:absolute;inset:0;container-type:inline-size;pointer-events:none;
+    max-width:none;padding:0;line-height:1.62}
+  .labs{margin:0;border:0}
+  .lab{position:absolute;transform:translateY(-50%);white-space:nowrap;text-align:right;
+    padding:0;border:0;font-size:.729cqw;letter-spacing:.16em;line-height:1.5}
+  .tx{position:absolute;transform:translateY(-50%);white-space:nowrap;padding:0;border:0;
+    font-size:.694cqw;letter-spacing:.16em}
+  .tx.dim-k{font-size:.972cqw;font-weight:500;color:var(--bone)}
+  .tx.lab-k{font-size:.729cqw}
+
+  /* the copy column, where the still's graduated filter is already waiting for
+     it - the grade is baked because it is photography, and it leaves with the
+     sentence because the sentence only exists at this t */
+  .copy{position:absolute;left:4.444%;bottom:13.83%;width:36.1%;margin:0}
+  .voice{font-size:3.05cqw}
+  .record{margin-top:1.8cqw;font-size:1.076cqw;padding-left:1.25cqw}
+  .record .src{margin-top:.9cqw;font-size:.66cqw;white-space:nowrap}
+  .state{margin-top:1.7cqw;font-size:.729cqw;letter-spacing:.16em}
+}

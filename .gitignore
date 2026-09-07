@@ -1,0 +1,13 @@
+# Source grids: 496 MB, fully reproducible from the URLs in
+# timeline.json -> earthStateDatasets. Rebuild with data/build_*.py
+data/raw/
+
+__pycache__/
+*.pyc
+
+# Generated build artifacts (inlined data, large)
+spike/*.build.html
+spike/bathy_*.png
+
+# Playwright shot-check output
+.playwright-mcp/

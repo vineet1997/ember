@@ -1,0 +1,14 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "slice",
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "slice/serve.py",
+        "8123"
+      ],
+      "port": 8123
+    }
+  ]
+}

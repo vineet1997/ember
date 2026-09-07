@@ -1,0 +1,1241 @@
+<title>One Ember</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap">
+
+<style>
+:root{
+  --ground:#0A0D12;
+  --surface:#111621;
+  --surface-2:#171D2A;
+  --inset:#0D111A;
+  --rule:#232B3A;
+  --rule-soft:#1A2130;
+  --bone:#E6E2D8;
+  --bone-dim:#B7B2A6;
+  --ice:#8FA8C4;
+  --ice-dim:#5F7794;
+  --ember:#E8703A;
+  --ember-dim:#B05628;
+
+  --display:"Fraunces","Iowan Old Style",Georgia,serif;
+  --body:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
+
+  --measure:66ch;
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground);
+  color:var(--bone);
+  font-family:var(--body);
+  font-weight:300;
+  font-size:15.5px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+p{margin:0}
+a{color:var(--ice);text-decoration-color:var(--ice-dim);text-underline-offset:3px}
+a:focus-visible{outline:2px solid var(--ember);outline-offset:3px;border-radius:2px}
+
+.wrap{max-width:1240px;margin:0 auto;padding:0 32px 120px}
+
+/* ---------- masthead ---------- */
+.masthead{padding:80px 0 44px;border-bottom:1px solid var(--rule)}
+.eyebrow{
+  font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--ice-dim);margin-bottom:26px;
+}
+h1{
+  font-family:var(--display);font-optical-sizing:auto;
+  font-size:clamp(46px,8vw,86px);font-weight:400;line-height:.98;letter-spacing:-.02em;
+  margin:0 0 22px;text-wrap:balance;color:var(--bone);
+}
+h1 em{font-style:normal;color:var(--ember)}
+.standfirst{font-size:19px;line-height:1.55;max-width:60ch;color:var(--bone-dim);font-weight:300}
+.standfirst strong{color:var(--bone);font-weight:500}
+
+.factstrip{
+  display:flex;flex-wrap:wrap;gap:0;margin-top:40px;
+  border-top:1px solid var(--rule-soft);
+}
+.fact{
+  flex:1 1 150px;padding:16px 20px 14px 0;margin-right:20px;
+  border-top:2px solid var(--rule);margin-top:-1px;
+}
+.fact:first-child{border-top-color:var(--ember-dim)}
+.fact dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ice-dim);margin-bottom:6px}
+.fact dd{margin:0;font-family:var(--mono);font-size:14px;color:var(--bone);font-variant-numeric:tabular-nums}
+
+/* ---------- two column shell ---------- */
+.shell{display:grid;grid-template-columns:172px minmax(0,1fr);gap:56px;align-items:start;margin-top:64px}
+
+/* ---------- deep time rail ---------- */
+.rail{position:sticky;top:28px}
+.rail-title{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ice-dim);margin-bottom:18px}
+.ruler{position:relative;height:820px;padding-right:4px}
+.ruler::before{content:"";position:absolute;left:38px;top:0;bottom:36px;width:1px;background:linear-gradient(var(--rule-soft),var(--rule),var(--ember-dim))}
+.tick{
+  position:absolute;left:0;right:0;transform:translateY(-50%);
+  display:grid;grid-template-columns:34px 12px 1fr;align-items:center;
+  font-family:var(--mono);font-size:10px;line-height:1;color:var(--ice-dim);
+  text-decoration:none;
+}
+.tick .yr{text-align:right;font-variant-numeric:tabular-nums}
+.tick .mark{height:1px;background:var(--rule);margin-left:4px}
+.tick .no{padding-left:9px;color:var(--bone-dim);letter-spacing:.04em}
+.tick:hover .no,.tick:focus-visible .no{color:var(--ember)}
+.tick:hover .mark{background:var(--ember-dim)}
+.tick.pole .no{color:var(--ember)}
+.tick.pole .mark{background:var(--ember-dim)}
+.rail-note{font-size:11.5px;line-height:1.5;color:var(--ice-dim);margin-top:6px;font-weight:300}
+
+/* ---------- generic section ---------- */
+section{margin-bottom:76px;scroll-margin-top:24px}
+h2{
+  font-family:var(--display);font-size:30px;font-weight:400;letter-spacing:-.01em;
+  margin:0;color:var(--bone);text-wrap:balance;
+}
+.section-head{border-top:1px solid var(--rule);padding-top:22px;margin-bottom:30px}
+.lede{max-width:var(--measure);color:var(--bone-dim);margin-top:10px}
+.lede b{color:var(--bone);font-weight:500}
+
+/* ---------- laws ---------- */
+.laws{display:grid;grid-template-columns:repeat(auto-fit,minmax(268px,1fr));gap:1px;background:var(--rule-soft);border:1px solid var(--rule-soft)}
+.law{background:var(--surface);padding:24px}
+.law .n{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;color:var(--ember-dim);display:block;margin-bottom:12px}
+.law h3{font-family:var(--display);font-size:20px;font-weight:400;margin:0 0 9px;color:var(--bone);line-height:1.2}
+.law p{font-size:14px;color:var(--bone-dim);line-height:1.6}
+.law b{color:var(--bone);font-weight:500}
+.law code{font-family:var(--mono);font-size:12.5px;color:var(--ice);background:var(--inset);padding:1px 5px}
+
+/* ---------- pacing chart ---------- */
+.chartbox{border:1px solid var(--rule);background:var(--surface);padding:26px 24px 18px;overflow-x:auto}
+.chartbox svg{display:block;min-width:660px;width:100%;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:22px;margin-top:16px;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ice-dim)}
+.legend span{display:flex;align-items:center;gap:8px}
+.swatch{width:14px;height:9px;display:inline-block}
+
+/* ---------- notation key ---------- */
+.key{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:22px 32px;margin:0}
+.key div{border-left:1px solid var(--rule);padding-left:16px}
+.key dt{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--ember-dim);margin-bottom:5px}
+.key dd{margin:0;font-size:13.5px;color:var(--bone-dim);line-height:1.55}
+.key code{font-family:var(--mono);color:var(--ice)}
+.chip-solid{font-family:var(--mono);font-size:11px;border:1px solid var(--rule);padding:2px 6px}
+.chip-dash{font-family:var(--mono);font-size:11px;border:1px dashed var(--ember-dim);color:var(--ember);padding:2px 6px}
+
+/* ---------- act divider ---------- */
+.act{margin:96px 0 34px;padding-top:26px;border-top:2px solid var(--ember-dim)}
+.act .label{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--ember);margin-bottom:10px}
+.act h2{font-size:38px}
+.act .span{font-family:var(--mono);font-size:12.5px;color:var(--ice-dim);margin-top:10px;font-variant-numeric:tabular-nums}
+.act .obstacle{max-width:var(--measure);margin-top:16px;color:var(--bone-dim);font-size:14.5px}
+.act .obstacle b{color:var(--ice);font-weight:500}
+
+/* ---------- beat card ---------- */
+.beat{border:1px solid var(--rule);background:var(--surface);margin-bottom:20px}
+.beat.pole{border-top:2px solid var(--ember)}
+.beat-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:16px;padding:20px 26px 18px;border-bottom:1px solid var(--rule-soft)}
+.beat-no{font-family:var(--mono);font-size:12px;color:var(--ember);letter-spacing:.06em}
+.beat-title{font-family:var(--display);font-size:25px;font-weight:400;line-height:1.15;color:var(--bone);margin:0;flex:1 1 260px;letter-spacing:0}
+.beat-meta{font-family:var(--mono);font-size:11.5px;color:var(--ice-dim);font-variant-numeric:tabular-nums;flex:0 0 auto}
+.pole-flag{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ember);border:1px solid var(--ember-dim);padding:3px 8px;align-self:center}
+
+.slots{display:grid;grid-template-columns:104px minmax(0,1fr);gap:0;margin:0}
+.slots > dt{
+  font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ice-dim);
+  padding:14px 0 14px 26px;border-bottom:1px solid var(--rule-soft);
+}
+.slots > dd{
+  margin:0;padding:14px 26px 14px 18px;border-bottom:1px solid var(--rule-soft);
+  font-size:14.5px;color:var(--bone-dim);max-width:78ch;
+}
+.slots > dt:last-of-type,.slots > dd:last-of-type{border-bottom:0}
+.slots dd b{color:var(--bone);font-weight:500}
+.slots dd b.warm{color:var(--ember);font-weight:500}
+.m{font-family:var(--mono);font-size:13px;color:var(--ice);font-variant-numeric:tabular-nums}
+.cut{font-family:var(--mono);font-size:12.5px;color:var(--ice);line-height:1.75}
+.cut i{font-style:normal;color:var(--ice-dim)}
+
+/* on-screen copy band */
+.onscreen{grid-column:1 / -1;background:var(--inset);border-bottom:1px solid var(--rule-soft);padding:26px 26px 26px 0;display:grid;grid-template-columns:104px minmax(0,1fr)}
+.onscreen .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ember-dim);padding-left:26px}
+.onscreen .line{
+  font-family:var(--display);font-size:clamp(20px,2.3vw,27px);font-weight:300;line-height:1.3;
+  color:var(--bone);padding-left:18px;border-left:1px solid var(--ember-dim);max-width:34ch;text-wrap:balance;
+}
+
+/* evidence chips */
+.ev{display:flex;flex-wrap:wrap;gap:8px;margin:0;padding:0;list-style:none}
+.ev li{
+  font-family:var(--mono);font-size:11.5px;line-height:1.35;color:var(--bone-dim);
+  padding:5px 10px;border:1px solid var(--rule);background:var(--inset);
+}
+.ev li.contested{border-style:dashed;border-color:var(--ember-dim);color:var(--ice-dim)}
+.ev li b{color:var(--ice);font-weight:500}
+.ev li.contested b{color:var(--ember)}
+.evnote{font-size:13px;color:var(--ice-dim);margin-top:12px;max-width:72ch}
+.evnote i{font-style:italic}
+
+/* ---------- payoffs table ---------- */
+.tablebox{overflow-x:auto;border:1px solid var(--rule)}
+table{border-collapse:collapse;width:100%;min-width:640px;background:var(--surface)}
+th,td{text-align:left;padding:13px 20px;border-bottom:1px solid var(--rule-soft);vertical-align:top;font-size:14px}
+th{font-family:var(--mono);font-size:10px;letter-spacing:.13em;text-transform:uppercase;color:var(--ice-dim);font-weight:500;background:var(--surface-2)}
+td{color:var(--bone-dim)}
+td:first-child{font-family:var(--mono);font-size:12px;color:var(--ember);white-space:nowrap;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:0}
+
+/* ---------- open questions ---------- */
+.qs{list-style:none;margin:0;padding:0;display:grid;gap:1px;background:var(--rule-soft);border:1px solid var(--rule-soft)}
+.qs li{background:var(--surface);padding:18px 24px;display:grid;grid-template-columns:96px minmax(0,1fr);gap:20px;align-items:baseline}
+.qs .tag{font-family:var(--mono);font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--ice-dim)}
+.qs .q{font-size:14.5px;color:var(--bone-dim)}
+.qs .q b{color:var(--bone);font-weight:500}
+
+footer{border-top:1px solid var(--rule);margin-top:80px;padding-top:26px;font-size:13.5px;color:var(--ice-dim);max-width:var(--measure);display:grid;gap:14px}
+footer b{color:var(--bone-dim);font-weight:500}
+footer code{font-family:var(--mono);color:var(--ice)}
+
+@media (max-width:1080px){ .shell{grid-template-columns:1fr;gap:0} .rail{display:none} }
+@media (max-width:640px){
+  .qs li{grid-template-columns:1fr;gap:6px}
+  .slots{grid-template-columns:1fr}
+  .slots > dt{padding:16px 20px 0;border-bottom:0}
+  .slots > dd{padding:6px 20px 16px}
+  .onscreen{grid-template-columns:1fr;padding:22px}
+  .onscreen .lbl{padding-left:0;margin-bottom:12px}
+  .onscreen .line{padding-left:14px}
+  .wrap{padding:0 20px 80px}
+  .beat-head{padding:18px 20px 16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+
+<div class="wrap">
+
+<header class="masthead">
+  <div class="eyebrow">Storyboard &middot; rev. 5 &middot; after the cartography spike</div>
+  <h1>One <em>Ember</em></h1>
+  <p class="standfirst">A scroll-driven film of <strong>the peopling of the habitable world</strong> &mdash; 300,000 BP to roughly 1300 CE, when the last major landmass was settled, then a bridge across the last seven hundred years. Fourteen beats, four acts. If a shot isn't specified here, it isn't in the film. Every date is bound to <code style="font-family:var(--mono);color:var(--ice);font-size:.85em">timeline.json</code>; every coastline, ice margin, sea level and sky colour is read from <code style="font-family:var(--mono);color:var(--ice);font-size:.85em">data/</code>, never authored.</p>
+
+  <dl class="factstrip">
+    <div class="fact"><dt>Runtime</dt><dd>8&ndash;12 min</dd></div>
+    <div class="fact"><dt>Beats</dt><dd>14 in 4 acts</dd></div>
+    <div class="fact"><dt>Span</dt><dd>300 ka &rarr; 0</dd></div>
+    <div class="fact"><dt>Primary</dt><dd>Desktop &ge;1280&times;800</dd></div>
+    <div class="fact"><dt>Secondary</dt><dd>Mobile atlas</dd></div>
+    <div class="fact"><dt>Ships on</dt><dd>vineet.cc/one-ember</dd></div>
+    <div class="fact"><dt>Sources</dt><dd>65 &middot; 1 incomplete</dd></div>
+    <div class="fact"><dt>Sea level</dt><dd>322 pts &middot; 0.5 ka res</dd></div>
+    <div class="fact"><dt>Temperature</dt><dd>2,998 pts &middot; 20 yr res</dd></div>
+    <div class="fact"><dt>Bathymetry</dt><dd>4096&times;2048 &middot; 0.3 m</dd></div>
+    <div class="fact"><dt>Ice</dt><dd>48 slices &middot; 26 ka</dd></div>
+  </dl>
+</header>
+
+<div class="shell">
+
+  <nav class="rail" aria-label="Deep time index">
+    <div class="rail-title">Deep time</div>
+    <div class="ruler">
+      <a class="tick" href="#b1" style="top:0%"><span class="yr">300 ka</span><span class="mark"></span><span class="no">01</span></a>
+      <a class="tick" href="#b2" style="top:2.2%"><span class="yr">260 ka</span><span class="mark"></span><span class="no">02</span></a>
+      <a class="tick" href="#b3" style="top:6.3%"><span class="yr">200 ka</span><span class="mark"></span><span class="no">03</span></a>
+      <a class="tick pole" href="#b4" style="top:21.5%"><span class="yr">76 ka</span><span class="mark"></span><span class="no">04 &#9670;</span></a>
+      <a class="tick pole" href="#b5" style="top:25.2%"><span class="yr">60 ka</span><span class="mark"></span><span class="no">05 &#9670;</span></a>
+      <a class="tick" href="#b6" style="top:28.0%"><span class="yr">50 ka</span><span class="mark"></span><span class="no">06</span></a>
+      <a class="tick" href="#b7" style="top:30.4%"><span class="yr">43 ka</span><span class="mark"></span><span class="no">07</span></a>
+      <a class="tick pole" href="#b8" style="top:31.9%"><span class="yr">39 ka</span><span class="mark"></span><span class="no">08 &#9670;</span></a>
+      <a class="tick" href="#b9" style="top:37.9%"><span class="yr">26.5 ka</span><span class="mark"></span><span class="no">09</span></a>
+      <a class="tick" href="#b10" style="top:40.2%"><span class="yr">23 ka</span><span class="mark"></span><span class="no">10</span></a>
+      <a class="tick pole" href="#b11" style="top:47.9%"><span class="yr">14 ka</span><span class="mark"></span><span class="no">11 &#9670;</span></a>
+      <a class="tick" href="#b12" style="top:56.7%"><span class="yr">8 ka</span><span class="mark"></span><span class="no">12</span></a>
+      <a class="tick" href="#b13" style="top:64.0%"><span class="yr">5 ka</span><span class="mark"></span><span class="no">13</span></a>
+      <a class="tick pole" href="#b14" style="top:92.7%"><span class="yr">800 yr</span><span class="mark"></span><span class="no">14 &#9670;</span></a>
+    </div>
+    <p class="rail-note">Log scale, computed from the beat spans in <code style="font-family:var(--mono);color:var(--ice);font-size:.9em">timeline.json</code>. Beat&nbsp;03 covers 124,000 years in 7% of the scroll; beat&nbsp;14 covers 800 in the same 7%. <b style="color:var(--bone-dim);font-weight:500">Compression ratio 155:1</b> &mdash; that is the number Law&nbsp;05's ruler has to make visible.</p>
+  </nav>
+
+  <main>
+
+  <section id="thesis">
+    <div class="section-head"><h2>The thesis</h2></div>
+    <p style="font-family:var(--display);font-size:24px;line-height:1.4;color:var(--bone);font-weight:300;max-width:42ch;margin-bottom:24px;text-wrap:balance">Every one of us is African. One line that left did not stop, and its descendants now live everywhere else.</p>
+    <p class="lede">Humanity is the protagonist. The earth is the antagonist &mdash; not a backdrop, an opponent with moves: it freezes, it erupts, it drops the sea and then takes the road away. The dramatic question is planted in Act&nbsp;I and answered in beat 05: <b>we had tried to leave before and failed every time, so what made the last one different?</b></p>
+    <p class="lede" style="margin-top:14px">Every beat below either serves that question or corrects something the reader arrived believing. Nothing is here to be pretty.</p>
+    <p class="lede" style="margin-top:20px;border-left:2px solid var(--ember-dim);padding-left:16px"><b style="color:var(--ember);font-weight:500">Corrected.</b> The previous thesis read <i>"everyone alive descends from a few thousand people who walked out of Africa and did not stop."</i> That is literally false &mdash; it makes Africans spectators in a story supposedly about everyone &mdash; and the data file already said so: beat 05's evidence reads <b>all non-African ancestry</b>. The copy over-claimed against its own data. See Law 07.</p>
+  </section>
+
+  <section id="laws">
+    <div class="section-head">
+      <h2>Seven laws</h2>
+      <p class="lede">Fixed. Art, code and copy are checked against these, and a beat that needs an exception is a beat that needs rewriting. Law 03 was widened and Law 07 added after review.</p>
+    </div>
+    <div class="laws">
+      <div class="law">
+        <span class="n">LAW 01</span>
+        <h3>One number governs everything</h3>
+        <p>Deep time is a single float <code>t</code>, driven by scroll. Sea level, ice, sky, camera and every ember read <code>t</code> and nothing reads anything else. No subsystem may depend on another's state. This is what lets the film hold twelve layers without becoming fragile, and it means scrubbing backwards is always correct.<br><br><b>Asserted, not assumed.</b> The spike hashes the full state at 401 points scrubbing forward, then again backward, and diffs them. It passes &mdash; and it kept passing through a complete renderer rewrite. Every sea depth on this page is read from the curve; seven changed the day the real data landed.</p>
+      </div>
+      <div class="law">
+        <span class="n">LAW 02</span>
+        <h3>Humans are the only warm light</h3>
+        <p>The earth is slate, ice, bone, deep blue. People are ember. Nothing else on screen is warm &mdash; not the sun, not the interface. Consequence: the film needs no legend and almost no labels.<br><br><b class="warm">Migration is light that travels.</b> The spike shipped lights that simply appeared at their beat and sat there, and it read as a scatter of pins rather than a story. A population is a <i>head</i> that moves along a path with a trail behind it. Thirteen routes now live in the data for exactly this.</p>
+      </div>
+      <div class="law">
+        <span class="n">LAW 03 &middot; two verbs</span>
+        <h3>Three registers, two transitions</h3>
+        <p><b>Planetary atlas</b> when simultaneity matters. <b>Orbital</b> for movement. <b>Ground</b> for a moment.<br><br><b>Match cut</b> for orbital&nbsp;&harr;&nbsp;ground &mdash; a shape held across a scale change. <b>Unroll</b> for orbital&nbsp;&harr;&nbsp;atlas &mdash; the camera pulls back and the globe flattens.<br><br>The spike proved the single-verb version wrong. A hard cut between projections has <i>nothing to match on</i>, because it is not a scale change &mdash; it is a change of space. It read as a glitch. Measured: from an Africa-centred globe only <b>2 of 6</b> agricultural centres are visible; the atlas shows <b>6 of 6</b>.</p>
+      </div>
+      <div class="law">
+        <span class="n">LAW 04 &middot; amended</span>
+        <h3>The dot is a population, the cut is the evidence</h3>
+        <p>Orbital is always about flows, never individuals &mdash; and orbital is <b>then</b>. Ground is always one named thing, and ground is <b>now</b>: the fossil, the bead, the footprint, as we hold it today. Only the orbital layer rides the time axis, so a ground cut can never break Law 01 &mdash; a 90,000-year-old fragment can be exhibited at any beat. Vastness, then a face.</p>
+      </div>
+      <div class="law">
+        <span class="n">LAW 05</span>
+        <h3>Time is non-linear and must confess it</h3>
+        <p>Ninety per cent of what the reader cares about sits in the last five per cent of the span. Silent compression is a lie, so a persistent ruler visibly <b>stretches</b> toward the present. Watching the ruler deform is itself an awe moment &mdash; it is the film telling you how recent you are.</p>
+      </div>
+      <div class="law">
+        <span class="n">LAW 06 &middot; widened in Phase 5</span>
+        <h3>Nothing on screen that isn't causal &mdash; for what happened, <i>or for how we know it</i></h3>
+        <p>Volcanoes, animals and weather appear only where they change what happens next. Toba dims the sky. The mammoth steppe is why Beringia was survivable. Anything else is decoration, and decoration is the entire distance between stunning and busy.</p>
+        <p><b class="warm">Resolved 2026-09-07, and the law widened rather than the eruption being cut.</b> The Campanian Ignimbrite changes nothing about what happened &mdash; but at &plusmn;140 years it is the best-dated tephra horizon in European prehistory, which makes it <i>how we know when beat 07 happened</i>. The film already built a register for that and shipped it: beat 06 draws Madjedbebe's contested 65 ka reading <b>on the time rail, not on the map</b>, exactly so a claim about <i>when</i> cannot move the world. So the grammar exists, is enforced by the copy check, and works.</p>
+        <p><b>The widening is not a loosening</b>, because it arrives with a bar the old law never had, and the bar is machine-checked rather than promised: <b>an epistemic object may not perturb <span class="m">stateFor(t)</span></b>. The eruption may be a marker and a horizon and a sentence. It may not grey the sky, dim a light, or move the camera. The <span class="m">law06</span> test samples every world channel across the eruption's instant at two resolutions and fails on anything that does not behave like a continuous function &mdash; a jump does not shrink when you halve the sample spacing. Under the old law the CI was cut for a <i>staging</i> &mdash; "it greyed the sky exactly as their light failed" &mdash; that no test would have caught. This one catches exactly that staging.</p>
+      </div>
+      <div class="law">
+        <span class="n">LAW 08 &middot; from the spike</span>
+        <h3>Change is an edge that moves, never a fill that fades</h3>
+        <p>Three of the spike's five failures were one bug. The emerging shelf, the advancing ice and the ancestral fan were all drawn as soft gradients, and all three were invisible &mdash; one of them so completely that the reviewer didn't notice anything was happening.<br><br>The eye tracks <b>edges</b>. A gradient says <i>atmosphere</i>; an edge says <i>something is happening</i>. And this film's whole subject is boundaries crossing the earth &mdash; a coastline, an ice margin, the leading edge of a population. Every one of them gets a visible line that moves.</p>
+      </div>
+      <div class="law">
+        <span class="n">LAW 07 &middot; new</span>
+        <h3>Copy is checked against the data, not just dates</h3>
+        <p>Three separate failures shared one cause. The data said <i>all non-Africans</i> and the copy said <i>everyone</i>. The data said <i>~2% in non-Africans</i> and the copy said <i>two percent of you</i>. The data said <b>do not assert an extinction</b> and the frame emptied the map. Numbers were being checked; sentences were not. Every on-screen line now gets diffed against the qualifiers its own event carries.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="pacing">
+    <div class="section-head">
+      <h2>Pacing</h2>
+      <p class="lede">Prescribed, not measured. Motion is how much moves on screen; weight is how much the beat carries. The rule the curve encodes: <b>never two spectacles back to back</b> &mdash; every peak is followed by a drop, and the largest emotional beat in the film has the least motion in it. Beat 10 is now split across its two frames (<span style="font-family:var(--mono);font-size:.9em">f1</span> holds at zero, <span style="font-family:var(--mono);font-size:.9em">f2</span> runs at five), which gives the film a second hold without spending a beat on one.</p>
+    </div>
+    <div class="chartbox">
+      <svg viewBox="0 0 900 268" role="img" aria-label="Bar chart of prescribed motion intensity for each of the fourteen beats on a scale of zero to five. Beats 4 and 8 peak at five; beat 5 is zero and marked HOLD; beat 10 is split, opening at zero and closing at five across its two frames; beat 12 is one. Diamonds mark the five narrative tentpoles at beats 4, 5, 8, 11 and 14.">
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#5F7794">
+          <text x="26" y="46" text-anchor="end">5</text>
+          <text x="26" y="82" text-anchor="end">4</text>
+          <text x="26" y="118" text-anchor="end">3</text>
+          <text x="26" y="154" text-anchor="end">2</text>
+          <text x="26" y="190" text-anchor="end">1</text>
+          <text x="26" y="226" text-anchor="end">0</text>
+        </g>
+        <g stroke="#1A2130" stroke-width="1">
+          <line x1="34" y1="42" x2="880" y2="42"/>
+          <line x1="34" y1="78" x2="880" y2="78"/>
+          <line x1="34" y1="114" x2="880" y2="114"/>
+          <line x1="34" y1="150" x2="880" y2="150"/>
+          <line x1="34" y1="186" x2="880" y2="186"/>
+        </g>
+        <line x1="34" y1="222" x2="880" y2="222" stroke="#232B3A" stroke-width="1"/>
+        <g>
+          <rect x="42"  y="150" width="38" height="72"  fill="#3E5675"/>
+          <rect x="102" y="150" width="38" height="72"  fill="#3E5675"/>
+          <rect x="162" y="114" width="38" height="108" fill="#3E5675"/>
+          <rect x="222" y="42"  width="38" height="180" fill="#5F7794"/>
+          <rect x="282" y="218" width="38" height="4"   fill="#E8703A"/>
+          <rect x="342" y="78"  width="38" height="144" fill="#5F7794"/>
+          <rect x="402" y="150" width="38" height="72"  fill="#3E5675"/>
+          <rect x="462" y="42"  width="38" height="180" fill="#5F7794"/>
+          <rect x="522" y="114" width="38" height="108" fill="#3E5675"/>
+          <rect x="582" y="218" width="18" height="4"   fill="#E8703A"/>
+          <rect x="602" y="42"  width="18" height="180" fill="#5F7794"/>
+          <rect x="642" y="114" width="38" height="108" fill="#3E5675"/>
+          <rect x="702" y="186" width="38" height="36"  fill="#3E5675"/>
+          <rect x="762" y="78"  width="38" height="144" fill="#5F7794"/>
+          <rect x="822" y="150" width="38" height="72"  fill="#3E5675"/>
+        </g>
+        <g fill="#E8703A">
+          <path d="M241 26 l7 7 -7 7 -7 -7 z"/>
+          <path d="M301 200 l7 7 -7 7 -7 -7 z"/>
+          <path d="M481 26 l7 7 -7 7 -7 -7 z"/>
+          <path d="M661 98 l7 7 -7 7 -7 -7 z"/>
+          <path d="M841 134 l7 7 -7 7 -7 -7 z"/>
+        </g>
+        <text x="301" y="187" font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#E8703A" text-anchor="middle">HOLD</text>
+        <text x="591" y="212" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#E8703A" text-anchor="middle">f1</text>
+        <text x="611" y="36" font-family="IBM Plex Mono, monospace" font-size="8.5" fill="#5F7794" text-anchor="middle">f2</text>
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#8FA8C4" text-anchor="middle">
+          <text x="61" y="240">01</text><text x="121" y="240">02</text><text x="181" y="240">03</text>
+          <text x="241" y="240" fill="#E8703A">04</text><text x="301" y="240" fill="#E8703A">05</text><text x="361" y="240">06</text>
+          <text x="421" y="240">07</text><text x="481" y="240" fill="#E8703A">08</text><text x="541" y="240">09</text>
+          <text x="601" y="240">10</text><text x="661" y="240" fill="#E8703A">11</text><text x="721" y="240">12</text>
+          <text x="781" y="240">13</text><text x="841" y="240" fill="#E8703A">14</text>
+        </g>
+        <g font-family="IBM Plex Mono, monospace" font-size="9.5" fill="#5F7794" letter-spacing="1.4">
+          <text x="42" y="260">ACT I</text>
+          <text x="222" y="260">ACT II</text>
+          <text x="462" y="260">ACT III</text>
+          <text x="642" y="260">ACT IV</text>
+        </g>
+      </svg>
+      <div class="legend">
+        <span><i class="swatch" style="background:#5F7794"></i> High motion</span>
+        <span><i class="swatch" style="background:#3E5675"></i> Low / mid motion</span>
+        <span><i class="swatch" style="background:#E8703A"></i> Tentpole &mdash; narrative weight</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="notation">
+    <div class="section-head">
+      <h2>How to read a beat</h2>
+      <p class="lede">Every card carries the same eight slots in the same order. A slot left empty is a decision not yet made, not a slot that didn't apply.</p>
+    </div>
+    <dl class="key">
+      <div><dt>Frame</dt><dd>What is composed in the shot. Landscape, ~1440&times;900, type living beside the globe rather than on it.</dd></div>
+      <div><dt>Camera</dt><dd>Register (atlas / orbital / ground) and the move. Rotation is scroll-driven and damped at <code>0.08</code>.</dd></div>
+      <div><dt>Earth</dt><dd>Sea level and temperature, both read from <code>data/</code>, plus ice and sky. All functions of <code>t</code>.</dd></div>
+      <div><dt>Cut in / out</dt><dd>How you enter and leave. <i>match</i> = a shape held across a scale change; <i>hold</i> = no cut, the camera stops.</dd></div>
+      <div><dt>On screen</dt><dd>The actual film copy, verbatim. Ceiling of roughly twenty words per frame. If it needs more, it is two beats.</dd></div>
+      <div><dt>Sound</dt><dd>Additive only. Nothing may be communicated in audio alone &mdash; every hold must survive mute.</dd></div>
+      <div><dt>Evidence</dt><dd>The anchors. <span class="chip-solid">solid</span> = well dated. <span class="chip-dash">dashed</span> = contested &mdash; the same grammar the film uses for routes.</dd></div>
+      <div><dt>Why it's here</dt><dd>Its job in the story, and the one thing the reader leaves with. A beat that cannot fill this gets cut.</dd></div>
+    </dl>
+  </section>
+
+  <div class="act" id="act1">
+    <div class="label">Act I</div>
+    <h2>Africa</h2>
+    <div class="span">300,000 &mdash; 76,000 BP &middot; beats 01&ndash;03 &middot; establishes the question</div>
+    <p class="obstacle">The obstacle is <b>distance and dead ends</b>. Act I's only job is to stop the reader assuming the exodus was inevitable. It ends on failure, deliberately.</p>
+  </div>
+
+  <article class="beat" id="b1">
+    <div class="beat-head">
+      <span class="beat-no">01</span>
+      <h3 class="beat-title">The dark earth</h3>
+      <span class="beat-meta">300&ndash;260 ka &middot; t 0.00&ndash;0.04 &middot; motion 2</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd>Full globe, small in frame, lit at the limb only. Vast negative space. No warm light anywhere &mdash; the one stretch of film with none, and it exists so the first ember means something.</dd>
+      <dt>Camera</dt><dd>Orbital, high. Slow constant rotation, Africa swinging toward the terminator. The camera does not yet know what it is looking for.</dd>
+      <dt>Earth</dt><dd><span class="m">sea &minus;43 m</span>, falling toward <span class="m">&minus;81 m</span> &middot; moderate ice &middot; clear sky. Recognisable but subtly wrong &mdash; the coastlines are not the ones the reader knows, and nobody explains why.</dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> page at rest. Black, one lit limb, the title, the readout at 300 ka. Nothing moves until they scroll.<br><i>OUT &mdash;</i> motivated: the terminator sweeps and Africa enters daylight.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen</span>
+        <p class="line">Four billion years. Nothing here ever needed to be told where to go.</p>
+      </div>
+      <dt>Sound</dt><dd>Room tone only, very low. The absence sets the floor everything later is measured against.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev"><li><b>MIS 9&ndash;8</b> &middot; sea level within ~20 m of present</li></ul>
+        <p class="evnote">The paleo-coastline is computed, not drawn &mdash; bathymetry thresholded against the sea-level curve at <span class="m">t</span>. No artist decides where the shore is.</p>
+      </dd>
+      <dt>Why it's here</dt><dd><b>Resets scale.</b> The reader arrives assuming humans are the subject of earth's history. One screen of a working planet without us is the cheapest possible correction, and it is what makes beat 02 land.</dd>
+    </dl>
+  </article>
+
+  <article class="beat" id="b2">
+    <div class="beat-head">
+      <span class="beat-no">02</span>
+      <h3 class="beat-title">Shimmer</h3>
+      <span class="beat-meta">260&ndash;200 ka &middot; t 0.04&ndash;0.10 &middot; motion 2</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd>Africa fills two thirds of frame, tilted. Warm light appears &mdash; <b>diffuse, multiple, continent-wide</b>. Loci brighten and fade, connect and disconnect. Never a single point, at any moment.</dd>
+      <dt>Camera</dt><dd>Orbital, closer. Almost still; the motion is in the light, not the lens.</dd>
+      <dt>Earth</dt><dd><span class="m">sea &minus;81 m &rarr; &minus;11 m</span> &mdash; the sea <b>rises</b> 70 metres across this beat, the largest sustained rise before the deglacial &middot; a wetter Sahara than the reader expects &middot; green corridors across what is now desert.</dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> continuous from 01, no cut.<br><i>OUT &mdash;</i> hold, then the northern loci begin to drift. <b>No ground cut yet</b> &mdash; the first descent is withheld until 03 so that it lands.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen</span>
+        <p class="line">We did not begin in a place. We began in a pattern.</p>
+      </div>
+      <dt>Sound</dt><dd>The first warm tone enters with the first ember. Sparse, unresolved.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev">
+          <li><b>Jebel Irhoud</b>, Morocco &middot; ~315 ka</li>
+          <li><b>Florisbad</b>, South Africa &middot; ~259 ka</li>
+          <li><b>Omo Kibish</b>, Ethiopia &middot; ~233 ka</li>
+          <li><b>Bizmoune</b> shell beads &middot; ~142 ka</li>
+          <li class="contested"><b>Single East African origin</b> &middot; superseded</li>
+        </ul>
+        <p class="evnote">Three sites, three corners of a continent, overlapping in time. That is the visual argument for a structured pan-African metapopulation, and it makes itself without a word of narration.</p>
+      </dd>
+      <dt>Why it's here</dt><dd><b>The first correction, delivered early.</b> Most readers arrive with a single glowing pin in the Rift Valley. Taking it away in the first ninety seconds is what buys trust for everything contested later.</dd>
+    </dl>
+  </article>
+
+  <article class="beat" id="b3">
+    <div class="beat-head">
+      <span class="beat-no">03</span>
+      <h3 class="beat-title">The failed doors</h3>
+      <span class="beat-meta">200&ndash;76 ka &middot; t 0.10&ndash;0.17 &middot; motion 3</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd>North-east Africa and the Levant. Embers leak north, thin out, travel &mdash; and <b>go out</b>. Then again. Then again. Each attempt reaches slightly differently; none persists.</dd>
+      <dt>Camera</dt><dd>Orbital, then <b>the film's first descent</b>. Ground: a child's grave in raking light. No context, no scale bar.</dd>
+      <dt>Earth</dt><dd><span class="m">sea &minus;11 m &rarr; &minus;32 m</span> &middot; a green Levantine corridor opening and closing with the interglacials &mdash; the door is literally a climate window.</dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> the drifting loci from 02 resolve into a northward thread.<br><i>OUT &mdash; <b class="warm">match cut</b>:</i> the arc of the Levantine coastline holds its shape and becomes the arc of fallow-deer antlers, laid across the chest and hands of the adolescent buried at Qafzeh. Coast &rarr; antler. Then it darkens.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen</span>
+        <p class="line">We got out far earlier than you think. It didn't take.</p>
+      </div>
+      <dt>Sound</dt><dd>The warm tone reaches for a resolution and does not get one, three times. That unresolved cadence is the setup for beat 05.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev">
+          <li><b>Qafzeh 11</b>, Israel &middot; 100&ndash;90 ka &middot; the ground cut</li>
+          <li><b>Skhul / Qafzeh</b> &middot; at least 15 individuals</li>
+          <li class="contested"><b>Misliya&#8209;1</b> &middot; 194&ndash;177 ka &middot; U-series disputed</li>
+          <li class="contested"><b>Apidima 1</b>, Greece &middot; ~210 ka &middot; heavily disputed</li>
+          <li><b>No surviving lineage</b> from these &middot; genetics</li>
+        </ul>
+        <p class="evnote"><b style="color:var(--ember);font-weight:500">Changed in Phase 1.</b> The ground cut was Misliya&#8209;1, until a published <i>Science</i> comment turned out to argue its uranium-series data support only ~60&ndash;70 ka. It is now drawn dashed and named, but the descent lands on Qafzeh 11 instead: an adolescent of twelve or thirteen, laid flexed in a cut rock recess, deer antlers severed and placed across the chest and hands, the sediment soaked in imported red ochre. Two dashed claims in one beat is exactly right &mdash; it is where the film teaches its grammar.</p>
+      </dd>
+      <dt>Why it's here</dt><dd><b>This beat is the dramatic question.</b> Without it, beat 05 is a map update; with it, beat 05 answers something the reader has been carrying for four minutes. And the new ground cut makes the argument in one object: they lived here properly, they buried their children with care, and then they were gone.</dd>
+    </dl>
+  </article>
+
+  <div class="act" id="act2">
+    <div class="label">Act II</div>
+    <h2>The breakout</h2>
+    <div class="span">76,000 &mdash; 39,000 BP &middot; beats 04&ndash;07 &middot; the question answered, then complicated</div>
+    <p class="obstacle">The obstacle escalates from distance to <b>catastrophe and open ocean</b>. Act II holds the film's emotional centre (05) and its most extraordinary single act (06), and closes on a second loss so the reader does not get comfortable.</p>
+  </div>
+
+  <article class="beat pole" id="b4">
+    <div class="beat-head">
+      <span class="beat-no">04</span>
+      <h3 class="beat-title">Toba</h3>
+      <span class="beat-meta">76&ndash;60 ka &middot; t 0.17&ndash;0.23 &middot; motion 5</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd>Sumatra, then the whole globe. Ash spreads across the Indian Ocean and the sky greys out &mdash; the entire earth desaturates toward monochrome and the ember light dims with it, because the sun is dimmer.</dd>
+      <dt>Camera</dt><dd>Orbital, pulling back fast. The only time the camera retreats <i>from</i> something, and the largest single move in the first half.</dd>
+      <dt>Earth</dt><dd><span class="m">sea &minus;32 m &rarr; &minus;85 m</span> &mdash; Toba itself falls at about <span class="m">&minus;36 m</span>, not the &minus;65 first written here &middot; stratospheric aerosol veil &middot; global temperature drop. <b>The first moment the earth acts on us rather than being acted on.</b></dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> hard. From the darkness of the failed jaw straight to the eruption, no transition. The film's only violent cut.<br><i>OUT &mdash;</i> the veil thins, colour bleeds back, embers still lit.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen</span>
+        <p class="line">You've heard we almost died here. The ash says otherwise.</p>
+      </div>
+      <dt>Sound</dt><dd>The one place a genuine transient is allowed, then a long decay into the greyed-out world.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev">
+          <li><b>Toba</b>, Sumatra &middot; ~74 ka &middot; VEI 8 &middot; ~2,800 km&sup3;</li>
+          <li><b>Pinnacle Point</b>, S. Africa &middot; occupation continuous through the ash</li>
+          <li><b>Jwalapuram</b>, India &middot; tools above and below the ash layer</li>
+          <li class="contested"><b>Toba bottleneck</b> &middot; largely rejected</li>
+        </ul>
+        <p class="evnote">"We were reduced to a thousand people" is the most widely believed wrong thing in popular prehistory. Correcting it, with the ash layer as the witness, is the film's proof of seriousness. <b style="color:var(--ember);font-weight:500">Do not overclaim:</b> the eruption's global climate impact is real and still actively studied. The film rejects the bottleneck attribution, not the severity.</p>
+      </dd>
+      <dt>Why it's here</dt><dd><b>Spectacle that carries an argument.</b> It delivers the promise of the premise &mdash; this will be enormous to look at &mdash; and simultaneously makes the reader smarter than they were. Tentpole because it is where the earth becomes a character with intent.</dd>
+    </dl>
+  </article>
+
+  <article class="beat pole" id="b5">
+    <div class="beat-head">
+      <span class="beat-no">05</span>
+      <h3 class="beat-title">The line that held</h3>
+      <span class="beat-meta">60&ndash;50 ka &middot; t 0.23&ndash;0.30 &middot; motion 0</span>
+      <span class="pole-flag">The hold</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd><b class="warm">BUILT, Phase 5.</b> <b>Both doors, not one.</b> The frame was written as "tight on the Horn of Africa and Arabia", which quietly chose the southern route in the film's only locked shot &mdash; and <span class="m">dispersal-route</span> is confidence <i>band</i>: unresolved. The frame now holds the Red Sea running up it with <b>Sinai at the top and Bab-el-Mandeb at the bottom</b>, and the Persian Gulf standing dry to the right. One plume crosses. <b>Then everything stops.</b></dd>
+      <dt>Camera</dt><dd>Locked, and locked in the strongest sense the code has: the keyframes at <span class="m">t 0.2300</span> and <span class="m">t 0.2900</span> are the <b>same tuple</b>, so every interpolation between them returns its own left operand exactly. The camera does not drift by a float. <b class="warm">This is now counted, not asserted</b> &mdash; the <span class="m">hold</span> test walks the whole span and fails on more than one camera-identical span that the world is visible through.</dd>
+      <dt>Earth</dt><dd><span class="m">sea &minus;84.7 m &rarr; &minus;68.3 m</span> &middot; <b class="warm">both doors measured on the raster</b> (Phase 5), same bottleneck definition as beat 06 so the two numbers may be spoken in one sentence. <b>Sinai is dry land at every sea level in the record</b>, lowstand included. <b>Bab-el-Mandeb is water at every sea level in the record</b> &mdash; and at 60 ka it is <b>under ten kilometres of it, as little as five</b> (5.2 / 6.6 / 9.1 km as the island floor rises 3.4 &rarr; 34 &rarr; 344 km&sup2;). The Persian Gulf basin stands <b>97.6% dry</b> against 61.1% today. <b>Arabia's green phase is NOT drawn</b> &mdash; the vegetation dataset is still unnamed, and the beat will not draw what it cannot source.</dd>
+      <dt>What carries a hold</dt><dd><b class="warm">The question the beat was built to answer, and the answer is: not the camera. The earth's own curve, which turns out to have a three-act shape sitting inside the lock for free.</b><br><br>
+        <span class="m">60.0&ndash;58.0 ka &nbsp; &minus;84.7 &rarr; &minus;85.7 m</span> &mdash; nothing. The plume crosses.<br>
+        <span class="m">58.0&ndash;54.0 ka &nbsp; &minus;85.7 &rarr; &minus;70.1 m</span> &mdash; <b>fifteen metres in four thousand years</b>, the fastest waterline in the first half of the film.<br>
+        <span class="m">54.0&ndash;50.0 ka &nbsp; &minus;70.1 &rarr; &minus;68.3 m</span> &mdash; nothing again. <b>The dead stretch.</b><br><br>
+        That was read off <span class="m">sealevel_merged.json</span>, not designed. The middle of the hold has an edge moving faster than anywhere else in Act I&ndash;II, and the last fifth has <i>nothing</i> moving but the year &mdash; four metres of sea over two thousand years. So the beat survives because <b>the world is not locked</b>, and then for one stretch even the world stops and the reader is left with a number going down. Law 08 does the work the camera cannot.</dd>
+      <dt>Law 02, suspended</dt><dd><b>Beat 05 is the one beat where Law 02's second clause does not apply.</b> "Migration is light that travels, never lights that appear and sit" governs how a <i>migration</i> is drawn. This beat's subject is the negation of a migration: a light that is not going anywhere and is still lit. So the plume crosses in the first half of the lock, then stops and stays, and <b>the staying is the sentence</b>. Any other beat doing this would be breaking the law.</dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> the greyed world from 04 clears, the camera settles, then refuses to move.<br><i>OUT &mdash;</i> the ember divides, and divides, and floods east &mdash; and <b class="warm">a second, paler light is already waiting in the north</b>. Release, after the longest held breath in the piece.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen</span>
+        <p class="line">This one did not go out.</p>
+      </div>
+      <dt>Sound</dt><dd><b>Silence, or near it.</b> The cadence that failed three times in 03 finally resolves &mdash; but the beat must land with audio off, so the resolution is a bonus, never the mechanism.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev">
+          <li><b>One successful dispersal</b> &middot; ~60&ndash;50 ka &middot; all non-African ancestry</li>
+          <li><b>Neanderthal gene flow</b> &middot; 50.5&ndash;43.5 ka &middot; a single event, ~7,000 yr</li>
+          <li class="contested"><b>Southern route</b> (Bab-el-Mandeb) vs <b>Sinai</b> &middot; unresolved</li>
+        </ul>
+        <p class="evnote"><b style="color:var(--ember);font-weight:500">Phase 5 found a data gap here and closed it.</b> The route is unresolved between two doors, and <span class="m">routes[]</span> carried geometry for only <i>one</i> of them &mdash; the southern spine. A renderer following the data literally would have drawn a plume through Bab-el-Mandeb and chosen the route on the reader's behalf, while the caption said it hadn't. The fix is not a caption: <span class="m">breakout-north</span> now exists at exactly the same evidential standing as <span class="m">breakout</span> &mdash; indicative cartography, declared as such &mdash; and both are drawn as plumes at equal weight, neither favoured. <b>Adding geometry reduced what the film claims.</b><br><br>The route is genuinely unsettled, so the ember crosses as a <i>diffuse plume</i>, not a line. Where the science has a band rather than a path, the film draws a band.<br><br><b style="color:var(--ember);font-weight:500">Changed in Phase 1.</b> The 2024 admixture genomes date a <i>single</i> Neanderthal gene-flow event, shared by every non-African, to 50.5&ndash;43.5 ka. So the crossing sits nearer 50 ka than 60 &mdash; and leaving Africa and meeting the others were not two events but one. The admixture moved here from beat 07, which is why the pale light now appears on the way out.</p>
+      </dd>
+      <dt>Why it's here</dt><dd><b>The emotional core, and the answer to Act I.</b> The reader's own existence gets located in one moment on one strait. Stillness is the mechanism &mdash; after Toba, nothing is louder than a camera that stops. Everything in the remaining nine beats is downstream of this shot.</dd>
+    </dl>
+  </article>
+
+  <article class="beat" id="b6">
+    <div class="beat-head">
+      <span class="beat-no">06</span>
+      <h3 class="beat-title">The crossing to Sahul</h3>
+      <span class="beat-meta">50&ndash;43 ka &middot; t 0.30&ndash;0.38 &middot; motion 4</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd>South-east Asia, and <b>the film's first sea-level spectacle</b>. As the ember moves east the shelf rises out of the water: Sunda fuses Borneo, Sumatra and Java to the mainland; Sahul fuses Australia, New Guinea and Tasmania. And between them, still, open water that never closes.</dd>
+      <dt>Camera</dt><dd>Orbital, tracking east with the light, low angle so the emerging shelf reads as landscape rather than map. Then ground.</dd>
+      <dt>Earth</dt><dd><span class="m">sea &minus;68 m &rarr; &minus;74 m</span> &mdash; <b>corrected from &minus;90 m</b>, which changes the shot &middot; <b class="warm">all three claims now measured on the raster, not asserted</b> (Phase 4). At &minus;68.3 m, Borneo, Sumatra and Java share one land component with mainland Asia, and Australia, New Guinea <b>and Tasmania</b> share another &mdash; <b class="warm">Tasmania is joined, not marginal</b>, which is a correction to this slot. Dry land inside the beat's frame grows from <b>23.75%</b> to <b>30.88%</b>, a gain of <b>30%</b> &middot; <b>Wallacea never bridged</b> &mdash; the minimum-bottleneck crossing is <b>70.5 km</b> at this sea level and never falls below <b>70.4 km</b> at any sea level in the record, lowstand included.</dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> the flood of embers from 05 resolves into one eastward thread.<br><i>OUT &mdash; <b class="warm">match cut</b>:</i> the Wallacean islands strung across water hold their arrangement and become the splayed fingers of a hand stencil on cave limestone. Archipelago &rarr; hand. The ground camera then finds the painted scene beside it.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen</span>
+        <p class="line">They could not see it. They went anyway.</p>
+      </div>
+      <dt>Sound</dt><dd>Water enters the mix for the first time. It does not leave again until beat 11, where it becomes the antagonist.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev">
+          <li><b>Liang Metanduno</b>, Muna I. &middot; &ge;67.8 ka &middot; oldest rock art on earth</li>
+          <li><b>Leang Karampuang</b>, Sulawesi &middot; &ge;51.2 ka &middot; oldest narrative scene</li>
+          <li><b>Leang Timpuseng</b> hand stencils &middot; &ge;39.9 ka &middot; the match cut</li>
+          <li><b>Wallacean crossings</b> &middot; <b class="warm">70.5 km measured</b>, floor 70.4 km at any sea level</li>
+          <li class="contested"><b>Madjedbebe</b> &middot; 65 ka &middot; disputed on stratigraphy</li>
+          <li class="contested"><b>Genetic window</b> &middot; 50&ndash;43 ka &middot; disputed by the rocks</li>
+          <li class="contested"><b>Who made the 67.8 ka stencils</b> &middot; possibly not us</li>
+        </ul>
+        <p class="evnote"><b style="color:var(--ember);font-weight:500">The beat's argument changed, and it got better.</b> The film does not adjudicate Madjedbebe. The ember arrives as a range spanning 65 to 43 ka, and the beat says out loud that the site evidence and the genomes disagree and nobody has resolved it.<br><br>Then in January 2026 the oldest securely dated rock art on earth was published: a hand stencil at Liang Metanduno, <b style="color:var(--bone);font-weight:500">67,800 years old, in Wallacea, on the road to Sahul</b> &mdash; fingertips deliberately reshaped to points, like claws.<br><br><b style="color:var(--ember);font-weight:500">Framing corrected.</b> An earlier draft led with "nobody knows whose hand it was," which inverted the authors' own emphasis. They acknowledge the maker cannot be identified directly, but they attribute it to <i>Homo sapiens</i> and present it as the oldest direct evidence for modern humans on the <b>northern corridor</b> through Sulawesi and the Spice Islands into New Guinea. Denisovans in the region are a caveat, not the headline.</p>
+      </dd>
+      <dt>On screen &middot; 2</dt><dd style="padding-top:0"><span style="font-family:var(--display);font-size:19px;line-height:1.35;color:var(--bone);display:block;border-left:1px solid var(--ember-dim);padding-left:16px;max-width:44ch">We cannot identify the hand directly. The authors believe it was ours. If they are right, the northern sea route was being travelled far earlier than the map once allowed.</span></dd>
+      <dt>Atlas</dt><dd><b class="warm">BUILT, Phase 5 step 2.</b> This is the only beat with a
+        static artifact: <code style="font-family:var(--mono);color:var(--ice)">slice/atlas.html</code> &mdash; eight stills baked from the
+        film's own shader at eight values of <code style="font-family:var(--mono);color:var(--ice)">t</code>, with every word placed back on
+        them as live HTML. Mobile, reduced motion, no JavaScript, crawlers, and a browser that has
+        switched WebGL off all land here. <b>A sequence of stills <i>is</i> this beat</b>, because
+        this beat is a journey: take any two frames and something is somewhere else. That is not
+        true of the beats either side &mdash; see <a href="#atlas">what the atlas found</a>.</dd>
+      <dt>Why it's here</dt><dd><b>The most extraordinary act in the story.</b> People built watercraft and set out toward land they could not see, tens of thousands of years before the wheel. And the beat now carries a second charge: the oldest hand on any wall anywhere is on that same road, older than the crossing &mdash; evidence that the corridor was being travelled while the genomes say nobody had arrived yet.</dd>
+    </dl>
+  </article>
+
+  <article class="beat" id="b7">
+    <div class="beat-head">
+      <span class="beat-no">07</span>
+      <h3 class="beat-title">The others</h3>
+      <span class="beat-meta">43&ndash;39 ka &middot; t 0.38&ndash;0.44 &middot; motion 2</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd>Europe and central Asia. The second, paler light &mdash; first seen at the end of 05, mingling with ours ever since &mdash; <b>thins, and goes out</b>. This beat is no longer the meeting. It is only the leaving.</dd>
+      <dt>Camera</dt><dd><b class="warm">BUILT, Phase 5.</b> Opens on the swing west that beat 06 deliberately left on the table: <b>ninety-nine degrees of longitude</b>, Sulawesi to the Atlantic &mdash; the whole distance the film has just spent two beats crossing, run backwards in about two seconds. It peaks at 2.1 earth radii, where the apparent motion is low enough that the speed reads as the globe turning rather than as a whip pan. Then Europe: close, slow, drifting west. Motion 2, and the camera does nothing interesting on purpose, because the only thing that matters is happening underneath it.<br><br><b>The Denny ground cut is deferred, and that is a decision.</b> Beat 06's match cut ends at <span class="m">t 0.3930</span>; a second one would land about four seconds later. Two match cuts that close together stop being the film's rarest move and start being a tic &mdash; which is this beat's own argument for why it gets no second hold. Denny is present in the <b>record voice</b>, present tense, with the frame saying out loud that she predates the beat by fifty thousand years. Law 04 is honoured; the plate is owed.</dd>
+      <dt>Earth</dt><dd><span class="m">sea &minus;74 m &rarr; &minus;90 m</span> &middot; cooling &middot; at 39.85 &plusmn; 0.14 ka the <b>Campanian Ignimbrite</b> greys the European sky. <b class="warm">No longer staged as causal</b> &mdash; recent work finds no lasting consequence for Neanderthals or early modern humans, so "it greyed the sky exactly as their light failed" overclaimed and failed Law 06.</dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> from the hand stencil, pull back and swing west.<br><i>OUT &mdash;</i> the pale light is gone. Hold two seconds on a Europe lit by one colour where a moment ago there were two.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen</span>
+        <p class="line">If your ancestors left Africa, two percent of you is them.</p>
+      </div>
+      <dt>Sound</dt><dd>A second voice in the score, a fifth below. It drops out and does not return &mdash; redundant with the visual, as Law 06 requires.</dd>
+      <dt>Device</dt><dd><b>No hold.</b> Beat 05 stays the film's only true stop, and beat 10 already borrows a partial one; a third would read as a tic. What this beat gets instead is <b>permanent absence</b>: when the pale light goes out, <b class="warm">that colour leaves the film's palette and never returns</b> across the remaining seven beats. A hold can only be momentary. This lasts the rest of the film, and costs no runtime. The two-second dead frame above stays as the local beat &mdash; and it is <i>not</i> a hold, which is now checkable rather than promised: beat 05's keyframes either side of the lock are identical, beat 07's last two differ, so the dead frame is still drifting by about a kilometre a second.</dd>
+      <dt>Absence, as a function of <span class="m">t</span></dt><dd><b class="warm">BUILT, Phase 5, and this was the beat's real problem.</b> A flag would do it in one line and would be wrong &mdash; a flag is a memory of a <span class="m">t</span> you passed through, and Law 01 says the frame is a function of the <span class="m">t</span> you are <i>at</i>. Scrub backwards past a flag and the colour never comes back; jump to 0.9 without passing 0.44 and it never leaves.<br><br>Instead <span class="m">paleRGB(t)</span> returns the colour when it exists and <b>null</b> when it does not &mdash; and null is not a dimmed colour, it is <i>nothing to draw with</i>. Every site that draws pale light reads it and returns early, so the palette is not policed, it is <b>absent</b>. The <span class="m">absence</span> test walks <span class="m">t</span> from the extinction out to <b>1.0</b> &mdash; across beats 08 to 14, <i>which do not exist yet</i> &mdash; and proves the colour is null at all 3,001 samples, then walks it backwards and proves it returns at the same <span class="m">t</span> to five places. <b>Being able to test seven unbuilt beats today is the whole return on one continuous <span class="m">t</span>.</b></dd>
+      <dt>How the light goes</dt><dd>The pale population <b>occupies</b>; it does not travel. Routes are the wrong shape for that, so it gets a <i>field</i> &mdash; 210 points on land inside an indicative ring, drawn diffuse because its confidence is <i>band</i> and a hard outline would claim a frontier no source supports.<br><br><b>The patches shrink. They do not fade.</b> Law 08 forbids the fade, and a field of lights dimming together would also read as one population getting quieter, when what Higham describes is range contracting in a mosaic. Radius to zero is an edge that moves.<br><br><b class="warm">And it does not contract toward a last refuge</b>, because there is no sourced last refuge and drawing one would invent the most memorable fact in the beat. The order patches go out is fixed noise, baked into the data file, carrying no dates, and the frame says <span class="m">EXTENT INDICATIVE &middot; NOT A SOURCED RANGE MAP</span>.</dd>
+      <dt>The idea that was cut</dt><dd><b>The pale light was going to be absorbed into the ember</b> as it went &mdash; the 2% entering us, literally drawn. It is the prettiest idea in the beat and it is <b class="warm">an assertion that Neanderthals ended by absorption</b>, which is one of three contested causes. So it is cut, and the 2% is stated in <i>type</i>, where it can carry its qualifier, instead of in the <i>picture</i>, where it would have picked a winner. The copy check now asserts the absorption visual is absent.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev">
+          <li><b>Last Neanderthal occupation</b> &middot; ~41&ndash;39 ka</li>
+          <li><b>Neanderthal ancestry</b> &middot; ~1.5&ndash;2% in all non-Africans</li>
+          <li><b>Denisova 11 &mdash; "Denny"</b> &middot; ~90 ka &middot; Neanderthal mother, Denisovan father</li>
+          <li><b>Campanian Ignimbrite</b> &middot; 39.85 ka</li>
+          <li class="contested"><b>Cause of extinction</b> &middot; competition, climate, absorption</li>
+        </ul>
+        <p class="evnote"><b style="color:var(--ember);font-weight:500">DECIDED 2026-09-07 &mdash; Law 06 widens, and the register says which.</b> The eruption changes nothing about what happened, but at &plusmn;140 years it is the best-dated tephra horizon in European prehistory, which makes it <i>how we know when this beat happened</i>. It stays &mdash; on the time rail, on the globe as a marker, and in the record voice &mdash; and it may not touch world state. The screen line reads <span class="m">A CLOCK, NOT A CAUSE</span>, and the record voice says it out loud: <i>"Recent work finds no lasting consequence for anyone living here. It is on screen because it is how we know when here is."</i><br><br>The deciding argument was that <b>the film had already built this register and shipped it</b>: beat 06 draws Madjedbebe's contested reading on the time rail and not on the map, for exactly this reason. The widening ships with a machine-checked bar &mdash; see Law 06 above &mdash; so it is stricter than the law it replaces, not looser.<br><br><b>One thing had to move.</b> The eruption's own date, 39,850 BP, lands at <span class="m">t 0.42725</span>, and the withdrawal was first scheduled to start at 0.4270 &mdash; the two on screen together, which is the old staging in a new costume no matter what the caption says. The withdrawal now begins at <span class="m">0.4300</span>, after the clock has been established and read. Same evidence, same dates, different order.<br><br><b style="color:var(--ember);font-weight:500">Denny survived a law change.</b> She is 90,000 years old and shown here at 40,000 &mdash; which under the old Law 04 meant the camera going backwards. Law 04 is now amended: <i>orbital is then, ground is now, and only the orbital layer rides the time axis.</i> A fossil is not a world-state, it is a thing we are holding today. So Denny stays, and no ground cut can ever break monotonicity again.<br><br>The Denisovan ancestry figure moved to beat 06 &mdash; it is an Island Southeast Asia event, not a European one.</p>
+      </dd>
+      <dt>Why it's here</dt><dd><b>Payoff of "embers go out" from 03, and it implicates the reader.</b> Sharper now that the meeting has moved to 05: the reader has watched the two lights travel together for two whole beats before one of them fails. The beat refuses the war framing every documentary reaches for &mdash; this is entanglement, and then absence.</dd>
+    </dl>
+  </article>
+
+  <div class="act" id="act3">
+    <div class="label">Act III</div>
+    <h2>The ice</h2>
+    <div class="span">39,000 &mdash; 14,000 BP &middot; beats 08&ndash;10 &middot; the antagonist at full strength</div>
+    <p class="obstacle">The obstacle is <b>the planet itself, at its most hostile</b>. Act III is where the earth-as-character thesis is delivered in full, and where the film's biggest visual sits. Phase 1 gave this act the human reversal it was missing: it now ends on a disappearance <i>and</i> on the first thing humans do that the film does not forgive.</p>
+  </div>
+
+  <article class="beat pole" id="b8">
+    <div class="beat-head">
+      <span class="beat-no">08</span>
+      <h3 class="beat-title">The world gets smaller</h3>
+      <span class="beat-meta">39&ndash;26.5 ka &middot; t 0.44&ndash;0.54 &middot; motion 5</span>
+      <span class="pole-flag">Visual tentpole</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd>Pull back to the whole northern hemisphere and let the ice grow. Laurentide swallows Canada, Fennoscandia swallows northern Europe. Simultaneously the sea falls 120 m and <b>every coastline on earth redraws at once</b> &mdash; Britain joins Europe, Japan nearly joins Asia, the Persian Gulf drains. Human light contracts into a handful of refugia.</dd>
+      <dt>Camera</dt><dd>The widest shot since 01, and the fastest time acceleration in the film &mdash; thousands of years per second. The ruler visibly races.</dd>
+      <dt>Earth</dt><dd><span class="m">sea &minus;90 m &rarr; &minus;129 m</span> &middot; Laurentide up to <span class="m">3&ndash;4 km</span> thick &middot; mean global temperature ~6&nbsp;&deg;C below present.</dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> from the emptied Europe of 07, pull back &mdash; the loss motivates the widening.<br><i>OUT &mdash; <b class="warm">match cut</b>:</i> the white curve of the ice margin holds and becomes the curve of a mammoth-ivory bead, one of ten thousand in a child's grave at Sungir.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen</span>
+        <p class="line">The world got smaller. We spent ten thousand hours on beads for a child's grave.</p>
+      </div>
+      <dt>Sound</dt><dd>Where the score does its most work: a low drone thickening as the ice advances. But the ice must be <i>visibly</i> advancing, so muted viewers lose only pleasure.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev">
+          <li><b>Sungir</b>, Russia &middot; ~34 ka &middot; &gt;10,000 ivory beads, two children</li>
+          <li><b>Yana RHS</b>, Siberia &middot; ~33&ndash;31 ka &middot; humans at 71&deg;N</li>
+          <li><b>Descent into the LGM</b> &middot; 33&ndash;26.5 ka &middot; two-step sea-level fall</li>
+          <li><b>Refugia</b> &middot; Iberia, Italy, the Balkans, Ukraine</li>
+          <li><b>Doggerland, Sunda, Beringia</b> &middot; all dry land</li>
+        </ul>
+        <p class="evnote">Yana moved here from beat 09 to keep the camera monotonic &mdash; at 32 ka it is the northward push <i>into</i> the cold, not the Beringian standstill. Humans inside the Arctic Circle while the world is freezing is this beat's argument, not the next one's.</p>
+      </dd>
+      <dt>Why it's here</dt><dd><b>The promise of the premise, paid in full.</b> Everything the reader was implicitly promised &mdash; that the earth would move under them &mdash; happens here. And the Sungir cut refuses the obvious reading: in the worst conditions our species ever faced, we spent thousands of hours making something beautiful for a dead child.</dd>
+    </dl>
+  </article>
+
+  <article class="beat" id="b9">
+    <div class="beat-head">
+      <span class="beat-no">09</span>
+      <h3 class="beat-title">Mammoth steppe</h3>
+      <span class="beat-meta">26.5&ndash;23 ka &middot; t 0.54&ndash;0.61 &middot; motion 3</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd>Beringia, and it is <b>not a bridge</b> &mdash; it fills the frame as a subcontinent, 1,600 km north to south, dry grassland running unbroken from Iberia to the Yukon. <b>This is where the animals earn their place</b>: mammoth, steppe bison, horse, woolly rhino, moving as tiny herds across the grass, because they are the reason the place was survivable.</dd>
+      <dt>Camera</dt><dd>Low orbital, almost grazing &mdash; the closest the orbital layer gets to the ground without cutting. Then a long, slow hold as time passes and the light stays put.</dd>
+      <dt>Earth</dt><dd><span class="m">sea &minus;129 m &rarr; &minus;122 m</span> &middot; <b>the lowstand sits at this beat's opening</b> &mdash; <span class="m">&minus;131 m</span> at 26 ka, three metres from Lambeck's published &minus;134 &middot; Beringia fully exposed &middot; cold and <b>dry</b>, not glaciated &mdash; the counter-intuitive fact this shot has to sell.</dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> from the bead, pull back east across a frozen Eurasia.<br><i>OUT &mdash;</i> the corridor opens and the held light finally moves.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen</span>
+        <p class="line">Not a bridge. A country.</p>
+      </div>
+      <dt>Sound</dt><dd>Wind and grass. The only beat with a real ambience rather than a score.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev">
+          <li><b>Last Glacial Maximum</b> &middot; 26.5&ndash;19 ka</li>
+          <li><b>Glacial lowstand</b> &middot; &minus;134 m &middot; ice volume ~52 &times; 10<sup>6</sup> km&sup3;</li>
+          <li><b>Mammoth steppe</b> &middot; largest terrestrial biome of the period</li>
+          <li class="contested"><b>Beringian standstill</b> &middot; duration 2,700 to 15,000 yr</li>
+        </ul>
+        <p class="evnote"><b style="color:var(--ember);font-weight:500">A line died here.</b> The copy said "they lived there for two hundred generations." That figure sits inside the published range but presents a badly contested number as fact &mdash; estimates run from ~2,700 years on Y-chromosome models to ~15,000 on early mitochondrial work. The duration claim comes off screen and moves to hover. The shorter line is better anyway.</p>
+      </dd>
+      <dt>Why it's here</dt><dd><b>Demolishes the schoolbook image.</b> Everyone pictures a narrow isthmus crossed in a season. It was a homeland where a distinct branch of humanity formed. The stillness here is also the setup that makes beat 10's opening land &mdash; because while this population sits isolated in the north, <b>someone is already walking in New Mexico</b>.</dd>
+    </dl>
+  </article>
+
+  <article class="beat" id="b10">
+    <div class="beat-head">
+      <span class="beat-no">10</span>
+      <h3 class="beat-title">The sweep</h3>
+      <span class="beat-meta">23&ndash;14 ka &middot; t 0.61&ndash;0.68 &middot; motion 0 &rarr; 5</span>
+      <span class="pole-flag">Two frames</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd><b>Opens still.</b> New Mexico, deep inside the ice age, and there is already a light there. Not a flow &mdash; one small, isolated glow, thousands of kilometres south of a Beringia that is still sealed. It holds. Then it <b class="warm">dims and goes uncertain</b> &mdash; obscured, archaeologically invisible, still possibly burning. <b>It must not be extinguished.</b> The map does not empty; it stops being legible, for five thousand years.<br><br>Only then does the second frame run: the Americas light up north to south, the fastest movement in the film. Two candidate routes render at once, a solid coastal thread and a <b>dashed</b> inland corridor.</dd>
+      <dt>Camera</dt><dd>Locked for the first frame &mdash; this is the beat's borrowed hold. Then orbital whip-pan south, the one place motion blur is permitted, doing honest work: compressing 15,000 km without faking the geography.</dd>
+      <dt>Earth</dt><dd><span class="m">sea &minus;122 m &rarr; &minus;69 m</span> &middot; ice at maximum, then separating &middot; Cordilleran and Laurentide parting &middot; Beringia narrowing behind them.</dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> from the isolated Beringian light of 09, cut <b class="warm">south</b> instead of following it. The audience expects the camera to wait with them. It doesn't.<br><i>MIDDLE &mdash;</i> the empty map. Five thousand years pass on the ruler with nothing lit.<br><i>OUT &mdash; <b class="warm">match cut</b>:</i> the trail of light down the continent holds its line and becomes footprints in white gypsum &mdash; a woman carrying a child, setting them down, picking them up again, over more than a kilometre.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen &middot; 1</span>
+        <p class="line">Someone was already here. After this, the record falls silent. We do not know what became of them.</p>
+      </div>
+      <div class="onscreen">
+        <span class="lbl">On screen &middot; 2</span>
+        <p class="line">Then a hemisphere in a thousand years. Behind them, the big animals stopped.</p>
+      </div>
+      <dt>Sound</dt><dd>Silence under the first frame and the empty map. Then fast, then abruptly thin at the extinction. Two drops in one beat &mdash; the only time the film does that.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev">
+          <li><b>White Sands footprints</b> &middot; 23&ndash;21 ka &middot; 55 <sup>14</sup>C dates, three materials</li>
+          <li><b>Monte Verde</b>, Chile &middot; ~14.5 ka</li>
+          <li><b>Megafaunal extinction</b> &middot; ~35 North American genera &middot; 13&ndash;11 ka</li>
+          <li class="contested"><b>The ~5,000-year gap</b> &middot; no accepted continuity</li>
+          <li class="contested"><b>Coastal vs ice-free corridor</b> &middot; corridor not viable before ~13 ka</li>
+          <li class="contested"><b>Extinction cause</b> &middot; hunting, climate, or both</li>
+        </ul>
+        <p class="evnote"><b style="color:var(--ember);font-weight:500">The beat was restructured in Phase 1, and its language corrected after review.</b> White Sands now rests on three independent materials &mdash; seeds in 2021, pollen and OSL in 2023, and lake mud from two independent labs in 2025 &mdash; 55 radiocarbon dates converging on 23&ndash;21 ka. Humans were in North America during the Last Glacial Maximum.<br><br>An earlier draft went further than that and said the map goes empty. <b style="color:var(--bone);font-weight:500">Absence of currently accepted evidence is not evidence of absence.</b> White Sands supports an early presence; it does not establish two peopling events, a vanished population, or an empty continent. The note in the data file said exactly this and the frame description contradicted it anyway.<br><br><b style="color:var(--bone);font-weight:500">The gap is in the record, not in the world.</b> The ember goes uncertain, never out. The failed-doors motif from beat 03 still pays a second time &mdash; what recurs is the silence, not a death.</p>
+      </dd>
+      <dt>Why it's here</dt><dd><b>This is where beat 03 pays a second time, 180,000 years later.</b> The failed-doors motif recurs on another continent, and Act III &mdash; which was otherwise ice, steppe, sweep, all external &mdash; finally gets a human reversal. Then speed, then the moral weight: the reader has just watched us survive an ice age and cross a hemisphere, and this is where the film declines to make us the hero.</dd>
+    </dl>
+  </article>
+
+  <div class="act" id="act4">
+    <div class="label">Act IV</div>
+    <h2>The return</h2>
+    <div class="span">14,000 BP &mdash; now &middot; beats 11&ndash;14 &middot; the reversal, the bridge, and the reader</div>
+    <p class="obstacle">The obstacle inverts: the earth stops trying to kill us and instead <b>closes the door behind us</b>. Act IV is the only act where humans hold agency over the earth rather than the reverse. It ends on the last landmass settled, a bridge across the seven hundred years the film would otherwise skip, and then inside the reader's own body.</p>
+  </div>
+
+  <article class="beat pole" id="b11">
+    <div class="beat-head">
+      <span class="beat-no">11</span>
+      <h3 class="beat-title">The doors close</h3>
+      <span class="beat-meta">14&ndash;8 ka &middot; t 0.68&ndash;0.78 &middot; motion 3</span>
+      <span class="pole-flag">The reversal</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd>Begins still and warm &mdash; ice retreating, light spreading north. Then the Younger Dryas slams it cold again for 1,200 years. Then real warmth, and <b>the water comes</b>. Doggerland drowns. Sundaland fragments into Indonesia. Beringia goes under. The Persian Gulf floods. Every route the reader has watched being walked disappears, in the order it was walked.<br><br>And in the last third of the beat, in the Levant, <b class="warm">the first light stops moving</b> &mdash; while the water is still coming for the coasts.</dd>
+      <dt>Camera</dt><dd>The exact reverse of beat 08, deliberately: same altitude, same framing, the map redrawing the other way. Slow. The drowning is not fast, and rushing it wastes the reversal.</dd>
+      <dt>Earth</dt><dd><span class="m">sea &minus;69 m &rarr; &minus;5 m</span> &middot; Meltwater Pulse 1A: <span class="m">~16&ndash;20 m in 350&ndash;500 yr</span> &middot; Younger Dryas 12.9&ndash;11.7 ka &middot; the 8.2 ka event.</dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> from the footprints, rise. Those prints are on a lakebed about to be underwater &mdash; the cut is also the theme.<br><i>OUT &mdash;</i> the modern coastline settles. The first time the reader sees the map they know, and it should feel like a door shutting rather than a homecoming.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen</span>
+        <p class="line">The roads we came in on went under. There was no going back the way we came.</p>
+      </div>
+      <dt>Sound</dt><dd>Water, from beat 06, returns as the dominant voice. It wins.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev">
+          <li><b>B&oslash;lling&ndash;Aller&oslash;d</b> warming &middot; 14.7 ka</li>
+          <li><b>Meltwater Pulse 1A</b> &middot; ~14.6&ndash;14.3 ka</li>
+          <li><b>Younger Dryas</b> &middot; 12.9&ndash;11.7 ka</li>
+          <li><b>Beringia submerged</b> &middot; ~11 ka</li>
+          <li><b>8.2 ka event</b> &middot; ~160 yr &middot; Lake Agassiz drainage</li>
+          <li><b>Doggerland</b> &middot; final inundation ~8.2 ka &middot; Storegga slide ~8.15 ka</li>
+          <li><b>Fertile Crescent</b> &middot; ~11.5 ka &middot; moved here from beat 12</li>
+          <li><b>G&ouml;bekli Tepe</b> &middot; ~11.5 ka &middot; monuments before farming</li>
+        </ul>
+        <p class="evnote">The 8.2 ka event is a cold snap, not an ice age &mdash; worth showing precisely because the popular version is imprecise, and because it arrives just as the last road closes.<br><br><b style="color:var(--ember);font-weight:500">Agriculture moved into this beat.</b> It begins at 11.5 ka, which falls inside beat 11 &mdash; so the old plan, where beat 12 announced that we stopped moving, was chronologically impossible. The shot this forces is better than the one it replaces: the first light fixing in place while the sea is still taking the coasts.</p>
+      </dd>
+      <dt>Why it's here</dt><dd><b>The structural insight the genre keeps missing.</b> Migration films end on arrival. This one shows the sea erasing every path behind us &mdash; which is the actual origin of human geography as the reader knows it. If one beat makes this a story rather than an animated map, it is this one.<br><br><b class="warm">Copy corrected.</b> The line was "we were where we were going to be," which contradicted the next two beats outright &mdash; the largest migrations in the story happen immediately after. The beat was never about people stopping. It is about the routes becoming <i>irreversible</i>: Beringia, Doggerland and Sunda closed permanently. Irreversibility survives Yamnaya, Bantu and Austronesian intact.</dd>
+    </dl>
+  </article>
+
+  <article class="beat" id="b12">
+    <div class="beat-head">
+      <span class="beat-no">12</span>
+      <h3 class="beat-title">Seeds</h3>
+      <span class="beat-meta">8&ndash;5 ka &middot; t 0.78&ndash;0.85 &middot; motion 1</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd>Whole globe. The one fixed light from the end of beat 11 is joined, one by one, by others that have nothing to do with it &mdash; the Yangtze, the northern millet belt, the New Guinea highlands, the Balsas valley, the Andes, the Sahel. Separate. Unconnected. Arriving at the same answer.</dd>
+      <dt>Camera</dt><dd>Locked wide. The second-stillest shot in the film, and the counterweight to 05: there, one point held; here, six do, in six places that had never heard of each other.</dd>
+      <dt>Earth</dt><dd><span class="m">sea &minus;5 m &rarr; 0 m</span> &middot; Holocene stability &middot; a green Sahara near its wettest, which is why the Sahel light exists at all.</dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> hold from the settled coastline of 11.<br><i>OUT &mdash; <b class="warm">match cut</b>:</i> the scatter of fixed lights holds its arrangement and becomes the ring of standing pillars at G&ouml;bekli Tepe, seen from above.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen</span>
+        <p class="line">In at least six places, with no contact between them, we arrived at the same answer.</p>
+      </div>
+      <dt>Sound</dt><dd>The score finds a tonic and stays on it. Rest, after nine beats of motion.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev">
+          <li><b>Yangtze rice / northern millet</b> &middot; ~9 ka</li>
+          <li><b>Kuk Swamp</b>, New Guinea &middot; ~9 ka, firm by ~7 ka</li>
+          <li><b>Maize</b>, Balsas valley &middot; ~9 ka</li>
+          <li class="contested"><b>Number of independent centres</b> &middot; published counts run 6&ndash;13</li>
+        </ul>
+        <p class="evnote"><b style="color:var(--ember);font-weight:500">The second line to die in Phase 1.</b> "In eleven places at once" was this beat's entire payload, and it is not a defensible number &mdash; counts run from six to thirteen and the disagreement is definitional, not empirical. Six is the conservative figure nobody can attack.<br><br>The rescue: <b style="color:var(--bone);font-weight:500">the wow was never the count, it was the independence.</b> Saying "with no contact between them" out loud recovers everything the smaller number gives away, and more.</p>
+      </dd>
+      <dt>Why it's here</dt><dd><b>Convergence, not diffusion.</b> Almost no reader holds this correctly &mdash; they assume agriculture spread from one place. It is also the film's rest beat, and 13 does not work without it.</dd>
+    </dl>
+  </article>
+
+  <article class="beat" id="b13">
+    <div class="beat-head">
+      <span class="beat-no">13</span>
+      <h3 class="beat-title">Sails</h3>
+      <span class="beat-meta">5,000&ndash;800 BP &middot; t 0.85&ndash;0.93 &middot; motion 4</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd>The Pacific and Indian Oceans, and the widest single expansion in the story: from Taiwan out to Madagascar in the west and Rapa Nui in the east &mdash; over half the circumference of the earth, by one seafaring tradition. Behind it, the steppe expansion drives west into Europe and south into India, the Bantu expansion crosses sub-Saharan Africa, the Norse reach Newfoundland.</dd>
+      <dt>Camera</dt><dd>Orbital, rotating with the expansion so the globe turns almost a full revolution &mdash; the only time the camera circumnavigates. Deliberately echoes beat 01's rotation, now with the light following it.</dd>
+      <dt>Earth</dt><dd><span class="m">sea &asymp; 0 m</span> &middot; modern coastlines &middot; the earth is finally the one the reader knows, and it has stopped being the antagonist.</dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> from the G&ouml;bekli Tepe ring, rise east.<br><i>OUT &mdash;</i> continuous into 14, no cut. The last two beats are one move.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen</span>
+        <p class="line">Now the ocean became a road.</p>
+      </div>
+      <dt>Sound</dt><dd>The fullest the score gets. The only beat allowed to be joyful.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev">
+          <li><b>Austronesian expansion</b> &middot; from Taiwan &middot; ~5 ka</li>
+          <li><b>Madagascar</b> &middot; settled ~1,200&ndash;1,500 yr BP</li>
+          <li><b>Rapa Nui</b> &middot; ~1200 CE</li>
+          <li><b>Steppe / Yamnaya</b> &middot; ~5 ka &middot; largest genetic turnover in European prehistory</li>
+          <li><b>Bantu expansion</b> &middot; ~3 ka</li>
+          <li><b>L'Anse aux Meadows</b> &middot; <b style="color:var(--ember)">exactly 1021 CE</b></li>
+          <li><b>Aotearoa</b> &middot; ~1280 CE &middot; the last major landmass settled</li>
+        </ul>
+        <p class="evnote">Madagascar and Rapa Nui settled by one seafaring tradition is the most astonishing under-known fact available &mdash; and it is a shape, an enormous arc across two oceans, so it can be shown rather than told.<br><br><b style="color:var(--ember);font-weight:500">Build the ruler for this.</b> L'Anse aux Meadows is dated to a single year: a 993 CE cosmic-ray spike sits 29 growth rings inside the bark edge on three separate pieces of worked wood. After fourteen beats of &plusmn;&nbsp;thousands, the film's last migration lands on <i>one exact year</i> &mdash; and Law 05's ruler, which has been visibly stretching the whole way, should be seen collapsing to a single tick. That is the payoff of the device.</p>
+      </dd>
+      <dt>Why it's here</dt><dd><b>The turn from crossing to navigating.</b> Beat 06 was one crossing into the unknown; this is systematic, repeatable voyaging over open ocean. Aotearoa at ~1280 CE is the last major landmass on earth to be settled &mdash; the true end of the peopling story, and a better closer than L'Anse aux Meadows. Keep both: <b>Aotearoa is the last place, L'Anse aux Meadows is the exact year.</b><br><br><b class="warm">Copy corrected.</b> The line was "now we left because we chose to," which contradicted beat 06 outright &mdash; people there sail toward land they cannot see, which is about as chosen as it gets. The real distinction was never choice. It is navigation.</dd>
+    </dl>
+  </article>
+
+  <article class="beat pole" id="b14">
+    <div class="beat-head">
+      <span class="beat-no">14</span>
+      <h3 class="beat-title">You</h3>
+      <span class="beat-meta">800 BP &rarr; now &middot; t 0.93&ndash;1.00 &middot; motion 2 &rarr; 0</span>
+      <span class="pole-flag">The payoff</span>
+    </div>
+    <dl class="slots">
+      <dt>Frame</dt><dd><b>Frame 1 &mdash; the bridge.</b> Every route the film has drawn, lit at once. Then the map fills with movement of a completely different character: dense, directed, arrows rather than seepage. Twenty to thirty seconds. Not chosen.<br><br><b>Frame 2 &mdash; the fan.</b> The globe rotates to the reader's own longitude, descends toward their city, and draws <b>one line</b> back. As the camera pulls away through the beats, that line <b class="warm">splits</b> &mdash; two, four, eight, widening. Then, in the deep past, it stops widening and begins to <b class="warm">merge</b>, because the lines run out of separate people to belong to. It converges on Africa. Hold. Then the reveal: <b>the same fan is the fan of the person sitting next to them.</b></dd>
+      <dt>Camera</dt><dd>Continuous from 13 into the bridge; hard cut out of it into the descent. Then locked. Ends on a held frame that does not resolve away.</dd>
+      <dt>Earth</dt><dd><span class="m">sea 0 m</span> &middot; present ice &middot; present sky. The film has walked the earth all the way back to the reader's own window. <b class="warm">The clamp is gone.</b> The old curve read +8.5 m at present and had to be forced to zero; the rebuilt curve reads <span class="m">0.00 m</span> because present is its zero by construction.</dd>
+      <dt>Cut in / out</dt><dd class="cut"><i>IN &mdash;</i> continuous. No cut from 13.<br><i>OUT &mdash;</i> none. The film ends here, and the page below it is apparatus: sources, the contested list, method, credits.</dd>
+      <div class="onscreen">
+        <span class="lbl">On screen &middot; 1</span>
+        <p class="line">The last five hundred years moved more people than the fifty thousand before them. Most did not choose it.</p>
+      </div>
+      <div class="onscreen">
+        <span class="lbl">On screen &middot; 2</span>
+        <p class="line">Roughly two thousand generations stand between you and the one that held.</p>
+      </div>
+      <dt>Sound</dt><dd>Reduces to the single warm tone that first appeared in 02. The same note, 300,000 years later.</dd>
+      <dt>Evidence</dt><dd>
+        <ul class="ev">
+          <li><b>Generation depth</b> &middot; ~50 ka &divide; 26.9 yr &asymp; 1,860</li>
+          <li><b>Transatlantic slave trade</b> &middot; 1501&ndash;1867 &middot; ~12.5 m embarked, ~10.7 m landed</li>
+          <li><b>The fan folds</b> &middot; ancestors exceed every human who ever lived</li>
+          <li><b>Geolocation</b> &middot; optional, city-level, unstored</li>
+          <li class="contested"><b>Any single route for one person</b> &middot; false, and now replaced</li>
+        </ul>
+        <p class="evnote"><b style="color:var(--ember);font-weight:500">The ending was rebuilt.</b> Drawing one thread from the viewer back to Africa is false for everyone &mdash; and specifically wrong for anyone of African or mixed ancestry, for whom it either excludes them or misrepresents how they got where they are. Making geolocation optional would have been consent around the problem rather than a fix.<br><br>The fan fixes it. Past about forty generations your ancestor count exceeds every human who has ever lived, so the lines <i>must</i> fold back on each other. Everyone's ancestry widens and then merges. Showing that is more accurate than a thread and a better image than one, and it dissolves the exclusion completely: <b style="color:var(--bone);font-weight:500">if your ancestry never left Africa, your fan simply never leaves &mdash; and it is still the same fan.</b><br><br><b style="color:var(--ember);font-weight:500">And the bridge is load-bearing, not garnish.</b> The film claimed 300,000 BP to now while stopping at 1021 CE, leaving the largest forced migration in history inside a silent gap. You cannot end on "here is your line back to Africa" and say nothing about the last five hundred years &mdash; for millions of viewers that line is not a story of frontier. The transition from 1300 CE to now has to exist anyway, so the bridge costs almost no runtime and is what lets the fan be honest.</p>
+      </dd>
+      <dt>Why it's here</dt><dd><b>The theme, restated and transformed.</b> Beat 02 said we began in a pattern; beat 14 shows the reader is one live end of that pattern, and so is everyone they will meet today &mdash; not as a claim, as a mechanism they watch happen. It converts a documentary into a mirror on the final screen.</dd>
+    </dl>
+  </article>
+
+  <section id="payoffs" style="margin-top:96px">
+    <div class="section-head">
+      <h2>Setups and payoffs</h2>
+      <p class="lede">Nothing plants without paying, nothing pays without planting. If a beat gets cut or reordered, check this table first &mdash; these are the load-bearing dependencies.</p>
+    </div>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Planted</th><th>What is planted</th><th>Paid</th><th>How it pays</th></tr></thead>
+        <tbody>
+          <tr><td>03</td><td>Embers travel and go out &mdash; leaving is normal, surviving isn't</td><td>05</td><td>"This one did not go out" becomes an answer, not a caption</td></tr>
+          <tr><td>03</td><td>Embers travel and go out <i>(second payoff)</i></td><td>10</td><td>Someone reaches New Mexico and leaves nobody. The motif recurs on another continent, 180,000 years later</td></tr>
+          <tr><td>03</td><td>The dashed grammar, introduced on Apidima and Misliya</td><td>06 &middot; 10</td><td>The reader already trusts the notation when Sahul and the Americas get messy</td></tr>
+          <tr><td>03</td><td>An unresolved musical cadence, three times</td><td>05</td><td>It resolves &mdash; as a bonus over a beat that works muted</td></tr>
+          <tr><td>02</td><td>"We began in a pattern"</td><td>14</td><td>Restated with the reader inside it</td></tr>
+          <tr><td>02</td><td>The first warm tone</td><td>14</td><td>The film ends on the same note, alone</td></tr>
+          <tr><td>01</td><td>Coastlines that are subtly not the reader's</td><td>08 &middot; 11</td><td>They learn the shore was never fixed, then watch it move twice</td></tr>
+          <tr><td>06</td><td>Water enters the score</td><td>11</td><td>Water becomes the antagonist, and wins</td></tr>
+          <tr><td>05</td><td>A second, paler light waiting on the way out of Africa</td><td>07</td><td>Two beats of travelling together before one of them fails</td></tr>
+          <tr><td>06</td><td>The oldest hand on any wall, and it may not be ours</td><td>07</td><td>The others were already out here, ahead of us</td></tr>
+          <tr><td>07</td><td>A second kind of light, extinguished</td><td>10</td><td>The megafauna go out the same way &mdash; we are on the other side of it now</td></tr>
+          <tr><td>09</td><td>A population sealed in the north, going nowhere</td><td>10</td><td>The camera abandons them and cuts south, to someone already there</td></tr>
+          <tr><td>08</td><td>Ice advancing, the map redrawing</td><td>11</td><td>The same shot, reversed &mdash; the doors closing</td></tr>
+          <tr><td>09</td><td>Stillness in Beringia</td><td>10</td><td>Makes a hemisphere in a thousand years read as violent speed</td></tr>
+          <tr><td>01</td><td>The camera rotating over an empty earth</td><td>13</td><td>The same rotation, now with human light following it around the world</td></tr>
+          <tr><td>05</td><td>Law 05's ruler, visibly stretching toward the present</td><td>13</td><td>It collapses to a single tick at L'Anse aux Meadows &mdash; one exact year, 1021 CE</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="changed">
+    <div class="section-head">
+      <h2>What Phase 1 changed</h2>
+      <p class="lede">Seven questions resolved against the literature. Two beats were restructured, two on-screen lines died, one law was amended, and one paper published three weeks ago rewrote a beat's argument. Full detail and citations in <code style="font-family:var(--mono);color:var(--ice);font-size:.9em">timeline.json</code>.</p>
+    </div>
+    <ul class="qs">
+      <li><span class="tag">Beat 10</span><span class="q"><b>White Sands holds, and Act III has a reversal now.</b> Three independent materials, 55 radiocarbon dates. Humans in New Mexico during the Last Glacial Maximum, who cannot descend from a Beringia still sealed. Folded into beat 10 as a two-frame structure rather than given a beat of its own.</span></li>
+      <li><span class="tag">Beat 06</span><span class="q"><b>The film stops adjudicating Sahul.</b> The rocks say 65 ka, the genomes say 50&ndash;43. Neither wins; the disagreement is the content. And the oldest rock art on earth &mdash; 67,800 years, Wallacea, published January 2026 &mdash; may not have been made by us.</span></li>
+      <li><span class="tag">Beat 05</span><span class="q"><b>Leaving Africa and meeting the others were one event.</b> A single Neanderthal gene-flow period, 50.5&ndash;43.5 ka, shared by every non-African. The admixture moved out of beat 07 and into beat 05.</span></li>
+      <li><span class="tag">Law 04</span><span class="q"><b>Amended so the ground layer is present tense.</b> Orbital is then, ground is the evidence as we hold it now. Only the orbital layer rides the time axis, so no ground cut can break monotonicity. Denny survives; the beat-06 match cut gets to choose a shape rather than a date.</span></li>
+      <li><span class="tag">Beat 03</span><span class="q"><b>The first ground cut moved off Misliya.</b> Its uranium-series data are disputed in print. The descent now lands on Qafzeh 11 &mdash; a child, deer antlers across the chest, ochre-soaked ground &mdash; which makes the beat's argument better than a jaw did.</span></li>
+      <li><span class="tag">Beats 09 &middot; 12</span><span class="q"><b>Two lines died.</b> "Two hundred generations" presented a badly contested duration as fact. "Eleven places at once" was not a defensible count. Both replaced; beat 12's replacement is stronger than the original.</span></li>
+      <li><span class="tag">Beat 14</span><span class="q"><b>The last line's number moved</b> from 2,400 generations to roughly two thousand, and is now computed at build time from the dispersal date rather than hardcoded.</span></li>
+    </ul>
+  </section>
+
+  <section id="review">
+    <div class="section-head">
+      <h2>What external review changed</h2>
+      <p class="lede">A second reader went through rev. 3 and found one factual error, three overreaches, four internal contradictions and one architectural hole. Roughly eighty per cent was accepted. The most valuable finding wasn't on its list.</p>
+    </div>
+    <ul class="qs">
+      <li><span class="tag">The pattern</span><span class="q"><b>Three of its strongest hits were the same failure.</b> The data file said <i>all non-Africans</i> and the copy said <i>everyone</i>. The data said <i>~2% in non-Africans</i> and the copy said <i>two percent of you</i>. The data said <b>do not assert an extinction</b> and the frame emptied the map. Numbers were being checked; sentences were not. That is Law 07 now.</span></li>
+      <li><span class="tag">Thesis</span><span class="q"><b>The old thesis was literally false.</b> It made Africans spectators in a story about everyone, and the data file had said so all along. Rewritten &mdash; and the flatter replacements on offer were rejected, because accuracy without an argument is a summary, not a thesis.</span></li>
+      <li><span class="tag">Beat 10</span><span class="q"><b>White Sands was overclaimed.</b> It supports an early presence; it does not establish two peopling events, a vanished population or an empty continent. The ember now goes <i>uncertain</i>, never out. More honest, and the more haunting of the two readings.</span></li>
+      <li><span class="tag">Law 03</span><span class="q"><b>Two altitudes were one too few.</b> Beat 12 needs six unconnected places at once; beat 08 needs a hemisphere. A globe can do neither. Three registers now, with the match cut still the only transition verb.</span></li>
+      <li><span class="tag">Beats 07 &middot; 11 &middot; 13</span><span class="q"><b>Four contradicted lines fixed.</b> "Now we left because we chose to" directly contradicted beat 06, where people sail toward invisible land. "We were where we were going to be" was followed immediately by the largest migrations in the story.</span></li>
+      <li><span class="tag">Beat 07</span><span class="q"><b>The Campanian Ignimbrite was staged as causal and isn't.</b> Recent work finds no lasting consequence for Neanderthals or modern humans. Demoted &mdash; it survives only as the best-dated horizon in European prehistory, which is a live Law 06 question rather than a settled one.</span></li>
+      <li><span class="tag">Beat 06</span><span class="q"><b>The Sulawesi framing inverted the authors' emphasis</b> &mdash; and the paper was called three weeks old when it published in January. It's now cited in full (Nature 650, 652&ndash;656) and framed as the authors frame it: the oldest direct evidence for modern humans on the northern corridor.</span></li>
+    </ul>
+  </section>
+
+  <section id="pushback">
+    <div class="section-head">
+      <h2>Where the review was wrong, or not right enough</h2>
+      <p class="lede">Four places the diagnosis was good and the prescription wasn't.</p>
+    </div>
+    <ul class="qs">
+      <li><span class="tag">Resolution</span><span class="q"><b>Misdiagnosed, and the real answer is better.</b> It called 1,000-year sampling a resolution problem. It's a <b>missing channel</b>: the 8.2 ka event barely moves sea level at all, so no higher-resolution sea-level data would ever have rendered it. The film had one environmental channel and was implying sky, cold and mood from a curve that doesn't carry them. There are two now &mdash; and at 20 years the 8.2 ka event is eight points, Meltwater Pulse 1A eighteen.</span></li>
+      <li><span class="tag">The ending</span><span class="q"><b>Optionality isn't a fix.</b> Making geolocation optional consents around the problem. One line back to Africa is false for everyone. The fan &mdash; one line that splits, then folds back and merges &mdash; is accurate, keeps the intimacy, and dissolves the exclusion: if your ancestry never left, your fan never leaves, and it's still the same fan.</span></li>
+      <li><span class="tag">Epilogue</span><span class="q"><b>It undersold its own point.</b> Omitting the last 500 years isn't a scope mismatch &mdash; it <i>breaks the ending</i>. You cannot close on "here is your line back to Africa" while silent about the largest forced migration in history. The bridge is load-bearing, and it is neither a beat nor a disclaimer.</span></li>
+      <li><span class="tag">Copy</span><span class="q"><b>Its replacement lines were textbook prose.</b> "Most people outside Africa carry roughly two percent Neanderthal ancestry" is accurate and would be dead on screen. Conditional, not academic: <i>"If your ancestors left Africa, two percent of you is them."</i></span></li>
+    </ul>
+  </section>
+
+  <section id="spike-results">
+    <div class="section-head">
+      <h2>What the cartography spike found</h2>
+      <p class="lede">Phase 3. A throwaway prototype, scroll-driven, on the real curves. It found five failures in a day &mdash; which is the entire point of building something you intend to delete.</p>
+    </div>
+    <ul class="qs">
+      <li><span class="tag">Passed</span><span class="q"><b>Law 01 holds, and it is asserted rather than assumed.</b> The state is hashed at 401 points forward, then backward, and diffed. It passed &mdash; and it kept passing through a complete renderer rewrite, which is the strongest evidence the architecture is right.</span></li>
+      <li><span class="tag">Passed</span><span class="q"><b>The atlas register is necessary, measured.</b> From an Africa-centred globe, <b>2 of 6</b> agricultural centres are visible. In the atlas, <b>6 of 6</b>. Beat 12 is impossible on a sphere.</span></li>
+      <li><span class="tag">Failed</span><span class="q"><b>The shelf was invisible</b> &mdash; drawn as a fading fill over a stand-in polygon. Fixed twice: a hard waterline edge (Law 08), then real bathymetry.</span></li>
+      <li><span class="tag">Failed</span><span class="q"><b>The register cut was jarring.</b> Law 03 gained a second verb: unroll, not cut.</span></li>
+      <li><span class="tag">Failed</span><span class="q"><b>The lights were a scatter, not a journey.</b> The deepest finding &mdash; it exposed that the data file held 42 points and <i>zero routes</i>. A film about movement with no movement in it. Thirteen routes now exist.</span></li>
+      <li><span class="tag">Failed</span><span class="q"><b>The ice was a glow, not a sheet</b>, and <b>the fan was noise.</b> Both the same bug as the shelf. Both now edges.</span></li>
+    </ul>
+  </section>
+
+  <section id="architecture">
+    <div class="section-head">
+      <h2>The renderer is a fragment shader</h2>
+      <p class="lede">Not a stylistic preference &mdash; the data forced it, and it makes the film simpler rather than harder.</p>
+    </div>
+    <p class="lede">Projecting a thresholded raster onto a globe needs per-pixel inverse projection. That is a shader's job; canvas cannot do it at frame rate. So the visual engine is a fullscreen quad and one fragment shader, exactly the shape described in <code style="font-family:var(--mono);color:var(--ice)">craft/webgl-shaders.md</code>.</p>
+    <p class="lede" style="margin-top:14px">What that buys: <b>the film needs no coastline geometry at all.</b> No vector data, no simplification pass, no per-beat cartography. One elevation raster, one float, one comparison &mdash; and every shoreline in every beat falls out of it, including the ones nobody has drawn because they have been underwater for twelve thousand years.</p>
+    <div class="tablebox" style="margin-top:22px">
+      <table>
+        <thead><tr><th>Layer</th><th>Source</th><th>Resolution</th><th>Drives</th></tr></thead>
+        <tbody>
+          <tr><td>elevation</td><td>ETOPO 2022 bedrock, 60&Prime;</td><td>4096&times;2048 &middot; 0.305 m</td><td>every coastline, thresholded against sea level</td></tr>
+          <tr><td>sea level</td><td>Spratt stack + ICE-6G_C</td><td>322 pts &middot; 0.5 ka deglacial</td><td>the threshold itself</td></tr>
+          <tr><td>ice</td><td>ICE-6G_C (VM5a)</td><td>48 slices &middot; 26 ka&ndash;0</td><td>the advancing margin</td></tr>
+          <tr><td>temperature</td><td>NGRIP, GICC05</td><td>2,998 pts &middot; 20 yr</td><td>sky, haze, the drone</td></tr>
+          <tr><td>routes</td><td>authored, cartographic</td><td>13 paths &middot; 110 waypoints</td><td>light that travels</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="data">
+    <div class="section-head">
+      <h2>The environmental data is complete</h2>
+      <p class="lede">Every blocking gap closed. Three checks worth keeping, because each one caught something.</p>
+    </div>
+    <ul class="qs">
+      <li><span class="tag">Sea level</span><span class="q"><b>Lambeck turned out to be unnecessary.</b> Its table is bot-blocked, but ICE-6G_C already encodes relative sea level in <code style="font-family:var(--mono);color:var(--ice)">Topo_Diff</code>; the far-field deep-ocean median recovers the eustatic curve at 0.5&nbsp;ka. <b>Better than the splice would have been</b> &mdash; sea level and the ice atlas now come from one model, so the coastline and the ice cannot contradict each other. Present reads <b>0.00 m</b>, so the old +8.5&nbsp;m artifact is gone at source rather than clamped. Lowstand <b>&minus;131 m</b>, three metres from Lambeck's published figure.</span></li>
+      <li><span class="tag">Bathymetry</span><span class="q"><b>GEBCO was the wrong product.</b> 86400&times;43200 and 4.2&nbsp;GB &mdash; ten times more resolution than a 4096-wide texture can show. ETOPO 2022 at 60&Prime; is still 5&times; oversampled for the target at a tenth the size. Bedrock, not ice-surface, so ICE-6G draws on top without double-counting. <b>28.5% of the grid stands dry today; 34.0% at &minus;130 m.</b> That gap is the shelf.</span></li>
+      <li><span class="tag">Ice</span><span class="q"><b>The sanity check passed.</b> 18.1% global ice cover at the LGM against 11.2% today. The seven-point difference is Laurentide plus Fennoscandian, which is the correct signal &mdash; and it means the atlas is aligned and oriented right.</span></li>
+      <li><span class="tag">Beats 08&ndash;14</span><span class="q"><b>Seven sea levels moved</b> when the rebuilt curve landed, by 4 to 8.5&nbsp;m. All corrected above. This is why the data was finished before this document was updated: folding first would have meant folding twice.</span></li>
+    </ul>
+  </section>
+
+  <section id="open">
+    <div class="section-head">
+      <h2>Still open</h2>
+      <p class="lede">Two. The Law 06 decision was taken while building beat 07 and has moved to <i>resolved</i>; the vegetation gap has since bitten a second beat.</p>
+    </div>
+    <ul class="qs">
+      <li><span class="tag">Data</span><span class="q"><b>Vegetation is still a placeholder</b> &mdash; and beats 02 and 12 depend on it, for the green Sahara and the Sahel centre. It is the last dataset without a name and a resolution. <b class="warm">It cost a written frame in Phase 5:</b> beat 05's Earth slot promised "Arabia's green phase closing behind them" and the beat cannot draw it, so the shot ships without it. Third beat affected.</span></li>
+      <li><span class="tag">Data</span><span class="q"><b>The ground register still owes two plates.</b> Leang Karampuang carries a dashed reserved plate marked <i>permission pending</i>, and Denisova 11 is now in the same position &mdash; present in the record voice, no image. Both sit with custodians or institutions whose permission is a lead time, not a launch time. The layouts carry the holes rather than hiding them.</span></li>
+      <li><span class="tag">Data</span><span class="q"><b>No temperature before 60 ka.</b> Beats 01&ndash;04, Toba included, run on sea level alone. Low priority &mdash; the deep beats are carried by coastline, and no Greenland core reaches 300 ka anyway.</span></li>
+    </ul>
+  </section>
+
+  <section id="phase5">
+    <div class="section-head">
+      <h2>What beats 05 and 07 found</h2>
+      <p class="lede">Phase 5, step 1. Beats 05, 06 and 07 now run on <b>one continuous <code style="font-family:var(--mono);color:var(--ice)">t</code></b> in
+        <code style="font-family:var(--mono);color:var(--ice)">slice/</code>. Five tests you can press. Again, only the things that changed a law, a number or a frame.</p>
+    </div>
+    <ul class="qs">
+      <li><span class="tag">Decision</span><span class="q"><b>One continuous <code style="font-family:var(--mono);color:var(--ice)">t</code>, not three addressable beats</b> &mdash; on Law 01, and it paid immediately. Three artifacts would need three <code style="font-family:var(--mono);color:var(--ice)">t</code> windows, three camera splines and three copies of the state function, and the two places this work was most likely to fail are 05's release into 06 and 06's pull-back into 07 &mdash; exactly the boundaries a three-artifact build makes unscrubbable. <b class="warm">A boundary you cannot scrub across is a boundary you cannot direct.</b> It also made beat 07's central claim testable at all: <i>that colour is gone for the remaining seven beats</i> is a statement about <code style="font-family:var(--mono);color:var(--ice)">t</code> in [0.44, 1.0] &mdash; beats which do not exist &mdash; and only a total function can be asked. Separately <i>addressable</i> was kept and is cheap: <code style="font-family:var(--mono);color:var(--ice)">#t=0.2650</code> and <code style="font-family:var(--mono);color:var(--ice)">#beat=05</code> both land on a shot.</span></li>
+      <li><span class="tag">Passed</span><span class="q"><b>A locked camera survives, and the earth is why.</b> Beat 05 holds for 0.060 of <code style="font-family:var(--mono);color:var(--ice)">t</code> &mdash; a quarter of the artifact &mdash; with the camera bit-identical throughout. What carries it was not designed: the sea-level curve already has a three-act shape sitting inside the lock. Nothing for two thousand years, then <b>fifteen metres in four thousand</b> &mdash; the fastest waterline in the first half of the film &mdash; then nothing again, four metres over two millennia. The beat's last fifth has <i>only</i> the year moving. Law 08 does the work the camera cannot.</span></li>
+      <li><span class="tag">Corrected</span><span class="q"><b>The film was about to choose a route it says is unresolved.</b> <code style="font-family:var(--mono);color:var(--ice)">dispersal-route</code> is confidence <i>band</i> &mdash; two doors, unresolved &mdash; but <code style="font-family:var(--mono);color:var(--ice)">routes[]</code> carried geometry for only the southern one. In the film's only <i>locked</i> shot, a plume through Bab-el-Mandeb would have made that choice for the reader and then refused to move off it for ten thousand years. The fix was not a caption. <b class="warm">Adding the northern spine reduced what the film claims.</b></span></li>
+      <li><span class="tag">Measured</span><span class="q"><b>Both doors, on the same definition as Wallacea, so the two numbers may be spoken in one sentence.</b> <b>Sinai is dry land at every sea level in the record</b>, lowstand included. <b>Bab-el-Mandeb is water at every sea level in the record</b> and never less than 3.6 km of it. Each door needs its own corridor: Africa and Eurasia are one land component at every sea level by way of Sinai, so a global bottleneck reads 0 km and measures nothing.</span></li>
+      <li><span class="tag">Corrected</span><span class="q"><b>A sentence was falsified by its own copy check before it reached the screen.</b> The line first read &ldquo;between five and nine kilometres&rdquo;. At 60 ka the bottleneck is <b>5.2 / 6.6 / 9.1 km</b> as the island floor rises 3.4 &rarr; 34 &rarr; 344 km&sup2; &mdash; so the strictest reading is 9.1 and the sentence is false. It now reads <b>&ldquo;under ten kilometres of it, as little as five&rdquo;</b>, and the check asserts exactly that bound. <b class="warm">Beat 06's figure survives the same scrutiny</b> because its claim is a floor, and raising the island threshold can only raise a bottleneck.</span></li>
+      <li><span class="tag">Decision</span><span class="q"><b>Law 06 widens: causal for what happened, <i>or for how we know it</i>, and the register says which.</b> The full argument is in the law itself and in beat 07. The short version: the film had already built this register in beat 06 and shipped it; the widening arrives with a machine-checked bar the old law never had; and the one thing that had to move was <i>ordering</i> &mdash; the withdrawal used to begin at the eruption's own instant, which is the old overclaim in a new costume no matter what the caption says.</span></li>
+      <li><span class="tag">Failed</span><span class="q"><b>A test that measured the wrong quantity &mdash; the project's signature mistake, committed again.</b> The first Law 06 test compared each channel's step near the eruption against its <i>average rate through the beat</i>, and failed on <code style="font-family:var(--mono);color:var(--ice)">paleOut</code> &mdash; a channel moving fast for its own reasons, not because the eruption moved it. What <i>the eruption did not touch the world</i> actually means is that <code style="font-family:var(--mono);color:var(--ice)">stateFor</code> has <b>no discontinuity</b> there, and that is resolution-independent: <b class="warm">halve the sample spacing and a smooth channel's largest step halves; a jump does not.</b> No tolerance, no yardstick, nothing to tune.</span></li>
+      <li><span class="tag">Failed</span><span class="q"><b>Beat 06's copy check only worked once, and had since it shipped.</b> It searched <code style="font-family:var(--mono);color:var(--ice)">document.body</code> for a degree sign &mdash; and the sentence <i>explaining</i> that check contains one, so the first run passed and every run after it failed on its own output. It now reads the film's own surfaces and copy tables, which is idempotent and also stricter: it covers the canvas labels, which never touch the DOM.</span></li>
+      <li><span class="tag">Corrected</span><span class="q"><b>&ldquo;The film's only hold&rdquo; needed defining before it could be counted.</b> The first version of the test found <i>two</i> camera-identical spans &mdash; the second being beat 06's ground register, where the orbital camera is parked because a hand stencil fills the frame. That is not a hold; it is a camera nobody is looking through. A hold is a locked camera <b>on the world</b>, and with that definition there is exactly one. Beat 07's dead frame is excluded for the opposite reason: it is on screen, but its last two keyframes differ, so it is still drifting.</span></li>
+      <li><span class="tag">Cut</span><span class="q"><b>The prettiest idea in beat 07 was the overclaiming one.</b> The pale light was going to be drawn merging into the ember as it went &mdash; the 2% entering us, literally. It is also <b class="warm">an assertion that Neanderthals ended by absorption</b>, one of three contested causes. Cut. The 2% is stated in type, where it carries its qualifier, instead of in the picture, where it would have picked a winner.</span></li>
+      <li><span class="tag">Budget</span><span class="q"><b>The earth pass costs what it cost, by construction rather than by luck.</b> Three beats want three high-resolution tiles, and the obvious build &mdash; three more samplers &mdash; takes the elevation fetches per pixel from two to eight, for tiles eighty degrees of longitude apart that can never share a frame. There is <b>one tile slot</b> and the CPU swaps it, chosen by <code style="font-family:var(--mono);color:var(--ice)">t</code> and therefore covered by the purity test. The shader is byte-for-byte the shipped one. <b>Everything Phase 5 added is overlay work</b>, which the GPU timer cannot see &mdash; so the panel now reports the 2D overlay separately, because a readout showing only the GPU would have said, honestly and uselessly, that nothing got more expensive.</span></li>
+    </ul>
+  </section>
+
+  <section id="atlas">
+    <div class="section-head">
+      <h2>What the atlas found</h2>
+      <p class="lede">Phase 5, step 2. Beat 06 as a static artifact &mdash; <b>eight stills baked
+        from the film's own fragment shader</b> at eight values of <code style="font-family:var(--mono);color:var(--ice)">t</code>, with every
+        word placed back onto them as live HTML. It is the mobile experience, the reduced-motion
+        fallback, the no-JS fallback, the crawler content and the answer for a browser that has
+        switched WebGL off, and it is one file rather than five. Again, only the things that
+        changed a law, a number or a frame.</p>
+    </div>
+    <ul class="qs">
+      <li><span class="tag">Decision</span><span class="q"><b>Bake the world. Never bake a word.</b>
+        The earth, the lights, the leaders and the marker dots come out of the shader as pixels,
+        because there is no honest way to reproduce a shader in a static page. <b class="warm">Type
+        does not.</b> The atlas is the crawler content, the screen-reader fallback and the page a
+        browser without WebGL receives &mdash; baked type would be pixels in exactly the artifact
+        whose job is to be text, and it would be invisible to the Law 07 copy check, which reads
+        the film's own surfaces.<br><br>So <code style="font-family:var(--mono);color:var(--ice)">film.js</code> grew an <b>annotation
+        sink</b>. No canvas text site writes a glyph any more; all three hand their string to one
+        function that either draws it (the film) or records where it would have gone (the bake), in
+        CSS pixels, with the class the type system gives it. The bake emits that geometry beside
+        each still, and the atlas puts real text on the end of a leader the still has already
+        drawn. <b>And the claim is checked on the functions, not on the output:</b>
+        <code style="font-family:var(--mono);color:var(--ice)">drawLabels</code>, <code style="font-family:var(--mono);color:var(--ice)">drawGap</code> and <code style="font-family:var(--mono);color:var(--ice)">drawCut</code>
+        are asserted to contain no <code style="font-family:var(--mono);color:var(--ice)">fillText</code>, so a glyph put back onto the canvas
+        fails a test on the day it is typed.</span></li>
+
+      <li><span class="tag">Found</span><span class="q"><b>Five on-screen lines had never been in
+        the copy check, and had not been since Phase 4.</b> The ground register's instrumentation
+        &mdash; <i>GROUND REGISTER &middot; PRESENT TENSE</i>, <i>ORIGINAL DIAGRAM, NOT A PHOTOGRAPH
+        OF THE SITE</i>, and the reserved plate's three lines &mdash; were string literals inside a
+        draw call, and the check reads tables. Two of the five make claims the film is answerable
+        for: that the stencil is a diagram rather than a photograph, and that a plate is reserved
+        rather than missing. They are a table now, and they are checked.<br><br><b class="warm">The
+        check could not see them</b>, which is the same failure as the check that only worked once,
+        wearing different clothes. The copy check went from <b>30 lines to 44</b> in this step, and
+        five of the fourteen are lines that were already on screen.</span></li>
+
+      <li><span class="tag">Passed</span><span class="q"><b>A sequence of stills <i>is</i> beat 06,
+        and the reason has nothing to do with the page being well made.</b> It is a property of the
+        beat. Beat 06 is a journey, so its content is <i>change of place</i>: take any two frames
+        and something is somewhere else &mdash; the light, the coastline, the camera &mdash; and the
+        frames in order are the beat. That is the grammar an atlas has, and here it is the beat's
+        grammar too.</span></li>
+
+      <li><span class="tag">Open</span><span class="q"><b>And it does not generalise. The two beats
+        either side are temporal devices, and a page cannot spend time.</b> This is the finding, and
+        it is written down rather than solved.<br><br><b>Beat 05's subject is duration.</b>
+        &ldquo;Nothing happens for ten thousand years&rdquo; is said by spending scroll on nothing:
+        the camera is bit-identical across 0.060 of <code style="font-family:var(--mono);color:var(--ice)">t</code>, a quarter of the running
+        artifact, and the beat's last fifth has only the year moving. A still of the dead stretch is
+        a locked camera over a flat sea &mdash; <i>correct, and it says nothing</i>, because the
+        content is the time the reader spent looking at it. Two stills of the same frame with
+        different year labels is not duration; it reads as a mistake.<br><br><b>Beat 07's subject is
+        a subtraction that has to persist.</b> &ldquo;That colour never comes back&rdquo; is a claim
+        about every <code style="font-family:var(--mono);color:var(--ice)">t</code> after 0.4405, including seven beats that do not exist;
+        <code style="font-family:var(--mono);color:var(--ice)">absence()</code> walks it out to 1.0 and proves it. A static page has no
+        <i>after</i>. Print a frame with two lights and a frame with one and the reader sees a
+        change &mdash; they cannot see <b>permanence</b>, because permanence is a property of the
+        frames you did not print.<br><br>So the atlas's grammar carries change of place and cannot
+        carry duration or absence. <b class="warm">Two candidate second ideas, neither prototyped,
+        neither believed yet.</b> For 05: invert the figure &mdash; one still, printed once, and the
+        <i>ruler</i> becomes the illustration, with the three-act shape of the sea-level curve
+        beside it, asking the reader to read a duration off an axis instead of feeling it. That is
+        an infographic rather than a film, and it may be the honest thing a page that cannot spend
+        time can do. For 07: a page can carry permanence only by <i>stating</i> it &mdash; and a
+        claim stated has to be shown to be enforced, which means the evidence is
+        <code style="font-family:var(--mono);color:var(--ice)">absence()</code>'s own result, printed. <b>What is decided is the
+        negative:</b> do not extend this atlas to 05 and 07 by adding more stills. Eight more frames
+        of a locked camera would be the atlas lying about what the beat is.</span></li>
+
+      <li><span class="tag">Corrected</span><span class="q"><b>A caption named a site the frame does
+        not hold.</b> Shot 06's caption talked about Liang Metanduno; at that <code style="font-family:var(--mono);color:var(--ice)">t</code>
+        Metanduno projects off the bottom of the frame. Nothing in the sentence was false &mdash; it
+        was doing the reader's imagining for them. It moved to shot 08, which <i>is</i> the
+        Metanduno stencil and whose record voice is already that event, and shot 06 now says what
+        its frame actually shows: Sahul as one continent, and the Madjedbebe ring marking a place
+        while its contested years stay on the rail.</span></li>
+
+      <li><span class="tag">Failed</span><span class="q"><b>The copy check failed twice on the new
+        lines, and both times the check was the thing that was wrong.</b> That is now the third
+        build running where fixing a failing check made it say something truer.<br><br><b>One:</b>
+        for &ldquo;the rocks argue for older&rdquo; the check read
+        <code style="font-family:var(--mono);color:var(--ice)">madjedbebe.dispute.alternative</code>, which is <b>50,000&ndash;47,000</b>
+        &mdash; the <i>younger</i> reading, because that field holds the objection <i>to</i> the
+        rocks. The older alternative is on <code style="font-family:var(--mono);color:var(--ice)">sahul-arrival</code>, whose dispute names
+        65,000&ndash;59,000. <b>Two:</b> the check asked <code style="font-family:var(--mono);color:var(--ice)">beatAt(t).id === 6</code> for
+        a shot at <code style="font-family:var(--mono);color:var(--ice)">t</code>&nbsp;0.3000, and the beat table resolves a shared endpoint
+        downward, so the film's own function answers <i>beat 05</i> at beat 06's
+        <code style="font-family:var(--mono);color:var(--ice)">t0</code>. The frame is right &mdash; 50,000&nbsp;BP, beat 06's opening camera
+        keyframe, and the caption opens &ldquo;as beat 05 lets go&rdquo; &mdash; so the honest test
+        is the beat's own closed <code style="font-family:var(--mono);color:var(--ice)">t</code> interval, not
+        <code style="font-family:var(--mono);color:var(--ice)">beatAt</code>.</span></li>
+
+      <li><span class="tag">Failed</span><span class="q"><b>And then the atlas committed the
+        degree-sign bug, one build after writing it into the laws.</b> A new check asserted that
+        all three fallback roads name the atlas &mdash; the desktop gate, the no-script block, the
+        WebGL failure page. It passed. Run twice, it failed, and it failed on every run
+        after.<br><br>The check selected <i>the document's first no-script element</i>. Its own
+        explanation, in the panel, contained the literal tag &mdash; and
+        <b class="warm">the panel renders these explanations with
+        <code style="font-family:var(--mono);color:var(--ice)">innerHTML</code></b>, so the first run built a real, empty no-script element
+        inside the panel, ahead of the film's in document order, for the second run to find. The
+        sentence explaining the check destroyed the check. That is the same shape as the copy check
+        that searched <code style="font-family:var(--mono);color:var(--ice)">document.body</code> for a degree sign, and it was written
+        <i>one phase</i> after that lesson went into this document.<br><br>Fixed in both halves,
+        because either alone leaves the trap loaded. The selector is now
+        <code style="font-family:var(--mono);color:var(--ice)">body &gt; noscript</code>, which cannot reach anything the panel builds. And
+        the panel escapes angle brackets in every check's line and reason before writing them, so
+        <b>no check's prose can build an element any more</b> &mdash; ampersands are deliberately
+        left alone, because the lines under test are the film's own copy and carry real entities.
+        The class of bug is closed, not the instance. <b class="warm">Run every test twice</b>
+        remains the rule that caught it; this build ran the copy check five times.</span></li>
+
+      <li><span class="tag">Found</span><span class="q"><b>The evidence table nearly flattened a
+        minimum into a date.</b> Liang Metanduno's <b>67,800</b> is a minimum &mdash; the U-series
+        date is on the calcite lying <i>over</i> the stencil, so the art is at least that old and
+        may be far older. The Campanian Ignimbrite's 39,850 is a point estimate with a tolerance.
+        Rendered as bare years side by side they read as the same kind of number. The table now
+        prints <b>&ge;&#8202;67,800&nbsp;BP</b>, read off the event's own
+        <code style="font-family:var(--mono);color:var(--ice)">dateNote</code> and never guessed &mdash; and <b class="warm">the build stops</b>
+        if a single-value event says neither <i>minimum</i> nor <i>&plusmn;</i>, because at that
+        point the generator cannot tell which kind of number it is holding and the only safe thing
+        it can do is refuse to print it.</span></li>
+
+      <li><span class="tag">Failed</span><span class="q"><b>One CSS rule escaped the reflow and
+        rendered at three pixels.</b> The overlay's type is sized in <code style="font-family:var(--mono);color:var(--ice)">cqw</code> &mdash;
+        per cent of the figure &mdash; so that the film's 10.5px margin label is 10.5px on a 1440
+        figure. Every one of those needs a pixel counterpart in the narrow branch, and one did not
+        get one: on a 390px phone it resolved to 0.7% of the figure. The stylesheet is
+        <b class="warm">mobile-first</b> now and every <code style="font-family:var(--mono);color:var(--ice)">cqw</code> lives inside the
+        <code style="font-family:var(--mono);color:var(--ice)">min-width:1280px</code> block, where it cannot reach a phone at all. The class
+        of bug is gone rather than the instance.</span></li>
+
+      <li><span class="tag">Measured</span><span class="q"><b>825&nbsp;KB of art, about 1,560 words
+        of text, and no JavaScript at all.</b> Eight WebP stills at 1920&times;1080, supersampled from
+        a device-pixel-ratio&nbsp;2 draw of a 1440&times;810 frame. Loaded with scripting disabled
+        the page still carries the film voice (once), all eight captions, every margin label, the
+        ground register's five lines, the dimension figure and every citation. <b>Zero
+        <code style="font-family:var(--mono);color:var(--ice)">&lt;script&gt;</code> tags</b> &mdash; the atlas has no JavaScript to
+        disable.</span></li>
+
+      <li><span class="tag">Confirmed</span><span class="q"><b>A headless browser can bake this film
+        and must still never time it.</b> Playwright's Chromium ran the whole film correctly on
+        <b>SwiftShader over Vulkan</b> &mdash; WebGL2, float elevation textures, the waterline, the
+        match cut, all eight frames right &mdash; at about <b>a minute a frame</b>. Every still is
+        accurate and no number from that machine means anything. The bake needs correctness, not
+        speed, which is exactly why it can run there;
+        <code style="font-family:var(--mono);color:var(--ice)">EMBER.bench()</code> is still the only honest way to time the draw
+        path.</span></li>
+    </ul>
+  </section>
+
+  <section id="phase4">
+    <div class="section-head">
+      <h2>What the vertical slice found</h2>
+      <p class="lede">Phase 4. Beat 06 built at final quality, in <code style="font-family:var(--mono);color:var(--ice)">slice/</code>. One shader, the ruler, the match cut, the ground register, and two tests you can press. What follows is only the things that changed a law, a number or a frame.</p>
+    </div>
+    <ul class="qs">
+      <li><span class="tag">Passed</span><span class="q"><b>Law 01 holds under the real renderer.</b> 401 samples forward, 401 backward, identical &mdash; and the year is asserted monotonically non-increasing at every one, which the spike never checked.</span></li>
+      <li><span class="tag">Passed</span><span class="q"><b>Law 07 is executable now.</b> Ten on-screen lines are diffed against the qualifiers their own events carry in <code style="font-family:var(--mono);color:var(--ice)">timeline.json</code>, and against the measured rasters. It is a button in the panel, not a habit.</span></li>
+      <li><span class="tag">Measured</span><span class="q"><b>The beat's central number was nearly wrong by a factor of fourteen.</b> The first attempt measured coastline-to-coastline from Sunda to Sahul and got <b>994 km</b>. That is a real distance and the wrong quantity. The claim is a <i>bottleneck</i>: over every island-hopping route, the smallest achievable longest hop. Computed properly &mdash; a Euclidean-Voronoi pass over the water to find which components are ever nearest neighbours, exact great-circle minima for those pairs, then union-find in ascending order &mdash; it is <b>70.5 km</b>, and the floor across every sea level tested is <b>70.4 km</b>. <b class="warm">The sea falls 131 metres and the gap does not close.</b> That is the beat.</span></li>
+      <li><span class="tag">Measured</span><span class="q"><b>The bottleneck hop lands on the northern corridor</b> &mdash; Sula to Buru, about 126&deg;E &middot; 3&deg;S, through the Spice Islands. That is the corridor the 2026 Liang Metanduno paper argues for. Two independent things pointing the same way is worth stating; it is <i>not</i> evidence that this was the route taken, and the film does not say it was.</span></li>
+      <li><span class="tag">Corrected</span><span class="q"><b>Tasmania is joined, not marginal.</b> At &minus;68.3 m, Australia, New Guinea and Tasmania are one land component on ETOPO 2022 bedrock at 60&Prime;. This beat's Earth slot said "marginal at this depth" and the raster disagrees. Dry land inside the beat's frame grows from <b>23.75%</b> to <b>30.88%</b> &mdash; a gain of <b>30%</b>.</span></li>
+      <li><span class="tag">Failed</span><span class="q"><b>Terrain-RGB is not mip-safe, and it cost most of a day.</b> Elevation is stored as R&times;256&nbsp;+&nbsp;G, so a mip level averages the <i>high byte</i> and rounds it &mdash; half a step of R is <b>39 metres</b>. That averaging happens exactly where R changes, which is exactly at a coastline. On a shelf sloping a tenth of a metre per kilometre, 39 m moves the waterline hundreds of kilometres. <b class="warm">The film now decodes the PNG to a float texture on load</b>, which makes the pyramid valid and the shader shorter.</span></li>
+      <li><span class="tag">Failed</span><span class="q"><b>Law 08 needs a third clause: an edge is a pixel, not a metre.</b> Thresholding <code style="font-family:var(--mono);color:var(--ice)">|elevation &minus; sea| &lt; k</code> frosts the entire Sunda shelf white, because a shelf lying flat at the waterline satisfies it everywhere at once. The edge has to be the distance to the zero crossing <i>in screen pixels</i> &mdash; and because a coastline is fractal, the field has to be smoothed to the pixel the frame actually has before it is thresholded. Un-smoothed, the ghost coastline came out as frost scattered over ten pixels rather than a line.</span></li>
+      <li><span class="tag">Decision</span><span class="q"><b>The match cut lands on Liang Metanduno, not Leang Timpuseng.</b> The data file nominated the Timpuseng stencils for their shape. But the beat's second on-screen block is <i>about</i> Metanduno, and its documented detail &mdash; fingertips deliberately reshaped to points, like claws &mdash; is the most specific thing known about the oldest hand on any wall. Under the amended Law 04 the shape may be chosen for the cut rather than the calendar, and that argument points at Metanduno.<br><br><b>And the shape is measured.</b> Sulawesi's four arm tips and its largest inscribed circle, off the raster at this beat's own sea level: 125.16&deg;E&nbsp;1.84&deg;N, 123.52&deg;E&nbsp;0.69&deg;S, 122.81&deg;E&nbsp;5.69&deg;S, 119.86&deg;E&nbsp;5.88&deg;S, palm at 120.16&deg;E&nbsp;2.08&deg;S with a 95 km radius. The camera flattens to nadir and turns until that fan opens upward; four strokes are drawn on it; across the cut they close from the <b>133&deg;</b> the island has to the <b>61&deg;</b> a hand has, and the thumb &mdash; which has no island to come from &mdash; grows last.</span></li>
+      <li><span class="tag">Decision</span><span class="q"><b>The contested date lives on the ruler, not in the world.</b> Madjedbebe reads 65&ndash;59 ka and the genomes read 50&ndash;43, and 65 ka sits inside beat 04's span &mdash; so an ember arriving on it would run time backwards. Law 05's rail is the honest place: the disagreement is drawn as a dashed bracket on the <i>linear</i> rail, because it is a claim about years and not about where the camera is. The ember rides the genetic window and the beat says the disagreement out loud in the record voice. <b class="warm">Neither reading moves the light.</b></span></li>
+      <li><span class="tag">New</span><span class="q"><b>The film has a type system.</b> Three voices that never mix &mdash; the film's voice in Fraunces, once per beat, the only large thing on screen; the record in Plex Sans, where Law 07's qualifiers live; instrumentation in Plex Mono, tracked, ice-dim, never bone. A place is named by a marker on the globe and a word in the right margin, joined by a leader, never by type laid across the ground.<br><br><b>One placement law had to be rewritten mid-build.</b> It began as <i>no scrims anywhere &mdash; if type needs a scrim the composition is wrong</i>, which is a good rule that does not survive a low-angle shot where the ground fills the frame. It now reads: <b class="warm">no plate, no box, no blur behind a word &mdash; but the frame may be graded.</b> A graduated filter across the left third, present only while a sentence is standing in it and leaving when the sentence does, is photography. A scrim behind type is a caption.</span></li>
+      <li><span class="tag">Open</span><span class="q"><b>The ground register still owes a photograph.</b> The stencil in the slice is an original drawn diagram and says so on screen. The Leang Karampuang plate is a dashed rectangle carrying its site name, its date and <i>permission pending</i>. The layout holds the hole rather than hiding it, which is the honest state of an image-rights lead time.</span></li>
+      <li><span class="tag">Measured</span><span class="q"><b>The frame budget is not a problem, and now there is a number.</b> On an Intel Iris Xe &mdash; integrated graphics, the hardware class that decides whether this film is affordable &mdash; beat 06 runs at <b>60 fps</b>, frame interval <b>16.7 / 16.9 / 17.0 ms</b> across median, p95 and worst. A 0.3 ms spread over 120 frames: nothing dropped, nothing hitching.<br><br><b class="warm">But a frame interval is clamped by vsync</b>, so 16.7 ms proves only that nothing was dropped and says nothing about how much of the budget was used. The question that matters for the remaining thirteen beats &mdash; which will stack ice, sky and more routes on this shader &mdash; is headroom, and a frame counter cannot answer it. A GPU timer query can, because it reads the GPU's own clock rather than the frame's: the earth pass costs <b>0.66 ms, four per cent of a frame</b>. At twice the pixel count that is still under a fifth. <b>There is room.</b><br><br>Both readouts are in the panel now, so the next person does not have to take this on trust.</span></li>
+      <li><span class="tag">Found</span><span class="q"><b>A browser can simply switch WebGL off, and one did.</b> Chrome 151 on the build machine reported <i>&ldquo;GPU process was unable to boot: GPU process crashed too many times with software GL&rdquo;</i>, crash count 3, <code style="font-family:var(--mono);color:var(--ice)">Disabled Features: all</code> &mdash; on a healthy Iris Xe that Chrome's own report lists as capable, with hardware acceleration switched on in settings. Edge on the same machine ran it at 60 fps.<br><br>This is not an exotic configuration; it is a mainstream laptop and a current browser locking itself out. <b class="warm">Those readers must get the atlas</b>, exactly as a phone or a reduced-motion setting does, and until that artifact exists they get an error screen. The film now diagnoses the failure honestly &mdash; it probes WebGL2 and WebGL1 on throwaway canvases, names the GPU and the browser, and says what to do &mdash; but a good error message is not a fallback.</span></li>
+    </ul>
+  </section>
+
+  <section id="next">
+    <div class="section-head">
+      <h2>Next</h2>
+    </div>
+    <p class="lede"><b style="color:var(--bone)">Beats 05 and 07</b>, either side of the slice, so beat 06's two cuts have something to cut to. These two, specifically: <b>05 is the film's only true hold</b> &mdash; motion 0 &mdash; and tests whether the renderer can carry a beat where nothing moves, which is a wholly different stress from 06. <b>07 needs permanent absence</b>: when the pale second light goes out, that colour leaves the palette for the remaining seven beats, and that is a state question touching Law 01, far better found now than at beat 12.</p>
+    <p class="lede" style="margin-top:14px">Beat 07 opens by pulling back from the stencil and swinging west. The slice deliberately ends <i>pulled back and holding</i>, because the swing belongs to 07 and taking it early spun the map a hundred and seventy degrees in a third of a second.</p>
+    <p class="lede" style="margin-top:14px"><b class="warm">The atlas is built, for beat 06.</b> <code style="font-family:var(--mono);color:var(--ice)">slice/atlas.html</code> &mdash; eight stills baked from the same shader at the same values of <code style="font-family:var(--mono);color:var(--ice)">t</code>, every word live HTML, checked by the same copy check. What it found is <a href="#atlas">its own section</a>. The part that is <i>not</i> done is the part it could not have done: <b style="color:var(--bone)">beats 05 and 07 need a second, different idea</b>, because a sequence of stills carries change of place and cannot carry duration or permanent absence. Two candidates are written down there; neither has been prototyped, and adding more stills is the one option ruled out.</p>
+    <p class="lede" style="margin-top:14px"><b style="color:var(--ember)">Not yet: the unroll.</b> Law 03's second verb, orbital&nbsp;&harr;&nbsp;atlas, is completely unbuilt, and the cartography spike already failed once here &mdash; a hard cut between projections read as a glitch. It is the film's largest remaining technical unknown, it belongs to beat 12, and it deserves its own slice rather than being improvised inside another beat.</p>
+    <p class="lede" style="margin-top:14px"><b style="color:var(--ember)">Still with a lead time.</b> <b style="color:var(--bone)">Image rights</b> for the ground register &mdash; the Sulawesi and Madjedbebe material sits with Indigenous custodians whose permission is both a courtesy and frequently a legal requirement. Every beat built before that lands inherits the same dashed reserved plate beat 06 now carries.</p>
+  </section>
+
+  <footer>
+    <p><b>Status &mdash;</b> Revision 8, after the atlas. <b>Phases 0&ndash;5 step 2 complete.</b> Thesis, eight laws, fourteen beats, 65 sources, 18 questions resolved, 2 open. Environmental data complete: elevation, sea level, ice and temperature all acquired, built and checked. <b>Beats 05, 06 and 07 run on one continuous <code>t</code></b> in <code>slice/</code>, with five tests in the panel &mdash; Law 01 purity, Law 07 copy, Law 06 epistemic, permanent absence, and the hold count. All five pass, and the copy check now carries <b>44 lines</b>. <b>Beat 06 also exists as a static atlas</b>, baked from the film's own shader, carrying every word as text and no JavaScript at all.</p>
+    <p><b>Next &mdash;</b> A <b>second idea for the temporal beats</b>: 05 and 07 cannot be told as a sequence of stills, and the atlas found out why rather than guessing. Then the <b>unroll</b>, which is still the largest technical unknown in the film and still belongs to beat 12. The renderer remains affordable: the shader is unchanged from Phase 4 and still does two elevation fetches per pixel, by design rather than by luck &mdash; but <b class="warm">frame timing has to be read on a real screen</b>. Every automated browser tried during this build, in-app and Playwright alike, throttled the frame loop to between zero and four ticks a second. The panel takes its own measurements and puts them where a person can read them.</p>
+    <p><b>The rule, and what it cost &mdash;</b> nothing on screen that isn't in the data, and nothing in the data without a date range, a confidence level and a citation. Enforcing it has restructured three beats, killed five lines of copy, added two laws and amended two more, corrected fifteen sea levels, rewritten the thesis, rebuilt the ending, and thrown away a renderer. <b>Every one was a loss at the time and an improvement afterwards.</b></p>
+    <p><b>And the pattern underneath all of it &mdash;</b> every serious error in this project was the same kind: a sentence that claimed more than the data behind it. The thesis said <i>everyone</i> where the data said <i>non-Africans</i>. The frame emptied a continent where the note said not to. The shelf was drawn as a fill where the physics is an edge. <b>The data was almost always right and the prose almost always drifted.</b> <b class="warm">And a fifth kind has now happened twice, which makes it a pattern rather than an anecdote: a check that stops being able to see what it checks.</b> The copy check once searched the whole page for a degree sign and found the sentence explaining the check. One phase later, a new check searched the whole page for a no-script element and found one the panel had built out of the sentence explaining <i>that</i> check. Both passed once and failed forever after. <b>The lesson is not &ldquo;be careful with wording&rdquo;</b> &mdash; it is that a check must be scoped to a surface a check's own output cannot enter, and that a panel which renders explanations as markup will keep manufacturing this bug. Both are fixed at the mechanism now.<br><br><b class="warm">The slice added a fourth of exactly that kind:</b> the beat&rsquo;s headline crossing distance was first computed as the wrong quantity &mdash; 994 km of coastline separation where the claim was a 70 km bottleneck &mdash; and it would have gone on screen looking perfectly measured. That is what Laws 07 and 08 exist to catch.</p>
+    <p><b class="warm">Beats 05 and 07 produced the same failure twice more, and both times the check caught it.</b> A sentence read &ldquo;between five and nine kilometres&rdquo; when the strictest island threshold measures 9.1 &mdash; falsified by its own copy check before it reached a frame. And the first Law 06 test compared a channel&rsquo;s step against its <i>average rate</i> rather than testing for a <i>discontinuity</i>, so it failed on a channel that was moving fast for its own reasons. Arithmetically fine, wrong quantity, twice. <b>The lesson is holding: it is not enough to check the number, you have to check that the number is the sentence.</b></p>
+  </footer>
+
+  </main>
+</div>
+</div>

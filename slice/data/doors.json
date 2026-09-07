@@ -1,0 +1,677 @@
+{
+ "what": "Minimum-bottleneck water crossing out of Africa, measured separately at each of the two candidate doors.",
+ "definition": "Over all island-hopping routes from the African landmass to the Eurasian landmass THROUGH THIS CORRIDOR ONLY, the smallest achievable longest single water hop. Identical to the Wallacea definition, so the two numbers may be quoted in one sentence.",
+ "whyCorridors": "Africa and Eurasia share one land component at every sea level in the record, by way of Sinai. A global bottleneck is therefore 0 km and measures nothing. Each corridor isolates one door.",
+ "notMeasured": "Not the coast-to-coast width of the strait, and not a claim that either door was the one used. timeline.json/dispersal-route is confidence 'band': the route is unresolved and the film does not choose.",
+ "grid": "ETOPO 2022 bedrock, 60 arc-seconds. Exact great-circle distances on unit-sphere coordinates, no projection.",
+ "doors": [
+  {
+   "id": "bab-el-mandeb",
+   "label": "Bab-el-Mandeb",
+   "box": [
+    41.0,
+    46.5,
+    10.0,
+    16.5
+   ],
+   "africa": [
+    42.4,
+    12.6
+   ],
+   "eurasia": [
+    45.2,
+    13.6
+   ],
+   "note": "The southern door."
+  },
+  {
+   "id": "sinai",
+   "label": "Sinai",
+   "box": [
+    30.0,
+    38.0,
+    24.0,
+    33.0
+   ],
+   "africa": [
+    31.0,
+    26.5
+   ],
+   "eurasia": [
+    36.0,
+    31.5
+   ],
+   "note": "The northern door."
+  }
+ ],
+ "rows": [
+  {
+   "bottleneckKm": 21.6,
+   "hops": 73,
+   "gapFrom": [
+    43.358,
+    12.458
+   ],
+   "gapTo": [
+    43.425,
+    12.642
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": 0.0,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 28.5,
+   "hops": 9,
+   "gapFrom": [
+    43.258,
+    12.525
+   ],
+   "gapTo": [
+    43.458,
+    12.692
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": 0.0,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 28.5,
+   "hops": 2,
+   "gapFrom": [
+    43.258,
+    12.525
+   ],
+   "gapTo": [
+    43.458,
+    12.692
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": 0.0,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 6.6,
+   "hops": 53,
+   "gapFrom": [
+    42.775,
+    13.542
+   ],
+   "gapTo": [
+    42.725,
+    13.508
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -68.3,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 10.3,
+   "hops": 6,
+   "gapFrom": [
+    43.108,
+    13.008
+   ],
+   "gapTo": [
+    43.175,
+    13.075
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -68.3,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 10.3,
+   "hops": 3,
+   "gapFrom": [
+    43.108,
+    13.008
+   ],
+   "gapTo": [
+    43.175,
+    13.075
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -68.3,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 5.2,
+   "hops": 31,
+   "gapFrom": [
+    42.758,
+    13.542
+   ],
+   "gapTo": [
+    42.725,
+    13.508
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -73.9,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 9.8,
+   "hops": 6,
+   "gapFrom": [
+    43.158,
+    12.925
+   ],
+   "gapTo": [
+    43.242,
+    12.958
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -73.9,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 9.8,
+   "hops": 2,
+   "gapFrom": [
+    43.158,
+    12.925
+   ],
+   "gapTo": [
+    43.242,
+    12.958
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -73.9,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 5.2,
+   "hops": 20,
+   "gapFrom": [
+    42.758,
+    13.542
+   ],
+   "gapTo": [
+    42.725,
+    13.508
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -84.7,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 6.6,
+   "hops": 6,
+   "gapFrom": [
+    42.675,
+    13.408
+   ],
+   "gapTo": [
+    42.708,
+    13.458
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -84.7,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 9.1,
+   "hops": 2,
+   "gapFrom": [
+    43.158,
+    12.925
+   ],
+   "gapTo": [
+    43.225,
+    12.975
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -84.7,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 5.2,
+   "hops": 20,
+   "gapFrom": [
+    42.758,
+    13.542
+   ],
+   "gapTo": [
+    42.725,
+    13.508
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -85.7,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 6.6,
+   "hops": 6,
+   "gapFrom": [
+    42.675,
+    13.408
+   ],
+   "gapTo": [
+    42.708,
+    13.458
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -85.7,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 9.1,
+   "hops": 2,
+   "gapFrom": [
+    42.508,
+    13.675
+   ],
+   "gapTo": [
+    42.575,
+    13.725
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -85.7,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 5.2,
+   "hops": 18,
+   "gapFrom": [
+    42.758,
+    13.542
+   ],
+   "gapTo": [
+    42.725,
+    13.508
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -90.3,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 6.6,
+   "hops": 6,
+   "gapFrom": [
+    42.675,
+    13.408
+   ],
+   "gapTo": [
+    42.725,
+    13.442
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -90.3,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 7.8,
+   "hops": 2,
+   "gapFrom": [
+    42.525,
+    13.675
+   ],
+   "gapTo": [
+    42.575,
+    13.725
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -90.3,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 3.6,
+   "hops": 18,
+   "gapFrom": [
+    42.558,
+    13.658
+   ],
+   "gapTo": [
+    42.592,
+    13.658
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -131.0,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 4.0,
+   "hops": 4,
+   "gapFrom": [
+    42.525,
+    13.708
+   ],
+   "gapTo": [
+    42.558,
+    13.725
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -131.0,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 4.0,
+   "hops": 2,
+   "gapFrom": [
+    42.525,
+    13.708
+   ],
+   "gapTo": [
+    42.558,
+    13.725
+   ],
+   "dry": false,
+   "doorId": "bab-el-mandeb",
+   "seaM": -131.0,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": 0.0,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": 0.0,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": 0.0,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -68.3,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -68.3,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -68.3,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -73.9,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -73.9,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -73.9,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -84.7,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -84.7,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -84.7,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -85.7,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -85.7,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -85.7,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -90.3,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -90.3,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -90.3,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -131.0,
+   "minIslandPx": 1,
+   "minIslandKm2": 3.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -131.0,
+   "minIslandPx": 10,
+   "minIslandKm2": 34.4
+  },
+  {
+   "bottleneckKm": 0.0,
+   "hops": 1,
+   "gapFrom": null,
+   "gapTo": null,
+   "dry": true,
+   "doorId": "sinai",
+   "seaM": -131.0,
+   "minIslandPx": 100,
+   "minIslandKm2": 344.1
+  }
+ ],
+ "gulf": {
+  "what": "Share of the Persian Gulf basin standing above the waterline.",
+  "box": [
+   48.0,
+   57.0,
+   24.0,
+   30.5
+  ],
+  "definition": "Area fraction of the box above sea level S on ETOPO 2022 bedrock at 60 arc-seconds. Box-relative: quote it only next to this box.",
+  "rows": [
+   {
+    "seaM": 0.0,
+    "dryFracBox": 61.11
+   },
+   {
+    "seaM": -68.3,
+    "dryFracBox": 93.75
+   },
+   {
+    "seaM": -73.9,
+    "dryFracBox": 95.43
+   },
+   {
+    "seaM": -84.7,
+    "dryFracBox": 97.59
+   },
+   {
+    "seaM": -85.7,
+    "dryFracBox": 97.74
+   },
+   {
+    "seaM": -90.3,
+    "dryFracBox": 98.35
+   },
+   {
+    "seaM": -131.0,
+    "dryFracBox": 99.45
+   }
+  ]
+ }
+}

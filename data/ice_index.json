@@ -1,0 +1,249 @@
+{
+ "cols": 8,
+ "rows": 6,
+ "tileW": 360,
+ "tileH": 180,
+ "slices": [
+  {
+   "i": 0,
+   "kaBP": 26.0,
+   "iceFrac": 18.06
+  },
+  {
+   "i": 1,
+   "kaBP": 25.0,
+   "iceFrac": 17.85
+  },
+  {
+   "i": 2,
+   "kaBP": 24.0,
+   "iceFrac": 17.96
+  },
+  {
+   "i": 3,
+   "kaBP": 23.0,
+   "iceFrac": 17.98
+  },
+  {
+   "i": 4,
+   "kaBP": 22.0,
+   "iceFrac": 18.05
+  },
+  {
+   "i": 5,
+   "kaBP": 21.0,
+   "iceFrac": 18.03
+  },
+  {
+   "i": 6,
+   "kaBP": 20.5,
+   "iceFrac": 18.04
+  },
+  {
+   "i": 7,
+   "kaBP": 20.0,
+   "iceFrac": 18.04
+  },
+  {
+   "i": 8,
+   "kaBP": 19.5,
+   "iceFrac": 18.05
+  },
+  {
+   "i": 9,
+   "kaBP": 19.0,
+   "iceFrac": 18.11
+  },
+  {
+   "i": 10,
+   "kaBP": 18.5,
+   "iceFrac": 18.13
+  },
+  {
+   "i": 11,
+   "kaBP": 18.0,
+   "iceFrac": 17.96
+  },
+  {
+   "i": 12,
+   "kaBP": 17.5,
+   "iceFrac": 17.98
+  },
+  {
+   "i": 13,
+   "kaBP": 17.0,
+   "iceFrac": 17.61
+  },
+  {
+   "i": 14,
+   "kaBP": 16.5,
+   "iceFrac": 17.61
+  },
+  {
+   "i": 15,
+   "kaBP": 16.0,
+   "iceFrac": 17.32
+  },
+  {
+   "i": 16,
+   "kaBP": 15.5,
+   "iceFrac": 17.18
+  },
+  {
+   "i": 17,
+   "kaBP": 15.0,
+   "iceFrac": 16.73
+  },
+  {
+   "i": 18,
+   "kaBP": 14.5,
+   "iceFrac": 16.66
+  },
+  {
+   "i": 19,
+   "kaBP": 14.0,
+   "iceFrac": 15.92
+  },
+  {
+   "i": 20,
+   "kaBP": 13.5,
+   "iceFrac": 15.69
+  },
+  {
+   "i": 21,
+   "kaBP": 13.0,
+   "iceFrac": 15.36
+  },
+  {
+   "i": 22,
+   "kaBP": 12.5,
+   "iceFrac": 15.11
+  },
+  {
+   "i": 23,
+   "kaBP": 12.0,
+   "iceFrac": 14.77
+  },
+  {
+   "i": 24,
+   "kaBP": 11.5,
+   "iceFrac": 14.7
+  },
+  {
+   "i": 25,
+   "kaBP": 11.0,
+   "iceFrac": 13.8
+  },
+  {
+   "i": 26,
+   "kaBP": 10.5,
+   "iceFrac": 13.74
+  },
+  {
+   "i": 27,
+   "kaBP": 10.0,
+   "iceFrac": 13.38
+  },
+  {
+   "i": 28,
+   "kaBP": 9.5,
+   "iceFrac": 12.94
+  },
+  {
+   "i": 29,
+   "kaBP": 9.0,
+   "iceFrac": 12.63
+  },
+  {
+   "i": 30,
+   "kaBP": 8.5,
+   "iceFrac": 12.37
+  },
+  {
+   "i": 31,
+   "kaBP": 8.0,
+   "iceFrac": 11.78
+  },
+  {
+   "i": 32,
+   "kaBP": 7.5,
+   "iceFrac": 11.54
+  },
+  {
+   "i": 33,
+   "kaBP": 7.0,
+   "iceFrac": 11.32
+  },
+  {
+   "i": 34,
+   "kaBP": 6.5,
+   "iceFrac": 11.31
+  },
+  {
+   "i": 35,
+   "kaBP": 6.0,
+   "iceFrac": 11.27
+  },
+  {
+   "i": 36,
+   "kaBP": 5.5,
+   "iceFrac": 11.27
+  },
+  {
+   "i": 37,
+   "kaBP": 5.0,
+   "iceFrac": 11.23
+  },
+  {
+   "i": 38,
+   "kaBP": 4.5,
+   "iceFrac": 11.25
+  },
+  {
+   "i": 39,
+   "kaBP": 4.0,
+   "iceFrac": 11.24
+  },
+  {
+   "i": 40,
+   "kaBP": 3.5,
+   "iceFrac": 11.24
+  },
+  {
+   "i": 41,
+   "kaBP": 3.0,
+   "iceFrac": 11.23
+  },
+  {
+   "i": 42,
+   "kaBP": 2.5,
+   "iceFrac": 11.23
+  },
+  {
+   "i": 43,
+   "kaBP": 2.0,
+   "iceFrac": 11.23
+  },
+  {
+   "i": 44,
+   "kaBP": 1.5,
+   "iceFrac": 11.23
+  },
+  {
+   "i": 45,
+   "kaBP": 1.0,
+   "iceFrac": 11.23
+  },
+  {
+   "i": 46,
+   "kaBP": 0.5,
+   "iceFrac": 11.23
+  },
+  {
+   "i": 47,
+   "kaBP": 0.0,
+   "iceFrac": 11.23
+  }
+ ],
+ "note": "Grayscale = percent ice cover, 255 = 100%. Tiles are oldest-first, row-major. Crossfade adjacent tiles on t."
+}

@@ -1,0 +1,109 @@
+{
+ "tile": {
+  "file": "bathy_sunda.png",
+  "w": 3840,
+  "h": 3120,
+  "lon0": 92.0,
+  "lon1": 156.0,
+  "lat0": -30.0,
+  "lat1": 22.0,
+  "kmPerPx": 1.853,
+  "maxDecodeErrorM": 0.3052,
+  "scale": 0.30518043793392846,
+  "offset": -11000.0
+ },
+ "checks": [
+  {
+   "seaM": 0.0,
+   "sunda": [
+    "mainland Asia"
+   ],
+   "sahul": [
+    "Australia"
+   ],
+   "wallaceaGapKm": 2776.8,
+   "landFracBox": 23.75
+  },
+  {
+   "seaM": -68.3,
+   "sunda": [
+    "Borneo",
+    "Java",
+    "Sumatra",
+    "mainland Asia"
+   ],
+   "sahul": [
+    "Australia",
+    "New Guinea",
+    "Tasmania"
+   ],
+   "wallaceaGapKm": 997.3,
+   "landFracBox": 30.44
+  },
+  {
+   "seaM": -73.9,
+   "sunda": [
+    "Borneo",
+    "Java",
+    "Sumatra",
+    "mainland Asia"
+   ],
+   "sahul": [
+    "Australia",
+    "New Guinea",
+    "Tasmania"
+   ],
+   "wallaceaGapKm": 993.7,
+   "landFracBox": 30.88
+  },
+  {
+   "seaM": -77.0,
+   "sunda": [
+    "Borneo",
+    "Java",
+    "Sumatra",
+    "mainland Asia"
+   ],
+   "sahul": [
+    "Australia",
+    "New Guinea",
+    "Tasmania"
+   ],
+   "wallaceaGapKm": 993.7,
+   "landFracBox": 31.11
+  },
+  {
+   "seaM": -85.0,
+   "sunda": [
+    "Borneo",
+    "Java",
+    "Sumatra",
+    "mainland Asia"
+   ],
+   "sahul": [
+    "Australia",
+    "New Guinea",
+    "Tasmania"
+   ],
+   "wallaceaGapKm": 974.0,
+   "landFracBox": 31.59
+  },
+  {
+   "seaM": -131.0,
+   "sunda": [
+    "Borneo",
+    "Java",
+    "Sumatra",
+    "mainland Asia"
+   ],
+   "sahul": [
+    "Australia",
+    "New Guinea",
+    "Tasmania"
+   ],
+   "wallaceaGapKm": 918.7,
+   "landFracBox": 33.01
+  }
+ ],
+ "note": "Gap is the great-circle distance between the coastlines of the component containing mainland Asia and the component containing Australia, on ETOPO 2022 bedrock at 60 arc-seconds."
+}

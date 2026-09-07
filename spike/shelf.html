@@ -1,0 +1,213 @@
+<title>Shelf Test</title>
+<style>
+:root{--ember:#E8703A;--ice:#8FA8C4;--ice-dim:#5F7794;--bone:#E6E2D8;--rule:#232B3A;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;--sans:"IBM Plex Sans","Segoe UI",Helvetica,sans-serif;}
+*{box-sizing:border-box}
+body{margin:0;background:#05070B;color:var(--bone);font-family:var(--sans);font-weight:300;overflow:hidden}
+canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
+#panel{position:fixed;left:16px;top:16px;z-index:5;background:rgba(13,17,26,.93);border:1px solid var(--rule);
+  padding:14px 16px;font-family:var(--mono);font-size:11px;line-height:1.7;color:var(--ice-dim);width:300px}
+#panel .hd{color:var(--ember);letter-spacing:.14em;text-transform:uppercase;font-size:9.5px;margin:10px 0 6px;
+  border-top:1px solid #1A2130;padding-top:9px}
+#panel .hd:first-child{margin-top:0;border-top:0;padding-top:0}
+#panel .row{display:flex;justify-content:space-between;gap:12px}
+#panel b{color:var(--bone);font-weight:500}
+input[type=range]{width:100%;margin:8px 0 2px;accent-color:var(--ember)}
+#panel .note{font-family:var(--sans);font-size:11.5px;line-height:1.5;color:var(--ice-dim);margin-top:10px}
+#panel button{width:100%;margin-top:9px;background:transparent;border:1px solid #B05628;color:var(--ember);
+  font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:7px;cursor:pointer}
+#panel button:hover{background:rgba(232,112,58,.12)}
+#cap{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:5;font-family:var(--mono);
+  font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--ice-dim);
+  background:rgba(13,17,26,.9);border:1px solid var(--rule);padding:7px 16px;text-align:center}
+#cap b{color:var(--ember);font-weight:500}
+#err{position:fixed;inset:0;display:none;place-items:center;font-family:var(--mono);font-size:12px;color:var(--ember);padding:40px;text-align:center}
+</style>
+
+<canvas id="gl"></canvas>
+<div id="err"></div>
+
+<div id="panel">
+  <div class="hd">Shelf test — real bathymetry</div>
+  <div class="row"><span>sea level</span><b id="p-sea">0 m</b></div>
+  <div class="row"><span>year</span><b id="p-yr">present</b></div>
+  <div class="row"><span>land visible</span><b id="p-land">—</b></div>
+  <input type="range" id="sea" min="-140" max="10" value="0" step="1">
+  <div class="hd">Camera</div>
+  <div class="row"><span>centre</span><b id="p-cam">—</b></div>
+  <input type="range" id="lon" min="-180" max="180" value="118" step="1">
+  <input type="range" id="lat" min="-80" max="80" value="-6" step="1">
+  <div class="hd">Waterline</div>
+  <div class="row"><span>wet band</span><b id="p-band">18 m</b></div>
+  <input type="range" id="band" min="0" max="60" value="18" step="1">
+  <button id="anim">Play — 0 m → LGM → 0 m</button>
+  <div class="note" id="note">Drag <b>sea level</b> and watch the coastline. Every pixel is ETOPO 2022 bedrock thresholded in the fragment shader — no polygons, no stand-in.</div>
+</div>
+
+<div id="cap">sunda &amp; sahul · <b id="capname">drag sea level</b></div>
+
+<script>
+(function () {
+  "use strict";
+  var cv = document.getElementById("gl");
+  var gl = cv.getContext("webgl", { antialias: true, alpha: false });
+  if (!gl) { fail("WebGL unavailable in this browser."); return; }
+
+  function fail(m) { var e = document.getElementById("err"); e.style.display = "grid"; e.textContent = m; }
+
+  var VERT = "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}";
+  var FRAG = [
+    "precision highp float;",
+    "uniform vec2  res;",
+    "uniform sampler2D bathy;",
+    "uniform float sea, lon0, lat0, band, scale, offset, radius;",
+    "const float PI=3.141592653589793;",
+    "",
+    "float elevAt(vec2 uv){",
+    "  vec3 c = texture2D(bathy, uv).rgb;",
+    "  return (c.r*255.0*256.0 + c.g*255.0)*scale + offset;",
+    "}",
+    "",
+    "void main(){",
+    "  vec2 p = (gl_FragCoord.xy - res*0.5)/radius;",
+    "  p.y = -p.y;",                       // screen y is down
+    "  float d2 = dot(p,p);",
+    "  if (d2 > 1.0){ gl_FragColor = vec4(0.02,0.028,0.043,1.0); return; }",
+    "",
+    "  vec3 q = vec3(p.x, -p.y, sqrt(max(0.0,1.0-d2)));",
+    "  float ca=cos(lat0), sa=sin(lat0);",
+    "  q = vec3(q.x, q.y*ca - q.z*sa, q.y*sa + q.z*ca);",   // rotate about X
+    "  float cb=cos(lon0), sb=sin(lon0);",
+    "  q = vec3(q.x*cb + q.z*sb, q.y, -q.x*sb + q.z*cb);",  // rotate about Y
+    "",
+    "  float lat = asin(clamp(q.y,-1.0,1.0));",
+    "  float lon = atan(q.x, q.z);",
+    "  vec2 uv = vec2(lon/(2.0*PI)+0.5, 0.5 - lat/PI);",
+    "  float e = elevAt(uv);",
+    "",
+    "  float above = e - sea;",
+    "  vec3 col;",
+    "  if (above > 0.0){",
+    "    float h = clamp(above/2600.0, 0.0, 1.0);",
+    "    col = mix(vec3(0.222,0.259,0.310), vec3(0.44,0.46,0.47), h);",
+    "    float wet = 1.0 - smoothstep(0.0, band, above);",   // the moving waterline
+    "    col = mix(col, vec3(0.62,0.70,0.80), wet*0.85);",
+    "  } else {",
+    "    float dep = clamp(-above/3000.0, 0.0, 1.0);",
+    "    col = mix(vec3(0.055,0.086,0.145), vec3(0.016,0.027,0.055), dep);",
+    "    float shallow = 1.0 - smoothstep(0.0, 260.0, -above);",
+    "    col = mix(col, vec3(0.10,0.16,0.24), shallow*0.7);",
+    "  }",
+    "  float limb = smoothstep(1.0, 0.965, sqrt(d2));",
+    "  col *= 0.35 + 0.65*limb;",
+    "  col += vec3(0.10,0.14,0.19) * pow(1.0-limb, 2.0) * 0.9;",
+    "  gl_FragColor = vec4(col, 1.0);",
+    "}"
+  ].join("\n");
+
+  function sh(type, src) {
+    var s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s);
+    if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { fail("Shader: " + gl.getShaderInfoLog(s)); return null; }
+    return s;
+  }
+  var prog = gl.createProgram();
+  var vs = sh(gl.VERTEX_SHADER, VERT), fs = sh(gl.FRAGMENT_SHADER, FRAG);
+  if (!vs || !fs) return;
+  gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) { fail("Link: " + gl.getProgramInfoLog(prog)); return; }
+  gl.useProgram(prog);
+
+  var buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  var loc = gl.getAttribLocation(prog, "a");
+  gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+  var U = {};
+  ["res","bathy","sea","lon0","lat0","band","scale","offset","radius"].forEach(function (n) {
+    U[n] = gl.getUniformLocation(prog, n);
+  });
+
+  /* terrain-RGB decode constants — must match data/build_rasters.py */
+  var E_MIN = -11000, E_MAX = 9000, SCALE = (E_MAX - E_MIN) / 65535;
+  gl.uniform1f(U.scale, SCALE); gl.uniform1f(U.offset, E_MIN);
+
+  var tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, 1, 1, 0, gl.RGB, gl.UNSIGNED_BYTE, new Uint8Array([0,0,0]));
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+  var img = new Image();
+  img.onload = function () {
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img);
+    document.getElementById("note").innerHTML =
+      "Texture loaded — <b>" + img.width + "×" + img.height + "</b>, ETOPO 2022 bedrock. Every pixel is thresholded in the fragment shader against the sea-level uniform. No polygons.";
+    ready = true;
+  };
+  img.onerror = function () { fail("Bathymetry texture failed to load."); };
+  img.src = window.__BATHY__;
+
+  var ready = false;
+  var S = { sea: 0, lon: 118, lat: -6, band: 18 };
+  var playing = false, pt = 0;
+
+  function bind(id, key, fmt) {
+    var el = document.getElementById(id);
+    el.addEventListener("input", function () { S[key] = +el.value; playing = false; });
+    return el;
+  }
+  var seaEl = bind("sea", "sea"), lonEl = bind("lon", "lon"), latEl = bind("lat", "lat"), bandEl = bind("band", "band");
+  document.getElementById("anim").addEventListener("click", function () { playing = !playing; });
+
+  /* sea level -> approximate year, from the film's own curve shape */
+  function yearFor(s) {
+    if (s >= -5) return "present";
+    if (s > -80) return "~" + Math.round(11 + (-s - 5) * 0.055) + " ka";
+    return "~" + Math.round(15 + (-s - 80) * 0.18) + " ka";
+  }
+
+  function resize() {
+    var dpr = Math.min(2, window.devicePixelRatio || 1);
+    cv.width = cv.clientWidth * dpr; cv.height = cv.clientHeight * dpr;
+    gl.viewport(0, 0, cv.width, cv.height);
+  }
+  window.addEventListener("resize", resize);
+  resize();
+
+  function frame() {
+    if (ready) {
+      if (playing) {
+        pt += 0.006;
+        var f = (Math.sin(pt) + 1) / 2;
+        S.sea = -f * 132;
+        seaEl.value = Math.round(S.sea);
+      }
+      gl.uniform2f(U.res, cv.width, cv.height);
+      gl.uniform1f(U.sea, S.sea);
+      gl.uniform1f(U.lon0, S.lon * Math.PI / 180);
+      gl.uniform1f(U.lat0, S.lat * Math.PI / 180);
+      gl.uniform1f(U.band, Math.max(0.5, S.band));
+      gl.uniform1f(U.radius, Math.min(cv.width, cv.height) * 0.44);
+      gl.uniform1i(U.bathy, 0);
+      gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, tex);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+
+      document.getElementById("p-sea").textContent = Math.round(S.sea) + " m";
+      document.getElementById("p-yr").textContent = yearFor(S.sea);
+      document.getElementById("p-cam").textContent = Math.round(S.lon) + "°, " + Math.round(S.lat) + "°";
+      document.getElementById("p-band").textContent = Math.round(S.band) + " m";
+      document.getElementById("p-land").textContent =
+        S.sea <= -125 ? "34.0% of grid" : (S.sea >= -2 ? "28.5% of grid" : "→ rising");
+      document.getElementById("capname").textContent =
+        S.sea > -20 ? "present coastline" : (S.sea > -70 ? "shelf emerging" : "sunda + sahul exposed");
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
