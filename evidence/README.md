@@ -3,7 +3,7 @@
 Things this project claims that are only checkable by **looking**, or by
 **breaking something on purpose**, kept where a clone can still find them.
 
-`.playwright-mcp/` is gitignored, which is correct — it is scratch — but the
+`.playwright-mcp/` is gitignored, which is correct — it is scratch — but a
 previous session learned that evidence written there does not survive. The
 audit's reproduction scripts were rescued into `audit/` for the same reason;
 these are the same kind of thing, produced by this project rather than by the
@@ -15,8 +15,10 @@ auditor.
 | `tile-fallback-no-tile.png` | The same frame with that tile **aborted**. |
 | `make_tile_fallback.py` | Shoots both. Run it from the repo root. |
 | `mutate_law06.py` | Makes the film wrong two ways and requires the panel to notice. |
+| `unroll-k0p00 … k1p00.png` | The unroll at six values of k, 1280×800. |
+| `../unroll/shoot.py` | Shoots that ladder and runs the slice's four tests, twice. |
 
-## What the two frames are evidence of
+## What the two tile frames are evidence of
 
 Invariant 8's empty state. Two of the three terrain tiles are fetched *after*
 the film starts, so a beat can be on screen before its tile arrives, and
@@ -30,6 +32,32 @@ dimension line, the labels' leaders and the ember head land in the same places.
 The Wallacean islands are simplified, not moved. No frost on the waterline, no
 displacement — which is what the 2026-09-08 registration bug looked like, and
 the reason this one was checked by eye and not only by assertion.
+
+## What the unroll ladder is evidence of
+
+That Law 03's second verb works, and that it works as a **surface morph** rather
+than a cut. Read the six frames in order:
+
+- **k 0.00** — the whole globe, the entry pose beat 11 hands over.
+- **k 0.15** — the seam opens. A sliver of the Americas' west coast appears at
+  the left edge with the Balsas ember standing on it. The antimeridian is one
+  point on a globe and two edges on a map, and this is the frame where the film
+  admits it.
+- **k 0.30 → 0.50** — the corners square off and the poles unzip from a point
+  into an edge. Every intermediate state is a sphere of growing radius, so the
+  eye is never asked to accept a change of space.
+- **k 0.75 → 1.00** — plate carrée, six centres of domestication in one frame,
+  and the graduated filter carrying the sentence in the lower left.
+
+The count in the corner is the argument: **2 of 6** centres in frame at k 0,
+**6 of 6** at k 1. That is the whole reason Law 03 has an atlas register, and
+the slice re-derives it on its own camera and its own surface rather than
+quoting the storyboard.
+
+Three of those six centres are drawn **dashed**, and that is not a style: the
+Fertile Crescent, the Andes and the Sahel are named in the storyboard's frame
+for beat 12 and have no event with coordinates in `timeline.json`. The picture
+says which numbers exist.
 
 ## What `mutate_law06.py` is evidence of
 

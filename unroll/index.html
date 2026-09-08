@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>One Ember — the unroll</title>
+<meta name="description" content="Phase 6 slice. Law 03's second verb: orbital to atlas, as one continuous surface.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..600&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap">
+<style>
+/* The type system is the film's, unchanged - see slice/index.html for the
+   three voices and the four placement laws. This slice only borrows the
+   tokens, because a spike that invents its own look cannot tell you whether
+   the transition works in the film. */
+:root{
+  --void:#04060A; --rule:#1A2130; --bone:#E6E2D8; --bone-dim:#A9A498;
+  --ice:#8FA8C4; --ice-dim:#647C99; --ember:#E8703A;
+  --display:"Fraunces","Iowan Old Style",Georgia,serif;
+  --body:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
+  --gutter:64px; --ease:cubic-bezier(.22,.61,.36,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--void);scrollbar-width:none}
+html::-webkit-scrollbar{display:none}
+body{background:var(--void);color:var(--bone);font-family:var(--body);font-weight:300;
+  -webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block}
+#earth{z-index:1}
+#over{z-index:2;pointer-events:none}
+
+.mono{font-family:var(--mono);font-size:10.5px;font-weight:400;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ice-dim)}
+
+#head{position:fixed;z-index:4;left:var(--gutter);top:30px;pointer-events:none}
+#head .ti{font-family:var(--display);font-size:15px;font-weight:400;color:var(--bone-dim);
+  margin-top:6px}
+
+#copy{position:fixed;z-index:3;pointer-events:none;
+  left:var(--gutter);bottom:150px;width:min(38vw,520px)}
+#voice{font-family:var(--display);font-optical-sizing:auto;
+  font-size:clamp(28px,3.05vw,44px);font-weight:300;line-height:1.14;
+  letter-spacing:-.015em;color:var(--bone);max-width:24ch;text-wrap:balance;
+  opacity:0;transition:opacity .9s var(--ease)}
+#voice.on{opacity:1}
+
+#state{position:fixed;z-index:3;left:var(--gutter);bottom:112px;pointer-events:none;
+  font-variant-numeric:tabular-nums}
+#state .k{color:var(--ice)}
+
+/* -- the scrub. A spike is for LOOKING at, so the whole point is a control
+      that puts any k on screen instantly and says which one it is. --------- */
+#scrub{position:fixed;z-index:6;left:var(--gutter);right:var(--gutter);bottom:34px;
+  display:flex;gap:18px;align-items:center}
+#scrub input{flex:1;accent-color:#8FA8C4;background:transparent}
+#scrub .v{font-variant-numeric:tabular-nums;color:var(--bone);min-width:150px}
+
+#panel{position:fixed;z-index:40;right:22px;top:22px;width:376px;display:none;
+  background:rgba(6,9,15,.95);border:1px solid var(--rule);padding:15px 16px;
+  font-family:var(--mono);font-size:10.5px;line-height:1.75;color:var(--ice-dim);
+  max-height:calc(100vh - 44px);overflow:auto}
+#panel.on{display:block}
+#panel h4{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ice);
+  font-weight:500;margin:14px 0 6px;border-top:1px solid var(--rule);padding-top:11px}
+#panel h4:first-child{margin-top:0;border-top:0;padding-top:0}
+#panel .r{display:flex;justify-content:space-between;gap:14px}
+#panel .r b{color:var(--bone);font-weight:500;font-variant-numeric:tabular-nums}
+#panel button{width:100%;margin-top:8px;background:transparent;border:1px solid #2A3344;
+  color:var(--ice);font:inherit;letter-spacing:.12em;text-transform:uppercase;
+  padding:7px;cursor:pointer;pointer-events:auto}
+#panel button:hover{background:rgba(143,168,196,.09)}
+#panel pre{white-space:pre-wrap;font:inherit;margin-top:8px;color:var(--bone-dim)}
+#panel .ok{color:#7FBF8F}
+#panel .bad{color:var(--ember)}
+#hint{position:fixed;z-index:5;right:22px;bottom:26px}
+
+#load{position:fixed;inset:0;z-index:20;background:var(--void);display:grid;
+  place-content:center;justify-items:center;gap:22px;transition:opacity .9s var(--ease)}
+#load.off{opacity:0;pointer-events:none}
+#load .bar{width:240px;height:1px;background:var(--rule);position:relative}
+#load .bar i{position:absolute;inset:0 auto 0 0;width:0;background:var(--ice-dim);
+  transition:width .3s linear}
+</style>
+</head>
+<body>
+
+<canvas id="earth" aria-hidden="true"></canvas>
+<canvas id="over" aria-hidden="true"></canvas>
+
+<div id="head">
+  <div class="mono" id="h-no">SLICE &middot; LAW 03's SECOND VERB</div>
+  <div class="ti">The unroll</div>
+</div>
+
+<div id="copy"><div id="voice"></div></div>
+<div id="state" class="mono"></div>
+
+<div id="scrub" class="mono">
+  <span>ORBITAL</span>
+  <input id="k" type="range" min="0" max="1" step="0.0005" value="0">
+  <span>ATLAS</span>
+  <span class="v" id="kv">k 0.0000</span>
+</div>
+
+<div id="hint" class="mono">press i</div>
+
+<div id="panel">
+  <h4>The surface &mdash; one definition, two consumers</h4>
+  <div class="r"><span>k &middot; bend b</span><b id="p-k">&mdash;</b></div>
+  <div class="r"><span>sphere radius 1/b</span><b id="p-r">&mdash;</b></div>
+  <div class="r"><span>camera height</span><b id="p-h">&mdash;</b></div>
+  <div class="r"><span>pitch &middot; bearing</span><b id="p-pb">&mdash;</b></div>
+  <div class="r"><span>map centre</span><b id="p-lon0">&mdash;</b></div>
+  <div class="r"><span>centres in frame</span><b id="p-vis">&mdash;</b></div>
+  <h4>Does the shader agree with the overlay</h4>
+  <button id="t-agree">Run the agreement test</button>
+  <pre id="o-agree">The shader inverse-maps a pixel to a lon/lat; project() forward-maps a lon/lat to a pixel. They are two different pieces of code for one surface, and if they disagree the lights slide off the ground they are standing on. This reads pixels back off the GPU and diffs them against project().</pre>
+  <h4>Is k=0 still the film's globe</h4>
+  <button id="t-sphere">Run the sphere test</button>
+  <pre id="o-sphere">At k=0 the morph must be the unit sphere EXACTLY, not nearly - otherwise entering the unroll costs a pop. Compares surf() against the film's own xyz() at a few thousand points.</pre>
+  <h4>Law 01 &mdash; the morph is a function of t</h4>
+  <button id="t-purity">Run the purity test</button>
+  <pre id="o-purity">Hashes the whole state scrubbing forward, then backward, and diffs. The unroll must be a pure function of t like everything else, or it cannot be scrubbed.</pre>
+  <h4>Why the atlas register exists at all</h4>
+  <button id="t-six">Count the centres</button>
+  <pre id="o-six">Law 03's justification is a measurement: a globe cannot hold beat 12. Counts how many domestication centres are visible in this frame, at this k, and reports the count at both ends.</pre>
+</div>
+
+<div id="load">
+  <div class="mono">ONE EMBER &middot; THE UNROLL</div>
+  <div class="bar"><i id="lbar"></i></div>
+  <div class="mono" id="lmsg" style="opacity:.55">reading the earth</div>
+</div>
+
+<script src="unroll.js"></script>
+</body>
+</html>

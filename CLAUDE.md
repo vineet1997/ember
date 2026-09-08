@@ -22,6 +22,8 @@ essay, same art and writing, no scroll-cinema. That one artifact is also the
 | `data/` | The environmental channels. All acquired and built. |
 | `slice/` | **Beats 05, 06 and 07 at final quality, on one continuous `t`.** The renderer, the type system, the ruler, the match cut, the hold, the plume, permanent absence, and five tests. This code *is* the film. |
 | `slice/atlas.html` | **Beat 06 as a static artifact.** Eight stills baked from the film's own shader; every word live HTML. Mobile, reduced motion, no-JS, crawlers, and a browser with WebGL off all land here. Generated — edit `film.js` and rebuild, never this file. |
+| `unroll/` | **Law 03's second verb, built.** Beat 12's orbital→atlas transition as one continuous surface, with four tests. Phase 6. |
+| `evidence/` | Things only a picture or a deliberate break can establish, kept where a clone can find them. |
 | `spike/` | Phase 3 throwaway prototypes. **Do not promote this code** — rewrite from scratch, keep only what it taught. |
 
 Published storyboard: https://claude.ai/code/artifact/2e20728f-4ebf-4f50-812c-be3cb964b56f
@@ -484,10 +486,34 @@ browser, says what to do), but **a good error message is not a fallback** — th
 it exists now: the failure page, the desktop gate and a `<noscript>` block all link to
 `atlas.html`, and the copy check asserts all three of those links rather than trusting them.
 
-**Not yet:** the **unroll** (orbital↔atlas, Law 03's second verb) is completely unbuilt, and
-the spike already failed once here — a hard cut between projections read as a glitch. It is
-the film's largest remaining technical unknown. It belongs to beat 12 and should get its own
-slice, not be improvised inside another beat.
+**Phase 6: the unroll is built** — `unroll/`, Law 03's second verb, and it did get its own
+slice. **The answer was not to cut better but not to cut at all.** Put the map's anchor at the
+origin and write the earth implicitly as **b·|q|² + 2·q_z = 0**: the unit sphere at b=1, the
+plane at b=0, and in between **a sphere of radius 1/b with the anchor pinned**. The globe does
+not melt into a map, it *inflates until it is flat*.
+
+Three things follow, and they are why this family was chosen over the obvious mesh:
+**the fragment shader survives it** — substituting the ray gives a quadratic whose leading
+coefficient *is* the bend, so the flat case is the linear root and not a branch, and the film
+keeps one renderer with no geometry and no depth buffer; **the map lands on plate carrée**,
+which is the projection the rasters are already in, so the atlas register adds no second
+distortion; and **the seam and the poles fall out** — the globe opens at the antimeridian and
+the pole unzips into an edge, both of which are true things about flat maps that the film now
+shows rather than hides.
+
+Four tests, all passing twice: the surface at k=0 is the unit sphere **exactly** (checked
+against two other formulas including the film's own `xyz`); the morph is a pure function of `t`;
+**the shader and the overlay agree to 0.0015 px** across the whole morph, by a round trip that
+reads the shader's own answer back off the GPU at 24 bits; and Law 03's justification is
+**re-derived rather than quoted** — 2 of 6 centres in frame from the globe, 6 of 6 from the
+atlas, measured on this slice's own camera. Frames in `evidence/unroll-k*.png`.
+
+**What is deliberately not built:** the slice's camera is its own — a height, a pitch, a bearing
+and a lens shift — and **not** the film's sine-rule `frame()`, so **the join to beat 11 is
+unbuilt** and is the next piece of work. And **three of beat 12's six centres have no
+coordinates in `timeline.json`** — the Fertile Crescent, the Andes and the Sahel are named in
+the storyboard's frame and sourced nowhere, so the slice draws them **dashed** and its own test
+says so. Data before documents: that is the other next piece.
 
 **The type system now exists** — three voices, three placement laws, in the head of
 `slice/index.html`. One law had to be rewritten during the build: *no scrims anywhere* does

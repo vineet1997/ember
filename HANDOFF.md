@@ -11,13 +11,98 @@ list this session worked through — is the parent of this file in git history.
 
 ## Status in one line
 
-**Phase 5 step 3 is done: the audit's access finding and the Law 06 independence
-finding are closed.** What remains of the audit is the historical framing —
+**Phase 5 step 3 is done** — the audit's access finding and the Law 06
+independence finding are closed — **and the director lifted the pause, so Phase 6
+built the unroll.** What remains of the audit is the historical framing —
 findings 1, 3 and 6 — which is **deliberately untouched**, because it needs the
-papers open and they were not read. The director's pause on expanding the slice
-is otherwise clear.
+papers open and they were not read.
 
 Repo: `github.com/vineet1997/ember`, branch `main`.
+
+---
+
+## Phase 6: the unroll is built
+
+**Law 03's second verb, `unroll/`.** The director lifted the pause; between
+beats 08–14 and the unroll, the unroll went first, because the storyboard says
+it is the film's largest technical unknown and building beats around a
+transition that might not work is the expensive order.
+
+**The answer was not to cut better. It was not to cut at all.** Put the map's
+anchor at the origin and write the earth implicitly:
+
+```
+b·|q|² + 2·q_z = 0
+```
+
+b = 1 is the unit sphere through the origin; b = 0 is the plane z = 0; in
+between it is **a sphere of radius 1/b with the anchor pinned**. The globe does
+not melt into a map, it *inflates until it is flat*. Three things follow, and
+they are the whole reason this family was chosen over the obvious mesh:
+
+- **The fragment shader survives it.** Substituting the ray gives a quadratic
+  whose leading coefficient *is* the bend, so the flat case is the linear root
+  rather than a branch, and one stable quadratic covers the morph. No geometry,
+  no mesh, no depth buffer, one renderer. A mesh would have cost the film a
+  second earth renderer that has to agree with the first, which is the shape of
+  every bug this project has had.
+- **The map lands on plate carrée** — the projection the rasters are already in
+  — so the atlas register adds no second distortion.
+- **The seam and the poles fall out.** The globe opens at the antimeridian and
+  the pole unzips from a point into an edge, because that is what a flat map
+  does, and the film now shows it instead of hiding it. `evidence/unroll-k0p15`
+  is the frame where it happens.
+
+**Four tests, all passing twice.** `python unroll/shoot.py` runs them and shoots
+the ladder.
+
+| | |
+|---|---|
+| `sphereTest` | at k = 0 the morph is the unit sphere **exactly**, against two other formulas including the film's own `xyz()` |
+| `purity` | the morph is a pure function of `t`, forward and backward |
+| `agreementTest` | the shader and `project()` agree to **0.0015 px** across the morph |
+| `sixTest` | **2 of 6** centres in frame from the globe, **6 of 6** from the atlas |
+
+`sixTest` re-derives the number the storyboard has quoted since Phase 3, on a
+different camera and a different surface, and it comes out the same.
+
+**`agreementTest` failed twice and both times the test was wrong**, which is now
+the fourth and fifth instance of this project's most reliable pattern. First it
+compared the shader's answer against the place the probe started from — which
+measures the distance from a continuous position to a pixel centre, half a pixel
+by construction. It showed as *every* probe at k = 1 being wrong by exactly
+0.2249°: one number, which is never a drift. It is a **round trip in pixels**
+now. Then it encoded the *world* longitude, which runs to 190° for a map centred
+at 10°E, and the clamp read as an 11-pixel drift at the seam — a failure
+entirely inside the instrument. It encodes the *map* coordinate, which the edge
+test has already bounded.
+
+**A mirrored world, caught by looking.** `frame()` copied the film's
+`cross(up, fwd)`, which is right in the film's chirality and wrong in anchor
+space, where x is east and z points at the camera. East came out on the left.
+Nothing in the arithmetic complains about a reflected earth; the first shot out
+of the renderer did.
+
+**Two of the film's constants were tuned at one scale and had to become
+relative.** The relief slope and the waterline's gradient gate were set on a
+beat-06 close shot at 0.0106° per pixel; the atlas register runs at 0.45, a
+factor of forty. Unscaled, the relief turned a world map into a black rectangle
+and the waterline lit the entire grazing limb white. Both are now scaled by the
+frame's own degrees-per-pixel, which is also Law 08's argument from the other
+end: **below a resolution there is no coastline to draw.**
+
+### What the unroll deliberately does not have
+
+- **The camera is the slice's own** — height, pitch, bearing and a lens shift —
+  and **not** the film's sine-rule `frame()`. **The join to beat 11 is unbuilt**
+  and is the next piece of work on it.
+- **Three of beat 12's six centres have no coordinates in `timeline.json`.** The
+  Fertile Crescent, the Andes and the Sahel are named in the storyboard's frame
+  and sourced nowhere. The slice draws them **dashed**, labels them INDICATIVE,
+  and `sixTest` says so in its own output. Larson et al. 2014 is already in the
+  bibliography and maps the accepted centres. **Data before documents:** finish
+  that before the beat is composed.
+- No copy check, no atlas fallback, no accessibility work. It is a slice.
 
 ---
 
@@ -200,8 +285,10 @@ Everything in the previous handoff's trap list still holds unchanged.
 ## Commands
 
 ```bash
-python slice/serve.py                   # dev server, no-cache. Never a caching one.
+python slice/serve.py                   # the film, on :8123
+python unroll/serve.py                  # the unroll, on :8124/unroll/
 python slice/tools/check.py verify      # is the film sound; non-zero exit if not
+python unroll/shoot.py                  # the unroll's four tests, twice, plus the ladder
 python slice/build_atlas.py             # bake + write atlas.html (~10 min)
 python slice/build_atlas.py --no-bake   # re-lay-out from the sidecar (seconds)
 python data/build_rasters.py            # rebuild terrain; ends with verify_registration()
@@ -222,9 +309,6 @@ WebGL failure path.
   time. The layouts carry the holes rather than hiding them.
 - **Vegetation dataset** still unnamed; has now cost a written frame in beats
   02, 05 and 12.
-- **The unroll** (orbital↔atlas, Law 03's second verb) is still unbuilt and is
-  still the largest technical unknown. It belongs to beat 12 and wants its own
-  slice.
 - **A second idea for the temporal beats**, 05 and 07 — the storyboard's `#atlas`
   section carries the argument, and the decided negative: do not extend the atlas
   to them by adding stills.
