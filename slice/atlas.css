@@ -38,7 +38,10 @@
   --bone:#E6E2D8;
   --bone-dim:#A9A498;
   --ice:#8FA8C4;
-  --ice-dim:#5F7794;
+  /* 4.72:1 on the void; #5F7794 was 4.40 and AA wants 4.5 at this size. The
+     atlas leans on this token harder than the film does - captions, labels,
+     the evidence table, the colophon. Kept identical to index.html. */
+  --ice-dim:#647C99;
   --display:"Fraunces","Iowan Old Style",Georgia,serif;
   --body:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Consolas,monospace;

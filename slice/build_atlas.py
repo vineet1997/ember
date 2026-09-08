@@ -57,7 +57,7 @@ BAKE_W, BAKE_H, BAKE_DPR = 1440, 810, 2
 SAVE_W, SAVE_H = 1920, 1080
 WEBP_QUALITY = 88
 
-TESTS = ["purity", "copyCheck", "law06", "absence", "hold"]
+TESTS = ["purity", "copyCheck", "law06", "independence", "absence", "hold"]
 
 
 # ── the server ──────────────────────────────────────────────────────────────
@@ -98,7 +98,14 @@ def bake(headed=False):
         page.on("pageerror", lambda e: errs.append(str(e)))
         page.goto(url, wait_until="load")
         try:
-            page.wait_for_function("window.EMBER && window.EMBER.bakeAt", timeout=90000)
+            # AND EVERY TILE UPLOADED. Two of the three frame tiles are fetched
+            # after the film starts now, so bakeAt exists a long time before
+            # beat 06's tile does - and a still baked in that window would be
+            # the right frame at the wrong resolution, drawn from the 2048-wide
+            # globe, silently, forever.
+            page.wait_for_function(
+                "window.EMBER && window.EMBER.bakeAt && window.EMBER.tilesReady()",
+                timeout=300000)
         except Exception:
             raise SystemExit(
                 "the film did not reach a bakeable state.\n"
@@ -130,7 +137,7 @@ def bake(headed=False):
             page.evaluate("window.EMBER.%s()" % name)
         tests = page.evaluate("""() => {
           const ids = {purity:'o-purity', copyCheck:'o-copy', law06:'o-law06',
-                       absence:'o-absence', hold:'o-hold'};
+                       independence:'o-indep', absence:'o-absence', hold:'o-hold'};
           const out = {};
           for (const k in ids) {
             const el = document.getElementById(ids[k]);
@@ -177,11 +184,11 @@ def bake(headed=False):
                    "timeline.json - this file authors nothing.",
         "bakedAt": {"w": BAKE_W, "h": BAKE_H, "dpr": BAKE_DPR,
                     "saved": [SAVE_W, SAVE_H], "renderer": renderer,
-                    # The colophon says "five tests passing". That is a claim
-                    # about a BAKE RUN, not about the film as it stands right
-                    # now, and --no-bake re-lays-out from a sidecar that may be
-                    # older than the film. Dating it is what keeps the sentence
-                    # true rather than merely once-true.
+                    # The colophon counts the tests that passed. That is a
+                    # claim about a BAKE RUN, not about the film as it stands
+                    # right now, and --no-bake re-lays-out from a sidecar that
+                    # may be older than the film. Dating it is what keeps the
+                    # sentence true rather than merely once-true.
                     "when": datetime.date.today().isoformat()},
         "tests": tests,
         "stills": stills,
@@ -210,7 +217,7 @@ def rail(side, mark_ts):
     for b in side["beats"]:
         mine = b["id"] == 6
         near = b["id"] in (5, 7)
-        col = "#E6E2D8" if mine else ("#5F7794" if near else "#3A465C")
+        col = "#E6E2D8" if mine else ("#647C99" if near else "#3A465C")
         op = ".95" if mine else (".7" if near else ".45")
         p.append('<path d="M%.2f 22 C%.2f 32,%.2f 44,%.2f 54" fill="none" stroke="%s" '
                  'stroke-width="%s" opacity="%s"/>'
@@ -382,6 +389,22 @@ def alt_text(st, sh):
             (sh["id"], f"{st['yr']:,}", st["sea"], st["register"], st["lon"], st["lat"]))
 
 
+NUMBER = ["No", "One", "Two", "Three", "Four", "Five", "Six", "Seven",
+          "Eight", "Nine", "Ten"]
+
+
+def colophon(side):
+    """The bake's own provenance. Every number in it is read off the sidecar."""
+    passed = [k for k, v in side["tests"].items() if v["pass"]]
+    n = len(passed)
+    return ("Stills baked from the film's fragment shader at %d&times;%d on %s, "
+            "renderer <code>%s</code>. %s test%s passing at that build: %s."
+            % (side["bakedAt"]["w"], side["bakedAt"]["h"], baked_when(side),
+               esc(side["bakedAt"]["renderer"]),
+               NUMBER[n] if n < len(NUMBER) else str(n),
+               "" if n == 1 else "s", ", ".join(passed)))
+
+
 def baked_when(side):
     """The date the sidecar was baked. Falls back to the file's own mtime for a
     sidecar written before this field existed - guessing would be worse than
@@ -458,11 +481,12 @@ def build(side):
         "stretch": (0.38 - 0.30) / ((50000 - 43000) / SPAN),
         "shots": shots,
         "closep": '<div class="lede">%s</div>' % "".join("<p>%s</p>" % p for p in A["close"]),
-        "colophon": ("Stills baked from the film's fragment shader at %d&times;%d on %s, "
-                     "renderer <code>%s</code>. Five tests passing at that build: %s."
-                     % (side["bakedAt"]["w"], side["bakedAt"]["h"], baked_when(side),
-                        esc(side["bakedAt"]["renderer"]),
-                        ", ".join(k for k, v in side["tests"].items() if v["pass"]))),
+        # A FIGURE MUST NAME ITS REFERENT AND THE NAME MUST BE GENERATED. This
+        # read "Five tests passing" beside a list that is built from the
+        # sidecar, so the day a sixth test was added the sentence said five and
+        # printed six - the same defect as "+30% on today, 92-160E", one line
+        # long, in the file that documents it. The count comes off the list now.
+        "colophon": colophon(side),
     }
     p = os.path.join(HERE, "atlas.html")
     with io.open(p, "w", encoding="utf-8", newline="\n") as f:

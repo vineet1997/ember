@@ -76,7 +76,8 @@ def serve():
 
 @contextmanager
 def session(page_name="index.html", query="?still=1", width=1440, height=810,
-            dpr=1, headed=False, javascript=True, gl=True, wait_ember=True):
+            dpr=1, headed=False, javascript=True, gl=True, wait_ember=True,
+            abort=()):
     """A served page with a Playwright page on it.
 
     page_name  "index.html" for the film, "atlas.html" for the static artifact.
@@ -86,6 +87,12 @@ def session(page_name="index.html", query="?still=1", width=1440, height=810,
     javascript False loads the atlas the way a crawler or a reader with
                scripting off receives it. Meaningless for the film.
     wait_ember waits for window.EMBER, which only appears on the renderer path.
+    abort      substrings of URLs to fail. The film's two loading claims are
+               both claims about FAILURE - that a background tile does not
+               block the film, and that a blocking one does not leave a reader
+               in a dead end - and neither can be checked on a page where
+               everything arrives. A check needs a configuration that could
+               have disagreed.
 
     Yields (page, errors) where errors is a live list of page exceptions — check
     it, because a thrown exception otherwise looks like a passing run.
@@ -99,6 +106,9 @@ def session(page_name="index.html", query="?still=1", width=1440, height=810,
                                   device_scale_factor=dpr,
                                   java_script_enabled=javascript)
         page = ctx.new_page()
+        if abort:
+            page.route("**/*", lambda route, req: (
+                route.abort() if any(s in req.url for s in abort) else route.continue_()))
         errors = []
         page.on("pageerror", lambda e: errors.append(str(e)))
         page.goto(url, wait_until="load")
@@ -125,7 +135,7 @@ def session(page_name="index.html", query="?still=1", width=1440, height=810,
             httpd.shutdown()
 
 
-def settle(page, images=False):
+def settle(page, images=False, tiles=True):
     """Wait until the page is actually photographable.
 
     The loading overlay fades over 0.9 s AFTER a 260 ms timeout, so a screenshot
@@ -139,6 +149,17 @@ def settle(page, images=False):
             timeout=30000)
     except Exception:
         pass
+    # AND THE TILES. The loader clears as soon as the ONE tile the opening frame
+    # stands on has arrived; the other two follow while the film runs. A shot
+    # taken in that window is a true picture at the wrong resolution, which is
+    # the worst kind to compare against. tiles=False for a session that has
+    # deliberately aborted one, where waiting is waiting for nothing.
+    if tiles:
+        try:
+            page.wait_for_function("!window.EMBER || !window.EMBER.tilesReady || "
+                                   "window.EMBER.tilesReady()", timeout=180000)
+        except Exception:
+            pass
     if images:
         page.evaluate("""async () => {
             const im = [...document.querySelectorAll('img')];
@@ -149,7 +170,7 @@ def settle(page, images=False):
 
 
 def panel_tests(page, runs=2):
-    """Run the five panel tests, `runs` times, and report each run separately.
+    """Run the six panel tests, `runs` times, and report each run separately.
 
     TWICE IS THE MINIMUM AND IT IS NOT SUPERSTITION. Two checks in this project
     have passed on their first run and failed on every run afterwards, because
@@ -159,7 +180,7 @@ def panel_tests(page, runs=2):
     for _ in range(runs):
         out.append(page.evaluate("""() => {
           const ids = {purity:'o-purity', copyCheck:'o-copy', law06:'o-law06',
-                       absence:'o-absence', hold:'o-hold'};
+                       independence:'o-indep', absence:'o-absence', hold:'o-hold'};
           const r = {};
           for (const k in ids) {
             window.EMBER[k]();

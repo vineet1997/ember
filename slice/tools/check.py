@@ -6,9 +6,10 @@
     python slice/tools/check.py shoot film -t 0.4040
     python slice/tools/check.py shoot atlas -w 390 -s "#s04"
 
-VERIFY is the one to run before believing anything. It runs the five panel tests
-twice, and then checks four things the panel cannot see because they are not
-functions of t:
+VERIFY is the one to run before believing anything. It runs the six panel tests
+twice, and then checks seven things the panel cannot see - because they are not
+functions of t, or because they are about the film FAILING and a panel only runs
+on a film that started:
 
   - the film still letters its own frames. Every canvas text site goes through
     the annotation sink so the atlas can bake the world and place words as HTML;
@@ -21,6 +22,22 @@ functions of t:
   - the film voice appears exactly ONCE on the atlas. A copy window is a range
     of t, so a line the film shows once is live at more than one sampled frame;
     printing it twice breaks the film's own discipline.
+  - one t, reached two ways, hands a screen reader the same copy. The copy
+    column is written only when it changes, so a paragraph that has left the
+    screen stays in the DOM at zero opacity; until 2026-09-08 it also stayed in
+    the accessibility tree, and WHICH paragraph depended on the direction you
+    arrived from. Two readers at one t, one state hash, different text.
+  - the two background tiles do not block the film. Aborted, the film must still
+    start, still clear its loader, and still draw beat 06 - from the global
+    texture, at lower resolution and never at a wrong value.
+  - a blocking asset that fails leaves a door open. It used to leave an opaque
+    loader with no link on it, and a later success would erase even the error.
+  - the way out is reachable from the keyboard: the first tab stop is the atlas.
+  - the gate answers a reader who changes their mind. It used to be asked once,
+    at parse time, so turning reduced motion on - or dragging the window down to
+    phone width - left the film scrolling with no way out of it. Both roads are
+    driven here, in both directions, and the draw loop has to actually STOP:
+    reduced motion means stop moving.
 
 Exit code is non-zero if anything fails, so it can gate a build.
 
@@ -78,8 +95,121 @@ def cmd_verify(a):
             fails.append("the annotation sink caught nothing")
         if film["marginInk"] != film["afterBake"]:
             fails.append("a bake left the annotation sink armed")
+        # ONE t, TWO ROADS, ONE READER. renderAt sets target and cur together, so
+        # rendering 0.28 then 0.31 really is the film arriving from below.
+        reader = page.evaluate("""() => {
+          const E = window.EMBER;
+          E.renderAt(0.2800); E.renderAt(0.3100);
+          const up = E.readerCopy();
+          E.renderAt(0.3450); E.renderAt(0.3100);
+          const down = E.readerCopy();
+          E.renderAt(0.3100);
+          return { up, down, hash: E.stateFor(0.31) && true };
+        }""")
+        same = reader["up"] == reader["down"]
+        print("  t 0.3100 from below vs from above: %s" % ("same" if same else "DIFFERENT"))
+        if not same:
+            print("    from below: %s\n    from above: %s" % (reader["up"], reader["down"]))
+            fails.append("the copy a reader receives depends on how they got there")
+
+        tab = page.evaluate("""() => {
+          const a = document.querySelector('#skip-atlas');
+          return { first: !!a && a === document.body.querySelector('a,button,[tabindex]'),
+                   chrome: !!document.querySelector('#chrome-atlas[href="atlas.html"]'),
+                   href: a ? a.getAttribute('href') : null };
+        }""")
+        print("  first focusable is the atlas skip link: %s   visible chrome link: %s"
+              % (tab["first"] and tab["href"] == "atlas.html", tab["chrome"]))
+        if not (tab["first"] and tab["href"] == "atlas.html"):
+            fails.append("the first thing a keyboard reaches is not the atlas")
+        if not tab["chrome"]:
+            fails.append("the film's chrome carries no visible atlas link")
+
         if errors:
             fails.append("page errors on the film: %s" % errors)
+
+    # ── the two background tiles, aborted ────────────────────────────────
+    # 1280x800 exactly, which is the smallest viewport the gate lets through -
+    # SwiftShader charges by the pixel and this is asking whether the film RUNS
+    # without those tiles, not what it looks like. Anything narrower is gated
+    # and the boot code never executes at all.
+    with session(width=1280, height=800,
+                 abort=("bathy_sunda", "bathy_europe")) as (page, errs):
+        settle(page, tiles=False)          # by construction they never arrive
+        d = page.evaluate("""() => {
+          const E = window.EMBER;
+          const s = E.renderAt(0.3350);
+          const over = document.getElementById('over'), x = over.getContext('2d');
+          const px = x.getImageData(0, 0, over.width, over.height).data;
+          let ink = 0;
+          for (let i = 3; i < px.length; i += 4) if (px[i] > 12) ink++;
+          return { ready: E.tilesReady(), tile: s.tile, ink,
+                   cleared: document.getElementById('load').classList.contains('off') };
+        }""")
+        print("\n  with sunda and europe aborted: film started, loader cleared: %s"
+              % d["cleared"])
+        print("    beat 06 wants tile %r, uploaded: %s, overlay ink: %d px"
+              % (d["tile"], d["ready"], d["ink"]))
+        if not d["cleared"]:
+            fails.append("a background tile blocked the film's loader")
+        if d["ready"]:
+            fails.append("tilesReady() is true with two tiles aborted; the abort missed")
+        if d["ink"] < 100:
+            fails.append("beat 06 drew nothing without its tile")
+        if errs:
+            fails.append("page errors with tiles aborted: %s" % errs)
+
+    # ── a blocking asset that fails ──────────────────────────────────────
+    with session(width=1280, height=800, abort=("bathy_global",),
+                 wait_ember=False) as (page, _):
+        page.wait_for_timeout(3000)
+        n = page.eval_on_selector_all("#ldetail a[href='atlas.html']", "a => a.length")
+        msg = page.eval_on_selector("#lmsg", "e => e.textContent")
+        print("  with the globe aborted: loader says %r, offers the atlas: %s"
+              % (msg[:52], bool(n)))
+        if not n:
+            fails.append("a failed raster leaves the reader with no way to the atlas")
+        if "bathy_global" not in msg:
+            fails.append("a later load erased the failure message: %r" % msg)
+
+    # ── the gate, after the film has started ─────────────────────────────
+    with session() as (page, errs):
+        settle(page)
+        def gate():
+            return page.evaluate("() => ({ ...window.EMBER.gated(), "
+                                 "on: document.getElementById('gate').classList.contains('on'), "
+                                 "inert: !!document.getElementById('copy').inert })")
+        steps = [("running, nothing changed", lambda: None, False)]
+        steps.append(("reduced motion turned ON",
+                      lambda: page.emulate_media(reduced_motion="reduce"), True))
+        steps.append(("reduced motion turned back off",
+                      lambda: page.emulate_media(reduced_motion="no-preference"), False))
+        steps.append(("dragged to phone width",
+                      lambda: page.set_viewport_size({"width": 390, "height": 800}), True))
+        steps.append(("dragged back out",
+                      lambda: page.set_viewport_size({"width": 1440, "height": 810}), False))
+        print()
+        for label, act, want in steps:
+            act()
+            # The gate flips synchronously; `running` only clears on the
+            # loop's NEXT tick, and headless Chromium runs about one of
+            # those a second. Wait for the condition, not for a stopwatch.
+            for expr in ("w => window.EMBER.gated().gate === w",
+                         "w => window.EMBER.gated().running === !w"):
+                try:
+                    page.wait_for_function(expr, arg=want, timeout=10000)
+                except Exception:
+                    pass
+            g = gate()
+            ok = (g["gate"] == want and g["on"] == want
+                  and g["inert"] == want and g["running"] == (not want))
+            print("  %s  gate %-13s up=%-5s loop=%s  film out of the reading order=%s"
+                  % ("ok " if ok else "MISS", label.split(",")[0][:13], g["on"],
+                     "running" if g["running"] else "stopped", g["inert"]))
+            if not ok:
+                fails.append("the runtime gate: %s" % label)
+        if errs:
+            fails.append("page errors driving the gate: %s" % errs)
 
     with session(query="?nogl=1", wait_ember=False) as (page, _):
         page.wait_for_timeout(2500)
@@ -191,7 +321,7 @@ def main():
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd", required=True)
 
-    v = sub.add_parser("verify", help="the five panel tests, plus what they cannot see")
+    v = sub.add_parser("verify", help="the six panel tests, plus what they cannot see")
     v.add_argument("--runs", type=int, default=2,
                    help="how many times to run the panel tests (default 2, never 1)")
     v.set_defaults(fn=cmd_verify)

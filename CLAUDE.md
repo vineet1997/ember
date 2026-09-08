@@ -70,10 +70,24 @@ Published storyboard: https://claude.ai/code/artifact/2e20728f-4ebf-4f50-812c-be
    temperature record at 39,850 BP fails the test on both while the same step 550 years away
    passes.
 
-   **The test that would prove non-influence is a different one and is not built:** remove the
-   eruption from the data entirely and assert the world is bit-identical at every `t`. That
-   compares against a configuration that could have disagreed, which is the only kind of check
-   worth the word "proves".)*
+   **The test that earns the word is a different one, and it is built now** —
+   `independence()`, added 2026-09-08, the sixth panel test. It strips the eruption from all
+   four surfaces it occupies — the event in `D.events`, the marker in `LABELS`, the paragraph
+   in `RECORDS`, the horizon on the rail — and asserts the world is **bit-identical at all
+   1,201 samples**. That compares the film against a configuration that could have disagreed,
+   which is the only kind of comparison that is evidence rather than a regression test. It is
+   non-vacuous by assertion, not by hope: the strip must reach all four surfaces, and with the
+   eruption gone `law06`'s own *on screen* half must stop holding — a positive control, because
+   a test that cannot be made to fail is not measuring anything.
+
+   **Mutation-tested with the audit's own injection.** A smooth dependence of `chill` on the
+   eruption — `0.05·exp(−((yr−39850)/400)²)`, gated on the event being in the record — **passes
+   `law06()` and fails `independence()`**. That is the gap, demonstrated, and closed.
+
+   **Its own boundary, which is not small.** It strips the film's *staging* of the eruption, not
+   an eruption signal from the physical record. `D.sea` and `D.temp` are measurements; if a
+   sea-level stack carried a depression at 39,850 BP, this test would pass. That is a question
+   for the datasets and their sources, and the panel says so.)*
 7. **Copy is checked against the data, not just dates.** Every on-screen line gets diffed
    against the qualifiers its own event carries.
 8. **Change is an edge that moves, never a fill that fades.** The eye tracks edges. A
@@ -186,9 +200,19 @@ Eight invariants. Breaking any of them breaks a law, not just a frame:
 4. **Ember is for people only** — the route head, its trail, the pigment a hand was blown
    around. Never in type, never in chrome.
 5. **Everything expensive is built once at load**, not on first entry to the thing that needs
-   it. The stencil plate is ~1.3 M pixels of value noise; the three elevation tiles are decoded
-   from terrain-RGB to float; the light sprites and the densified routes are built there too.
+   it. The stencil plate is ~1.3 M pixels of value noise; an elevation tile is decoded from
+   terrain-RGB to float; the light sprites and the densified routes are built there too.
    Any of these done mid-scroll drops a second of frames at a beat boundary.
+   **One deliberate exception, taken 2026-09-08 with its cost stated.** *Load* and *decode* are
+   different things and this invariant is about the decode. All three tiles used to be
+   **fetched** before the first frame: 36.8 MB blocking, ~29 s at 10 Mbit and ~5 min at 1 Mbit,
+   for two tiles the reader cannot reach for two more beats. The blocking set is now the record,
+   the globe and **the one tile the opening frame stands on**; the other two are fetched while
+   the film runs and decoded inside a `requestIdleCallback`. That is a mitigation and not a
+   guarantee — the honest trade is *one possible hitch, once per tile*, against half a minute of
+   black screen. Until a tile arrives its beat draws from the global texture (invariant 8), and
+   `EMBER.tilesReady()` exists because a **bake** must still wait for all three: a still baked
+   in that window would be the right frame at the wrong resolution, silently, forever.
 6. **Overlay drawing is per-frame and must stay cheap.** *(Corrected in Phase 5: this used to
    read "no image compositing in the loop except the pre-built plate", and there are now three
    pre-built images — the plate and two light sprites. The invariant's real content is that
@@ -213,9 +237,17 @@ Eight invariants. Breaking any of them breaks a law, not just a frame:
    frame is ~50° wide and the tiles are 30° apart, so the outgoing tile always clips an edge.
    What makes it acceptable is speed — one frame, at the edge, inside the tile's own blend
    margin, while the camera crosses ~10° of longitude per frame.
+   **And the slot has a defined empty state.** When the chosen tile has not arrived yet,
+   `bindTile()` binds **the global texture into the tile slot** and hands it the whole world as
+   its box — so `s.q` is `s.g` to the bit, `s.lt` is `s.lg`, `elevAt` mixes the global field
+   with *itself*, and the frame **is** the global field exactly. A resolution change, never a
+   value change, and no branch anywhere near a derivative. Checked by picture as well as by
+   assertion: `evidence/tile-fallback-*.png` are beat 06 with and without its tile, and the
+   coastlines, the dimension line and the ember land in the same places.
 
-Two keys: `i` = director's panel — state readout, **frame time and GPU/overlay cost**, five
-tests, measured figures. `d` = shader x-ray, cycling live edge / ghost edge / gradient /
+Two keys: `i` = director's panel — state readout, **frame time and GPU/overlay cost**, six
+tests, measured figures. **Each test's panel prose now states what it certifies and where that
+stops** — four of them used to overclaim, and one of them said "proves". `d` = shader x-ray, cycling live edge / ghost edge / gradient /
 pixel-distance.
 
 `#t=0.3350` jumps to a frame, `#beat=05` to a beat, `?still=1` disables the copy transitions so
@@ -260,12 +292,25 @@ instead of sliding off it, and it deliberately does **not** scroll.
   screenshotted as pure black while the stills were provably 20–60 mean luminance on disk. Force
   `loading="eager"`, reassign `src`, and `await img.decode()` before the shot.
 - **`python slice/tools/check.py verify` before believing the film is sound.** It runs the
-  five panel tests *twice* and then checks four things the panel cannot see, because they are
-  not functions of `t`: that the film still letters its own frames and a bake does not leave the
-  annotation sink armed; that all three fallback roads reach the atlas; that the atlas is intact
-  with JavaScript disabled; and that the film voice appears on it exactly once. Non-zero exit on
-  failure. `check.py probe -e "<js>"` answers anything else in JSON, which is cheaper and more
-  precise than a screenshot — and works when screenshots do not.
+  **six** panel tests *twice* and then checks **seven** things the panel cannot see — because
+  they are not functions of `t`, or because they are about the film **failing** and a panel only
+  runs on a film that started: that the film still letters its own frames and a bake does not
+  leave the annotation sink armed; that every fallback road reaches the atlas; that the atlas is
+  intact with JavaScript disabled; that the film voice appears on it exactly once; **that one
+  `t` reached two ways hands a screen reader the same copy; that the two background tiles do not
+  block the film when aborted, and a blocking one that fails still leaves a door open; and that
+  the gate answers a reader who turns reduced motion on or drags the window narrow after the
+  film has started, in both directions, with the draw loop actually stopping.** Non-zero exit on
+  failure. `harness.session(abort=(...))` is how the failure roads are reached: a check about
+  failure needs a configuration that could have disagreed, and a page where everything arrives
+  is not one. `check.py probe -e "<js>"` answers anything else in JSON, which is cheaper and
+  more precise than a screenshot — and works when screenshots do not.
+- **A mutation harness must restore what it FOUND, not what git last remembered.** The script
+  that mutation-tests a new check reverted with `git checkout -- slice/film.js` — and every edit
+  of the session was uncommitted, so one line of cleanup deleted an afternoon. It is written to
+  take a **byte copy of each file before touching anything** and to assert both files are
+  restored byte-for-byte at the end. Related: `git checkout` restores through `core.autocrlf`,
+  so a file that was LF in the working tree comes back **CRLF**; check before you re-patch.
 - **Always serve with `slice/serve.py`.** A caching static server hands you yesterday's
   shader and you will debug code that is not running. A browser that visited an earlier
   build may still hold it — add `?v=2` to the URL once to break that.
@@ -355,11 +400,42 @@ for 07, state the permanence and print `absence()`'s own result as the evidence 
 decided is the negative: do not extend this atlas to 05 and 07 by adding stills.** Eight more
 frames of a locked camera would be the atlas lying about what the beat is.
 
+**And Phase 5 step 3: access — the audit's largest reader-facing finding, closed 2026-09-08.**
+Six defects, all of them the same shape: *the film was correct and the reader could not have it.*
+
+- **36.8 MB no longer blocks the first frame.** The record, the globe and one tile do; the other
+  two follow while the film runs (invariant 5's stated exception, invariant 8's empty state).
+- **What a screen reader receives is a function of `t` now.** A copy block is written only when
+  it changes and leaves by an opacity class, so a paragraph that had left the screen stayed in
+  the accessibility tree — and *which* paragraph depended on the direction you arrived from.
+  Two readers at one `t`, one state hash, different text. `expose()` sets `inert` and
+  `aria-hidden` from the same `av`/`ar` that decide the fade, so this is not a timer that
+  forgets, it is Law 01 applied one layer out. `EMBER.readerCopy()` makes it askable, and
+  `verify` asks it by rendering 0.31 from below and from above.
+- **The gate is re-asked.** Turning reduced motion on, or dragging to phone width, used to leave
+  the film scrolling with no way out. Both roads now raise the gate, take the chrome out of the
+  reading order, and **stop the draw loop** — reduced motion means stop moving. Both directions,
+  both roads, checked.
+- **There is a way out on the page**: a skip link first in the tab order and a visible link in
+  the chrome. The atlas was reachable only from the gate, `<noscript>` and the WebGL failure
+  page — none of which a *working* film ever shows. This is placement law 4 in the type system.
+- **A failed raster no longer erases itself or dead-ends.** `step()` refuses to write after a
+  failure, and the failure page carries the atlas link the WebGL one has always had.
+- **`--ice-dim` was 4.40:1 on the void** — below AA, and it is *every* instrumentation surface in
+  both artifacts. It is `#647C99`, 4.72:1, same hue to two decimals. `ICED` on the canvas moved
+  with it, because the film draws a label's value in one and the atlas prints the same string in
+  the other. The atlas is re-baked.
+
 **Next — Phase 5 continued:**
 
-1. **A second idea for the temporal beats**, 05 and 07 — see the two candidates above, and the
+1. **Historical framing** — audit findings 1, 3 and 6. **Deliberately not done here**: the
+   handoff says do not act on the audit's reading of the literature without reading the papers,
+   and they were not read. URLs in `audit/AUDIT-EVIDENCE.md`. Finding 1's *structural* half
+   needs no citation and is fair — the film claims neutrality on Sahul chronology while the
+   picture adjudicates.
+2. **A second idea for the temporal beats**, 05 and 07 — see the two candidates above, and the
    storyboard's `#atlas` section for the argument.
-2. **The unroll**, which is still the largest technical unknown — see below.
+3. **The unroll**, which is still the largest technical unknown — see below.
 
 **The frame budget was measured in Phase 4 and is fine.** Intel Iris Xe, integrated: **60 fps**,
 frame interval **16.7 / 16.9 / 17.0 ms** median/p95/worst — a 0.3 ms spread over 120 frames,
@@ -418,6 +494,12 @@ slice, not be improvised inside another beat.
 not survive a low-angle shot where the ground fills the frame. It now reads **no plate, no
 box, no blur behind a word — but the frame may be graded.** A graduated filter that is
 present only while a sentence is standing in it is photography; a scrim is a caption.
+
+**Not measured on a real screen yet:** the access work is all load-order and DOM, and it does
+not touch the draw path — but the deferred tile decode is a new piece of main-thread work
+scheduled by `requestIdleCallback`, and no automated browser can tell you whether it drops a
+frame. ⚠️ **Scroll from the top on the machine, with the panel open, and watch the worst
+frame** the first time the reader crosses into beat 06.
 
 **Open (2, none blocking):** vegetation dataset still unnamed — it has now cost a written
 frame, not just a future one: beat 05's Earth slot promised "Arabia's green phase closing behind

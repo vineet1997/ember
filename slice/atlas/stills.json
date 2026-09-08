@@ -24,6 +24,10 @@
    "pass": true,
    "head": "PASS"
   },
+  "independence": {
+   "pass": true,
+   "head": "PASS"
+  },
   "absence": {
    "pass": true,
    "head": "PASS"
@@ -152,7 +156,7 @@
    "gap": null,
    "reserved": null,
    "file": "06-02.webp",
-   "bytes": 128446
+   "bytes": 128346
   },
   {
    "t": 0.322,
@@ -242,7 +246,7 @@
    "gap": null,
    "reserved": null,
    "file": "06-03.webp",
-   "bytes": 100858
+   "bytes": 100834
   },
   {
    "t": 0.335,
@@ -369,7 +373,7 @@
    },
    "reserved": null,
    "file": "06-04.webp",
-   "bytes": 100278
+   "bytes": 100548
   },
   {
    "t": 0.345,
@@ -500,7 +504,7 @@
    },
    "reserved": null,
    "file": "06-05.webp",
-   "bytes": 114132
+   "bytes": 113778
   },
   {
    "t": 0.352,
@@ -631,7 +635,7 @@
    },
    "reserved": null,
    "file": "06-06.webp",
-   "bytes": 106818
+   "bytes": 109022
   },
   {
    "t": 0.361,
@@ -748,7 +752,7 @@
     "h": 98
    },
    "file": "06-08.webp",
-   "bytes": 41696
+   "bytes": 41728
   }
  ],
  "atlas": {

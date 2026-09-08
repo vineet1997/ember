@@ -37,16 +37,26 @@
 var RAD = Math.PI / 180, DEG = 180 / Math.PI;
 var $ = function (id) { return document.getElementById(id); };
 
-/* -- the gate: desktop is the film ---------------------------------------- */
-if (window.innerWidth < 1280 || window.innerHeight < 700 ||
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-  $("gate").classList.add("on");
-  return;
+/* -- the gate: desktop is the film ----------------------------------------
+   ASKED AT STARTUP AND ASKED AGAIN AFTERWARDS. It used to be asked once, at
+   parse time, which left the one reader the gate exists for stranded: turn
+   reduced motion on while the film is running, or drag the window down to
+   phone width, and the film went on scrolling with no way out of it. The
+   answer is a function of the environment, so it is re-asked whenever the
+   environment changes - see applyGate() in section 13, wired to resize and to
+   the media query itself, and note that the draw loop STOPS while the gate is
+   up. Reduced motion means stop moving; a film still animating behind a panel
+   that says it has stopped is the film lying. */
+var REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)");
+function gateWanted() {
+  return window.innerWidth < 1280 || window.innerHeight < 700 || REDUCED.matches;
 }
+var GATED = gateWanted();
+if (GATED) { $("gate").classList.add("on"); return; }
 
 /* ═══ 1 · BOOT ═══════════════════════════════════════════════════════════ */
 
-var D = null, TEXG = null, gl = null, prog = null, U = {};
+var D = null, TEXG = null, TXG = null, gl = null, prog = null, U = {};
 /* The three frame tiles, by id. Only ONE is bound at a time - see section 7,
    tileFor(t): the camera is only ever in one of them, and swapping on the CPU
    keeps the shader at two elevation fetches instead of eight. */
@@ -66,24 +76,143 @@ window.addEventListener("keydown", function (e) {
    finished when it returns instead of being 0.9s into a fade. */
 if (/[?&]still=1/.test(location.search)) document.body.classList.add("still");
 
-var steps = 0, STEPS = 5;
+var steps = 0, STEPS = 3, LOAD_FAILED = false;
 function step(msg) {
+  /* A LATER SUCCESS MUST NOT ERASE AN EARLIER FAILURE. Five parallel loads all
+     wrote into this one line, so a tile that failed said so only until the next
+     tile succeeded - after which the reader sat in front of an opaque loader
+     watching a progress line for a load that was never going to finish. */
+  if (LOAD_FAILED) return;
   steps++;
   $("lbar").style.width = Math.round(steps / STEPS * 100) + "%";
   $("lmsg").textContent = msg;
 }
 
-Promise.all([
-  fetch("data/film.json").then(function (r) { return r.json(); })
-    .then(function (j) { D = j; step("the record"); }),
-  image("data/bathy_global.png").then(function (i) { TEXG = i; step("the earth, 2048 x 1024"); }),
-  image("data/bathy_redsea.png").then(function (i) { TEX.redsea = i; step("both doors out of Africa"); }),
-  image("data/bathy_sunda.png").then(function (i) { TEX.sunda = i; step("Wallacea, 1.85 km per pixel"); }),
-  image("data/bathy_europe.png").then(function (i) { TEX.europe = i; step("Europe and west Asia"); })
-]).then(start).catch(function (e) {
+/* WHAT BLOCKS THE FILM, AND WHAT MERELY FOLLOWS IT.
+
+   The three frame tiles are 33 MB between them, and all three used to sit in
+   one Promise.all with the record and the globe: 36.8 MB before the first
+   frame, about twenty-nine seconds on a 10 Mbit line and five minutes on a
+   1 Mbit one - and two of those tiles are for beats the reader cannot reach for
+   another several thousand words of scroll.
+
+   So the blocking set is three files: the record, the globe, and the ONE tile
+   the opening frame stands on. The other two are fetched after the film is
+   running, nearest first. Until one arrives its beat draws from the global
+   texture instead, which is a resolution change and never a value change - see
+   bindTile(), where the fallback is arranged so the shader mixes the global
+   field with ITSELF and the frame is that field exactly.                    */
+var TILES = {
+  redsea: { src: "data/bathy_redsea.png", msg: "both doors out of Africa" },
+  sunda:  { src: "data/bathy_sunda.png",  msg: "Wallacea, 1.85 km per pixel" },
+  europe: { src: "data/bathy_europe.png", msg: "Europe and west Asia" }
+};
+
+/* Which tile the film will open on: the hash if there is one, otherwise
+   whatever scroll position the browser has restored. A wrong guess is not an
+   error, it is one beat drawn from the globe for a few seconds. */
+function entryTile() {
+  var want = tFromHash();
+  if (want === null) want = tFor(window.scrollY / maxScroll());
+  return tileFor(want);
+}
+
+var pRecord = fetch("data/film.json").then(function (r) { return r.json(); })
+  .then(function (j) { D = j; step("the record"); });
+var pGlobe = image("data/bathy_global.png")
+  .then(function (i) { TEXG = i; step("the earth, 2048 x 1024"); });
+/* The record decides which tile is first - it carries tSpan and the beat table
+   - so this one waits on it. film.json is 120 KB and the globe is coming down
+   through that wait, so the cost is one round trip and not one download. */
+var pFirst = pRecord.then(function () {
+  var k = entryTile();
+  return image(TILES[k].src).then(function (i) { TEX[k] = i; step(TILES[k].msg); });
+});
+
+Promise.all([pRecord, pGlobe, pFirst]).then(function () {
+  start();
+  loadRest();
+}, assetFailure);
+
+/* AN ASSET DID NOT ARRIVE, and the reader is looking at an opaque black page.
+   Two things were wrong here and only one of them was the message. The other
+   was that this was a dead end with no door in it: the WebGL failure path has
+   offered the atlas since Phase 5 and this path, where the reader is equally
+   stuck, offered nothing at all. */
+function assetFailure(e) {
+  LOAD_FAILED = true;
   $("lmsg").textContent = String(e && e.message || e);
   $("lmsg").style.color = "#E8703A";
-});
+  $("ldetail").style.display = "block";
+  $("ldetail").innerHTML =
+    '<p><a class="go" href="atlas.html">Read beat 06 as the atlas</a></p>' +
+    "<p>One of the rasters the film draws the earth from did not arrive, and " +
+    "there is no honest frame without it: every coastline in this beat is " +
+    "computed from that elevation and from nothing else. A reload is worth one " +
+    "try. The atlas above is the same beat, baked from the same shader, and " +
+    "needs none of it.</p>";
+}
+
+/* THE OTHER TWO TILES, while the film is already running.
+
+   Nearest first, and "nearest" is read off tileFor() rather than typed beside
+   it, so the priority cannot drift from the boundaries it is about.
+
+   Decoding a 4320x1860 terrain-RGB image into floats is a third of a second of
+   main thread, and invariant 5 says that must not land at a beat boundary.
+   requestIdleCallback puts it in a gap between frames and the timeout is the
+   promise that it happens at all. That is a mitigation, not a guarantee, and
+   the trade is the honest one: one possible hitch, once per tile, against
+   twenty-nine seconds of black screen before the first frame. */
+function loadRest() {
+  if (!gl) return;
+  var rest = Object.keys(TILES).filter(function (k) { return !TEX[k]; });
+  rest.sort(function (a, b) { return tileReach(a) - tileReach(b); });
+  (function next() {
+    var k = rest.shift();
+    if (!k) return;
+    image(TILES[k].src).then(function (i) {
+      TEX[k] = i;
+      idle(function () {
+        gl.activeTexture(gl.TEXTURE1);
+        TXO[k] = elevTexture(TEX[k], gl.CLAMP_TO_EDGE, D.measured.tiles.sunda);
+        /* elevTexture leaves ITS texture bound to the unit; drop the cached
+           binding so the next frame re-states the box and the size. */
+        boundTile = "";
+        next();
+      });
+    }, function () {
+      /* A background tile that never arrives is not fatal - its beat draws from
+         the globe - but it must not stop the tile behind it. */
+      next();
+    });
+  })();
+}
+
+/* the nearest t at which this tile is the one the film would bind, measured
+   from where the reader is now. Derived from tileFor, never from a copy of
+   its boundaries. */
+function tileReach(k) {
+  var here = tFor(cur), best = 9;
+  for (var i = 0; i <= 400; i++) {
+    var t = D.tSpan[0] + (D.tSpan[1] - D.tSpan[0]) * (i / 400);
+    if (tileFor(t) === k) best = Math.min(best, Math.abs(t - here));
+  }
+  return best;
+}
+
+function idle(fn) {
+  if (window.requestIdleCallback) window.requestIdleCallback(fn, { timeout: 4000 });
+  else setTimeout(fn, 60);
+}
+
+/* Every frame tile decoded and uploaded. The bake asks this before it starts:
+   a still baked while sunda was still in flight would be beat 06 drawn from the
+   2048-wide globe, which is a true picture of the wrong resolution and would
+   silently become the atlas. */
+function tilesReady() {
+  return Object.keys(TILES).every(function (k) { return !!TXO[k]; });
+}
 
 function image(src) {
   return new Promise(function (res, rej) {
@@ -830,18 +959,23 @@ function initGL() {
   gl.uniform1f(U.uTanHalf, TAN_HALF);
 
   FLOAT_ELEV = !!gl.getExtension("EXT_color_buffer_float");
-  gl.activeTexture(gl.TEXTURE0); elevTexture(TEXG, gl.REPEAT, any);
+  /* KEPT, not discarded: bindTile() puts this same texture into the tile slot
+     while a tile is still in flight. */
+  gl.activeTexture(gl.TEXTURE0); TXG = elevTexture(TEXG, gl.REPEAT, any);
   gl.uniform1i(U.uGlobal, 0);
   gl.uniform2f(U.uGlobalSize, TEXG.width, TEXG.height);
 
-  /* All three frame tiles are decoded and uploaded ONCE, here. Decoding a
-     4320x1860 terrain-RGB image into floats takes a good fraction of a second,
-     and the one place that must never happen is mid-scroll at a beat boundary -
-     the same reason the stencil plate is built at load. Only the binding
-     changes per frame, and a binding is free. */
+  /* Each frame tile is decoded and uploaded ONCE. Decoding a 4320x1860
+     terrain-RGB image into floats takes a good fraction of a second, and the
+     one place that must never happen is mid-scroll at a beat boundary - the
+     same reason the stencil plate is built at load. Only the binding changes
+     per frame, and a binding is free.
+
+     ONLY THE TILES THAT HAVE ARRIVED. The other two are uploaded by loadRest()
+     as they land, in an idle callback, for the reason above. */
   gl.activeTexture(gl.TEXTURE1);
   Object.keys(TEX).forEach(function (k) {
-    TXO[k] = elevTexture(TEX[k], gl.CLAMP_TO_EDGE, any);
+    if (TEX[k]) TXO[k] = elevTexture(TEX[k], gl.CLAMP_TO_EDGE, any);
   });
   gl.uniform1i(U.uTile, 1);
 
@@ -871,19 +1005,43 @@ function gpuTimerPoll() {
 
 var boundTile = "";
 
+/* THE FRAME TILE, CHOSEN BY t - and what to draw before it has arrived.
+
+   Rebinding only when the choice actually changes keeps this off the per-frame
+   path entirely for all but two frames in the film.
+
+   The tile may not be there yet: two of the three are now fetched after the
+   film starts, so that the reader waits for one raster and not for three. The
+   fallback binds THE GLOBAL TEXTURE into the tile slot and hands it the whole
+   world as its box. Then s.q is s.g to the bit, and s.lt is s.lg, so elevAt
+   mixes the global field with itself and the frame IS the global field - a
+   resolution change, never a value change, and no branch anywhere near a
+   derivative (invariant 3). Law 08's edge is still an edge computed from real
+   elevation; it is simply a coarser one for a few seconds.
+
+   The key carries the pending state, so the arrival of a tile rebinds instead
+   of being cached out. */
+function bindTile(name) {
+  var key = (TXO[name] ? "" : "~") + name;
+  if (key === boundTile) return;
+  gl.activeTexture(gl.TEXTURE1);
+  if (TXO[name]) {
+    var tl = D.measured.tiles[name];
+    gl.bindTexture(gl.TEXTURE_2D, TXO[name]);
+    gl.uniform4f(U.uBox, tl.lon0, tl.lon1, tl.lat0, tl.lat1);
+    gl.uniform2f(U.uTileSize, tl.w, tl.h);
+  } else {
+    gl.bindTexture(gl.TEXTURE_2D, TXG);
+    gl.uniform4f(U.uBox, -180, 180, -90, 90);
+    gl.uniform2f(U.uTileSize, TEXG.width, TEXG.height);
+  }
+  boundTile = key;
+}
+
 function drawEarth(s, F) {
   var chill = s.chill;                       /* computed in stateFor - see there */
 
-  /* the frame tile, chosen by t. Rebinding only when it actually changes keeps
-     this off the per-frame path entirely for all but two frames in the film. */
-  if (s.tile !== boundTile) {
-    var tl = D.measured.tiles[s.tile];
-    gl.activeTexture(gl.TEXTURE1);
-    gl.bindTexture(gl.TEXTURE_2D, TXO[s.tile]);
-    gl.uniform4f(U.uBox, tl.lon0, tl.lon1, tl.lat0, tl.lat1);
-    gl.uniform2f(U.uTileSize, tl.w, tl.h);
-    boundTile = s.tile;
-  }
+  bindTile(s.tile);
 
   gl.uniform2f(U.uRes, earth.width, earth.height);
   gl.uniform1f(U.uSea, s.sea);
@@ -912,7 +1070,10 @@ function drawEarth(s, F) {
 
 /* ═══ 8 · THE OVERLAY ════════════════════════════════════════════════════ */
 
-var EMBER = "232,112,58", BONE = "230,226,216", ICE = "143,168,196", ICED = "95,119,148";
+/* ICED is --ice-dim, and the two must not drift: the film draws a margin
+   label's value in it on canvas and the atlas prints that same string as HTML
+   in the CSS token. Lifted with the token on 2026-09-08, from 95,119,148. */
+var EMBER = "232,112,58", BONE = "230,226,216", ICE = "143,168,196", ICED = "100,124,153";
 
 /* Catmull-Rom through the waypoints. A route drawn as straight segments shows
    its own corners, and a corner reads as a decision - which is exactly the
@@ -1923,7 +2084,37 @@ function drawCopy(s) {
     if (ar >= 0) $("record").innerHTML = RECORDS[ar].html;
   }
   $("record").classList.toggle("on", ar >= 0);
+  /* Law 01 held for the state and not for what a reader was handed - see
+     expose() below, which is the fix and the reason. */
+  expose($("voice"), av >= 0);
+  expose($("record"), ar >= 0);
   $("state").innerHTML = stateLine(s).join("&nbsp;&nbsp;&middot;&nbsp;&nbsp;");
+}
+
+/* WHAT A SCREEN READER RECEIVES IS ALSO A FUNCTION OF t, AND IT WAS NOT.
+
+   A copy block is written only when it CHANGES, because rewriting innerHTML
+   every frame restarts the fade every frame - so a line that has left the
+   screen is still in the DOM, holding the last string it was given. Leaving is
+   a class toggle, and that class is opacity: the paragraph goes to zero alpha
+   and stays perfectly readable to anything that reads the accessibility tree.
+
+   An outside audit found what that costs. At t 0.31, arriving from 0.28 leaves
+   ONE invisible paragraph exposed and arriving from 0.345 leaves a DIFFERENT
+   one - two readers at the identical t, with an identical state hash, handed
+   different text. Law 01 was true of the world and false of the page.
+
+   inert removes the subtree from the accessibility tree, from focus and from
+   hit-testing; aria-hidden carries the same claim to anything that predates
+   inert. Both are set from av/ar, which are functions of t and nothing else -
+   so the fix is not a timer that forgets, it is the same law applied one layer
+   out. The element keeps its text, because the fade needs it; the reader is
+   simply no longer told about a sentence that is not on screen.             */
+function expose(el, on) {
+  if (el.inert === !on && (el.getAttribute("aria-hidden") === "true") === !on) return;
+  el.inert = !on;
+  if (on) el.removeAttribute("aria-hidden");
+  else el.setAttribute("aria-hidden", "true");
 }
 
 /* The instrumentation line, as data rather than as innerHTML. Pulled out of
@@ -1983,6 +2174,19 @@ function boxLabel(b) {
     ? Math.abs(b.lat0) + "&ndash;" + d(b.lat1, "S", "N")
     : d(b.lat0, "S", "N") + "&ndash;" + d(b.lat1, "S", "N");
   return lo + " " + la;
+}
+
+/* THE COPY COLUMN AS A READER RECEIVES IT, which is not the same thing as the
+   copy column. Exported so the question can be asked from outside the film:
+   render one t by two different scroll paths and compare. It could have
+   disagreed - it did, until expose() - and that is the only kind of check
+   worth running. */
+function readerCopy() {
+  return ["voice", "record", "state"].map(function (id) {
+    var el = $(id);
+    return el.getAttribute("aria-hidden") === "true" || el.inert
+      ? "" : el.textContent.replace(/\s+/g, " ").trim();
+  }).join(" | ");
 }
 
 /* the measured row closest to the sea level we are actually at */
@@ -2269,6 +2473,113 @@ function law06() {
     "is the channel that bug moved. It does not prove\nnon-influence. The test that would is a different\n" +
     "one: remove the eruption from the data and assert\nthe world is bit-identical at every t.\n" +
     (bad.length ? "\n" + bad.join("\n") : "");
+  return ok;
+}
+
+/* LAW 06's OTHER HALF: INDEPENDENCE, WHICH CONTINUITY IS NOT.
+
+   law06() above catches a STAGED DISCONTINUITY - the bug the film actually
+   committed, when the eruption arrived as grey sky "exactly as their light
+   failed". It does not prove non-influence, and until 2026-09-08 the law said
+   it did. An outside audit settled the question by injecting a SMOOTH hundred-
+   metre sea-level depression centred on the eruption: every line of law06()
+   passes on it, because a smooth channel is a smooth channel whether or not the
+   eruption is what is smoothing it.
+
+   This is the test that earns the word. It removes the eruption from the film -
+   from the record it is an event in, from the margin where it is a marker, from
+   the copy where it is a paragraph, and from the rail where it is a horizon -
+   and asserts that the world is BIT-IDENTICAL at every t. That compares the
+   film against a configuration that could have disagreed, which is the only
+   kind of comparison worth running: an encode/decode round trip, a value
+   checked against the JSON that produced it, and "the film agrees with the
+   film" all pass on a wrong world.
+
+   TWO THINGS MAKE IT NON-VACUOUS, and both are asserted rather than assumed.
+   The strip has to REACH something - four surfaces, each removed exactly once,
+   because a walk that removes nothing reads exactly like a walk that removes
+   everything. And the removal has to be VISIBLE: with the eruption stripped,
+   law06's own on-screen half must fail, which is the positive control. A test
+   that cannot be made to fail is not measuring anything.
+
+   WHAT IT STILL DOES NOT SHOW, and this is not a small boundary. It strips the
+   film's STAGING of the eruption, not the eruption's signal from the physical
+   record. D.sea and D.temp are measurements; if a sea-level stack carried a
+   depression at 39,850 BP, stripping the marker would not remove it and this
+   test would pass. That is a question for the datasets and their sources, not
+   for the film, and the film should not pretend otherwise.                  */
+function independence() {
+  var t0 = D.tSpan[0], t1 = D.tSpan[1], N = 1200, i, t;
+  var base = [];
+  for (i = 0; i <= N; i++) {
+    t = t0 + (t1 - t0) * (i / N);
+    base.push(hashState(stateFor(t)));
+  }
+
+  /* the four surfaces the eruption occupies, and what it takes to remove each */
+  var iEv = -1, iLab = -1, iRec = -1, rail = $("ci");
+  D.events.forEach(function (e, k) { if (e.id === "campanian-ignimbrite") iEv = k; });
+  LABELS.forEach(function (L, k) { if (L.k === "CAMPI FLEGREI") iLab = k; });
+  RECORDS.forEach(function (r, k) { if (/Campi Flegrei/.test(r.html)) iRec = k; });
+  var reached = (iEv >= 0) + (iLab >= 0) + (iRec >= 0) + (rail ? 1 : 0);
+
+  var ev = null, lab = null, rec = null, drawn = null, after = [], bad = [];
+  try {
+    if (iEv >= 0) ev = D.events.splice(iEv, 1)[0];
+    if (iLab >= 0) lab = LABELS.splice(iLab, 1)[0];
+    if (iRec >= 0) rec = RECORDS.splice(iRec, 1)[0];
+    if (rail) rail.parentNode.removeChild(rail);
+
+    /* the positive control: with it gone, the ON SCREEN half must not hold */
+    drawn = LABELS.some(function (L) { return L.k === "CAMPI FLEGREI"; }) || !!$("ci");
+
+    for (i = 0; i <= N; i++) {
+      t = t0 + (t1 - t0) * (i / N);
+      var h = hashState(stateFor(t));
+      after.push(h);
+      if (h !== base[i] && bad.length < 5) bad.push(t.toFixed(5));
+    }
+  } finally {
+    /* back exactly where they were, whatever happened above */
+    if (ev) D.events.splice(iEv, 0, ev);
+    if (lab) LABELS.splice(iLab, 0, lab);
+    if (rec) RECORDS.splice(iRec, 0, rec);
+    if (rail) $("rsvg").appendChild(rail);
+  }
+
+  var same = bad.length === 0 && after.length === base.length;
+  var restored = D.events.some(function (e) { return e.id === "campanian-ignimbrite"; }) &&
+                 LABELS.some(function (L) { return L.k === "CAMPI FLEGREI"; }) &&
+                 RECORDS.some(function (r) { return /Campi Flegrei/.test(r.html); }) &&
+                 !!$("ci");
+  var ok = reached === 4 && drawn === false && same && restored;
+
+  $("o-indep").innerHTML =
+    (ok ? '<span class="ok">PASS</span>\n' : '<span class="bad">FAIL</span>\n') +
+    (reached === 4 ? "\u00b7 " : "\u2717 ") + "THE STRIP REACHES ALL FOUR SURFACES the\n" +
+    "   eruption occupies: the event in the record, the\n" +
+    "   marker in the margin, the paragraph in the copy\n" +
+    "   and the horizon on the rail. " + reached + " of 4.\n" +
+    (drawn === false ? "\u00b7 " : "\u2717 ") + "POSITIVE CONTROL: with it stripped, law06\u2019s\n" +
+    "   ON SCREEN half no longer holds \u2014 so the strip is\n" +
+    "   doing something a passing run could not fake.\n" +
+    (same ? "\u00b7 " : "\u2717 ") + "THE WORLD IS BIT-IDENTICAL at all " + (N + 1) + "\n" +
+    "   samples across the whole span, hash for hash.\n" +
+    (restored ? "\u00b7 " : "\u2717 ") + "All four surfaces are back.\n" +
+    "\nWHY THIS AND NOT law06 ALONE. Continuity is not\n" +
+    "independence: a channel driven smoothly by the\n" +
+    "eruption passes every line of that test, and an\n" +
+    "outside audit demonstrated it. This one compares\n" +
+    "the film against a configuration that could have\n" +
+    "disagreed, which is the only comparison that is\n" +
+    "evidence rather than a regression check.\n" +
+    "\nITS OWN BOUNDARY. It strips the film\u2019s STAGING of\n" +
+    "the eruption, not an eruption signal from the sea\n" +
+    "level and temperature records. Those are\n" +
+    "measurements; if one carried a depression at\n" +
+    "39,850 BP this would pass. That is a question for\n" +
+    "the datasets, not for the film.\n" +
+    (bad.length ? "\nmoved at t " + bad.join(", ") : "");
   return ok;
 }
 
@@ -2711,10 +3022,13 @@ function copyCheck() {
 
   check("The mobile experience, the reduced-motion fallback, the no-JavaScript " +
         "fallback, the crawler content, and the answer for a browser with WebGL off.",
-    "every one of those paths has to actually arrive here, so the claim is three links and " +
+    "every one of those paths has to actually arrive here, so the claim is five links and " +
     "not a promise: the desktop gate (which is also the reduced-motion gate), the no-script " +
-    "block, and the WebGL failure page. The crawler needs no link - it is already reading the " +
-    "atlas - and the mobile road is the gate's.\n   Scoped to a DIRECT CHILD OF BODY, and that " +
+    "block, the WebGL failure page, the page a failed RASTER leaves behind - which was a dead " +
+    "end with no door in it until 2026-09-08 - and a link in the film's own chrome, because a " +
+    "reader who can see the film perfectly well and cannot use it had no way out either. The " +
+    "crawler needs no link, it is already reading the atlas.\n   Scoped to a DIRECT CHILD OF " +
+    "BODY, and that " +
     "is not fussiness. The first version took the document's FIRST no-script element and passed " +
     "exactly once, then failed forever: the panel used to render these explanations as HTML, " +
     "this sentence named the tag, and so each run CREATED one inside the panel for the next run " +
@@ -2723,7 +3037,9 @@ function copyCheck() {
     "longer lets a check's own prose build elements",
     /atlas\.html/.test(($("gate") || {}).innerHTML || "") &&
     /atlas\.html/.test((document.querySelector("body > noscript") || {}).textContent || "") &&
-    String(glFailure).indexOf("atlas.html") > 0);
+    String(glFailure).indexOf("atlas.html") > 0 &&
+    String(assetFailure).indexOf("atlas.html") > 0 &&
+    !!document.querySelector("#chrome-atlas") && !!document.querySelector("#skip-atlas"));
 
   check(cap["01"],
     "at t 0.3000 the sea is -68.3 m, which rounds to the sixty-eight the line says; and " +
@@ -3094,13 +3410,41 @@ function drawFrame(s, opts) {
   return s;
 }
 
+var running = false;
+
 function loop(now) {
+  /* STOPPED, NOT THROTTLED. The gate can go up while the film is running -
+     reduced motion switched on, the window dragged to phone width - and the
+     right response to "stop moving" is to stop, not to keep drawing behind a
+     panel that says the film has stopped. applyGate() starts it again. */
+  if (GATED) { running = false; ftPrev = 0; return; }
   if (ftPrev) { FT[ftAt] = now - ftPrev; ftAt = (ftAt + 1) % FT.length; ftN++; }
   ftPrev = now;
 
   cur += (target - cur) * 0.08;
   drawFrame(stateFor(tFor(cur)));
   requestAnimationFrame(loop);
+}
+
+/* The gate, re-asked. Everything the film needs is already built, so coming
+   back out of it is free: the loop picks up at the t the reader is at. */
+function applyGate() {
+  var want = gateWanted();
+  if (want === GATED) return;
+  GATED = want;
+  $("gate").classList.toggle("on", want);
+  /* The gate is a full-screen answer, so the film behind it leaves the reading
+     order with it. Otherwise a reader who has just been told the film has
+     stopped can tab straight into its chrome and read a beat that is no longer
+     running - the same defect as a faded paragraph that is still in the
+     accessibility tree, one layer out. */
+  ["head", "copy", "state", "ruler", "hint"].forEach(function (id) {
+    var e = $(id); if (!e) return;
+    e.inert = want;
+    if (want) e.setAttribute("aria-hidden", "true");
+    else e.removeAttribute("aria-hidden");
+  });
+  if (!want && !running) { running = true; requestAnimationFrame(loop); }
 }
 
 /* DRAW ONE FRAME AT ONE t, SYNCHRONOUSLY, AND RETURN ITS STATE.
@@ -3207,9 +3551,10 @@ function panel(s) {
     });
   }
   $("p-pale").innerHTML = s.paleRGB === null
-    ? '<span style="color:#5F7794">not in the palette</span>'
+    ? '<span style="color:#647C99">not in the palette</span>'
     : pale + " of " + D.measured.pale.points.length + " lit  ·  rgb(" + s.paleRGB + ")";
-  $("p-tile").textContent = s.tile;
+  $("p-tile").textContent = s.tile +
+    (TXO[s.tile] ? "" : "  ·  in flight, drawing from the globe");
 
   var f = frameStats();
   $("p-frame").innerHTML = f
@@ -3235,7 +3580,8 @@ function panel(s) {
    in order to tell you the renderer is broken is no use to anybody. */
 function bindTests() {
   [["t-purity", purity], ["t-copy", copyCheck],
-   ["t-law06", law06], ["t-absence", absence], ["t-hold", hold],
+   ["t-law06", law06], ["t-indep", independence],
+   ["t-absence", absence], ["t-hold", hold],
    ["t-bench", function () { bench(); }]]
     .forEach(function (p) { $(p[0]).addEventListener("click", p[1]); });
 }
@@ -3325,6 +3671,7 @@ function start() {
     window.EMBER = { stateFor: stateFor, camAt: camAt, frame: frame, D: D,
                      purity: purity, copyCheck: copyCheck,
                      law06: law06, absence: absence, hold: hold,
+                     independence: independence, readerCopy: readerCopy,
                      ATLAS: ATLAS, VOICES: VOICES, RECORDS: RECORDS,
                      LABELS: LABELS, GROUND: GROUND, stateLine: stateLine };
     initRuler(); measured();
@@ -3351,6 +3698,11 @@ function start() {
   resize();
   makePlate();
   window.addEventListener("resize", resize);
+  /* Both roads back to the gate. A media query fires on change; a window does
+     not, so the size half rides on resize. */
+  window.addEventListener("resize", applyGate);
+  if (REDUCED.addEventListener) REDUCED.addEventListener("change", applyGate);
+  else if (REDUCED.addListener) REDUCED.addListener(applyGate);
   window.addEventListener("scroll", function () {
     target = window.scrollY / maxScroll();
   }, { passive: true });
@@ -3369,6 +3721,11 @@ function start() {
                    project: project, D: D, purity: purity, copyCheck: copyCheck,
                    law06: law06, absence: absence, hold: hold,
                    ROUTES: ROUTES, tileFor: tileFor, renderAt: renderAt, bench: bench,
+                   tilesReady: tilesReady, readerCopy: readerCopy,
+                   independence: independence,
+                   /* "reduced motion means stop moving" is a claim about the
+                      loop, not about a panel, so the loop is askable. */
+                   gated: function () { return { gate: GATED, running: running }; },
                    /* the atlas: one baked still, and the copy tables it draws from */
                    bakeAt: bakeAt, ATLAS: ATLAS, VOICES: VOICES, RECORDS: RECORDS,
                    LABELS: LABELS, GROUND: GROUND, stateLine: stateLine,
@@ -3376,6 +3733,7 @@ function start() {
                      var f = (t - D.tSpan[0]) / (D.tSpan[1] - D.tSpan[0]);
                      window.scrollTo(0, f * maxScroll()); target = cur = f;
                    } };
+  running = true;
   requestAnimationFrame(loop);
   setTimeout(function () { $("load").classList.add("off"); }, 260);
 }

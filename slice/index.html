@@ -33,6 +33,13 @@
         and a caption.
      3. Ember never appears in type. Law 02 reserves warm light for people, so
         the only ember on this page is a person-marker or a person's pigment.
+     4. THE WAY OUT IS ALWAYS ON THE PAGE. The film is desktop, motion and
+        WebGL, and a reader who has all three and still cannot use it - a
+        keyboard, a screen reader - used to have no door: the atlas was reached
+        from the gate, from <noscript> and from the WebGL failure page, none of
+        which a working film ever shows. So there is a skip link first in the
+        tab order and a visible link in the chrome. Ice, never ember: a link is
+        not a person.
    ========================================================================== */
 :root{
   --void:#04060A;
@@ -40,7 +47,12 @@
   --bone:#E6E2D8;
   --bone-dim:#A9A498;
   --ice:#8FA8C4;
-  --ice-dim:#5F7794;
+  /* Lifted from #5F7794 on 2026-09-08. That was 4.40:1 against the void and
+     AA wants 4.5 for text this small - and this token is EVERY instrumentation
+     surface in both artifacts: the margin labels, the ruler, the record's
+     citations, the panel, the atlas's captions and its whole colophon. This is
+     4.72:1, the same hue to two decimal places and the same saturation. */
+  --ice-dim:#647C99;
   --ember:#E8703A;
   --display:"Fraunces","Iowan Old Style",Georgia,serif;
   --body:"IBM Plex Sans","Segoe UI",Helvetica,Arial,sans-serif;
@@ -135,7 +147,19 @@ canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block}
 #panel pre{white-space:pre-wrap;font:inherit;margin-top:8px;color:var(--bone-dim)}
 #panel .ok{color:#7FBF8F}
 #panel .bad{color:var(--ember)}
-#hint{position:fixed;z-index:5;right:22px;bottom:26px;opacity:.45}
+/* The bottom-right corner: the panel key, and the way out.
+   The blanket opacity:.45 that used to be here took --ice-dim to roughly 2:1
+   against the void, which is illegible for anyone it was not already decorative
+   for. The type system's own value for instrumentation is --ice-dim at full
+   strength, so this is the system being applied rather than the chrome being
+   made louder. */
+#hint{position:fixed;z-index:5;right:22px;bottom:26px;
+  display:flex;gap:20px;align-items:baseline}
+#skip-atlas{position:fixed;z-index:50;left:var(--gutter);top:-72px;
+  background:var(--void);border:1px solid var(--rule);padding:11px 15px;
+  transition:top .18s var(--ease)}
+#skip-atlas:focus{top:22px}
+a.go:focus-visible{outline:1px solid var(--ice);outline-offset:5px}
 
 /* -- loading -------------------------------------------------------------- */
 #load{position:fixed;inset:0;z-index:20;background:var(--void);display:grid;
@@ -186,8 +210,14 @@ body.still #record{transition:none !important}
 </head>
 <body>
 
-<canvas id="earth"></canvas>
-<canvas id="over"></canvas>
+<a class="go" id="skip-atlas" href="atlas.html">Skip the film &mdash; read beat 06 as the atlas</a>
+
+<!-- The world is a shader and has no text alternative that is not the atlas;
+     saying so is more honest than letting a reader tab into two unlabelled
+     canvases. Every word the film draws on them is also in the copy column,
+     and everything else about them is the atlas's job. -->
+<canvas id="earth" aria-hidden="true"></canvas>
+<canvas id="over" aria-hidden="true"></canvas>
 
 <div id="head">
   <div class="no" id="h-no">BEAT 05 &middot; ACT II &middot; 60,000 &mdash; 50,000 BP</div>
@@ -208,7 +238,10 @@ body.still #record{transition:none !important}
     <span id="r-str"></span>
   </div>
 </div>
-<div id="hint" class="mono">press i</div>
+<div id="hint" class="mono">
+  <span>press i</span>
+  <a class="go" id="chrome-atlas" href="atlas.html">Read beat 06 as the atlas</a>
+</div>
 
 <div id="panel">
   <h4>State &mdash; everything is a function of t</h4>
@@ -237,19 +270,32 @@ Scroll for a few seconds first. The worst frame is what matters: one 40 ms hitch
 Only meaningful in a VISIBLE window. A hidden tab or a headless browser throttles the frame loop and will report a whole second per frame.</pre>
   <h4>Law 01 &mdash; one number governs everything</h4>
   <button id="t-purity">Run purity test</button>
-  <pre id="o-purity">Hashes the full state at 401 points scrubbing forward, then again backward, and diffs them.</pre>
+  <pre id="o-purity">Hashes the full state at 401 points scrubbing forward, then again backward, and diffs them.
+
+A REGRESSION CHECK, and worth naming as one. It shows that stateFor hands back the same world at the same t at the points it samples, and that the year never runs backwards. It cannot see between two samples, and it says nothing about whether anything downstream reads a value that is not in the state - a channel computed inside a draw call is invisible to it, which is exactly how the sky tint stayed outside the Law 06 walk for a phase.</pre>
   <h4>Law 07 &mdash; copy checked against the data</h4>
   <button id="t-copy">Run copy check</button>
-  <pre id="o-copy">Diffs every on-screen line against the qualifiers its own event carries in timeline.json.</pre>
+  <pre id="o-copy">Diffs every on-screen line against the qualifiers its own event carries in timeline.json.
+
+It bounds the FILM, not the literature: it can show that a sentence claims no more than the record behind it, and it cannot tell you the record is right. Three of the last five failures here were the check being wrong rather than the copy, and each time fixing the check made it say something truer.</pre>
   <h4>Law 06 &mdash; epistemic, not causal</h4>
   <button id="t-law06">Run law 06 test</button>
-  <pre id="o-law06">The Campanian Ignimbrite is on screen because it is how we know when beat 07 happened, not because it did anything. Proves both halves: that it is drawn, and that no world channel notices it.</pre>
+  <pre id="o-law06">The Campanian Ignimbrite is on screen because it is how we know when beat 07 happened, not because it did anything. This half shows that it is drawn, and that no world channel takes a STEP at its instant - which is the bug the film actually committed, when the eruption used to arrive as grey sky.
+
+Continuity is not independence, and this test does not prove non-influence: a channel driven smoothly by the eruption passes every line of it. That is the test below.</pre>
+  <h4>Law 06 &mdash; take it out and nothing moves</h4>
+  <button id="t-indep">Run independence test</button>
+  <pre id="o-indep">Strips the eruption from all four surfaces it occupies &mdash; the record, the margin, the copy and the rail &mdash; and asserts the world is bit-identical at every t. The only test here that compares the film against a configuration that could have disagreed.</pre>
   <h4>Permanent absence &mdash; a colour leaves the film</h4>
   <button id="t-absence">Run absence test</button>
-  <pre id="o-absence">When the pale light goes out it must stay out for the remaining seven beats. Walks t to 1.0 &mdash; through beats that are not built &mdash; and then walks it backwards.</pre>
+  <pre id="o-absence">When the pale light goes out it must stay out for the remaining seven beats. Walks t to 1.0 &mdash; through beats that are not built &mdash; and then walks it backwards.
+
+What it certifies is a property of THIS function: paleRGB is null at every sampled t after the extinction, and returns at the same t scrubbing back. It cannot promise that beats 08 to 14 will not light a second pale population by some other route. It promises that this one will not.</pre>
   <h4>The only true hold</h4>
   <button id="t-hold">Count the holds</button>
-  <pre id="o-hold">Beat 05 is the film's only locked camera. Counts the spans where the camera is bit-identical and fails on more than one.</pre>
+  <pre id="o-hold">Beat 05 is the film's only locked camera. Counts the spans where the camera is bit-identical and fails on more than one.
+
+Counted at the sample spacing, so a lock shorter than that is invisible to it. The definition took two tries: a hold is a locked camera ON THE WORLD, and the first version counted a camera nobody was looking through.</pre>
   <h4>Time the draw path</h4>
   <button id="t-bench">Run the benchmark</button>
   <pre id="o-bench">A frame interval reads 16.7 ms whether the work took 1 ms or 15, so it says nothing about headroom. This draws six real shots 160 times each, synchronously, and divides. It blocks for about a second.</pre>
@@ -272,7 +318,7 @@ Only meaningful in a VISIBLE window. A hidden tab or a headless browser throttle
   <p style="margin-top:22px"><a class="go" href="atlas.html">Read beat 06 as the atlas</a></p>
 </div></div>
 
-<div id="runway"></div>
+<div id="runway" aria-hidden="true"></div>
 
 <noscript>
   <div id="nojs"><div>
