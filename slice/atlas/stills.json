@@ -55,14 +55,14 @@
    "record": null,
    "state": [
     "<span class=\"k\">SEA LEVEL</span> -68.3 M",
-    "<span class=\"k\">DRY LAND</span> +28% ON TODAY, 92&ndash;156&deg;E"
+    "<span class=\"k\">DRY LAND</span> +28% ON TODAY, 90&ndash;160&deg;E 50&deg;S&ndash;30&deg;N"
    ],
    "text": [],
    "labels": [],
    "gap": null,
    "reserved": null,
    "file": "06-01.webp",
-   "bytes": 151418
+   "bytes": 147108
   },
   {
    "t": 0.308,
@@ -85,7 +85,7 @@
    "record": null,
    "state": [
     "<span class=\"k\">SEA LEVEL</span> -72.1 M",
-    "<span class=\"k\">DRY LAND</span> +30% ON TODAY, 92&ndash;156&deg;E"
+    "<span class=\"k\">DRY LAND</span> +30% ON TODAY, 90&ndash;160&deg;E 50&deg;S&ndash;30&deg;N"
    ],
    "text": [
     {
@@ -152,7 +152,7 @@
    "gap": null,
    "reserved": null,
    "file": "06-02.webp",
-   "bytes": 132332
+   "bytes": 128446
   },
   {
    "t": 0.322,
@@ -175,7 +175,7 @@
    "record": null,
    "state": [
     "<span class=\"k\">SEA LEVEL</span> -76.5 M",
-    "<span class=\"k\">DRY LAND</span> +31% ON TODAY, 92&ndash;156&deg;E"
+    "<span class=\"k\">DRY LAND</span> +31% ON TODAY, 90&ndash;160&deg;E 50&deg;S&ndash;30&deg;N"
    ],
    "text": [
     {
@@ -242,7 +242,7 @@
    "gap": null,
    "reserved": null,
    "file": "06-03.webp",
-   "bytes": 100928
+   "bytes": 100858
   },
   {
    "t": 0.335,
@@ -272,7 +272,7 @@
    "record": null,
    "state": [
     "<span class=\"k\">SEA LEVEL</span> -73.8 M",
-    "<span class=\"k\">DRY LAND</span> +30% ON TODAY, 92&ndash;156&deg;E"
+    "<span class=\"k\">DRY LAND</span> +30% ON TODAY, 90&ndash;160&deg;E 50&deg;S&ndash;30&deg;N"
    ],
    "text": [
     {
@@ -369,7 +369,7 @@
    },
    "reserved": null,
    "file": "06-04.webp",
-   "bytes": 100606
+   "bytes": 100278
   },
   {
    "t": 0.345,
@@ -403,7 +403,7 @@
    },
    "state": [
     "<span class=\"k\">SEA LEVEL</span> -75.7 M",
-    "<span class=\"k\">DRY LAND</span> +31% ON TODAY, 92&ndash;156&deg;E"
+    "<span class=\"k\">DRY LAND</span> +31% ON TODAY, 90&ndash;160&deg;E 50&deg;S&ndash;30&deg;N"
    ],
    "text": [
     {
@@ -500,7 +500,7 @@
    },
    "reserved": null,
    "file": "06-05.webp",
-   "bytes": 114486
+   "bytes": 114132
   },
   {
    "t": 0.352,
@@ -534,7 +534,7 @@
    },
    "state": [
     "<span class=\"k\">SEA LEVEL</span> -75.1 M",
-    "<span class=\"k\">DRY LAND</span> +30% ON TODAY, 92&ndash;156&deg;E"
+    "<span class=\"k\">DRY LAND</span> +30% ON TODAY, 90&ndash;160&deg;E 50&deg;S&ndash;30&deg;N"
    ],
    "text": [
     {
@@ -631,7 +631,7 @@
    },
    "reserved": null,
    "file": "06-06.webp",
-   "bytes": 108788
+   "bytes": 106818
   },
   {
    "t": 0.361,
@@ -660,7 +660,7 @@
    "gap": null,
    "reserved": null,
    "file": "06-07.webp",
-   "bytes": 94634
+   "bytes": 94584
   },
   {
    "t": 0.38,
@@ -769,7 +769,7 @@
     "t": 0.308,
     "id": "02",
     "ev": [],
-    "cap": "The pale ground is the shelf &mdash; land standing dry here that is under water today. Across the beat, dry land inside the box the film measures, ninety&#8209;two to a hundred and fifty&#8209;six degrees east, grows from 23.75 per cent to 30.88 per cent: a gain of thirty per cent on today."
+    "cap": "The pale ground is the shelf &mdash; land standing dry here that is under water today. Measured over the box the connectivity test uses, ninety to a hundred and sixty degrees east and fifty south to thirty north: 30.88 per cent of it stands dry at the end of this beat against 23.75 per cent today, a gain of thirty per cent on the present. Across the beat itself the change is small &mdash; 30.44 to 30.88 per cent &mdash; because the shelf was already out when the beat opened. Beat 05 exposed it."
    },
    {
     "t": 0.322,
@@ -783,7 +783,7 @@
     "ev": [
      "wallacea-crossing"
     ],
-    "cap": "Seventy point five kilometres. Not the narrowest crossing in Wallacea &mdash; the widest single hop that any island&#8209;hopping route from Sunda to Sahul must include, minimised over every route there is. The sea falls a hundred and thirty&#8209;one metres from here to the lowstand and that floor moves to seventy point four."
+    "cap": "Seventy point five kilometres. Not the narrowest crossing in Wallacea &mdash; the widest single hop that any island&#8209;hopping route from Sunda to Sahul must include, minimised over every route there is. The sea has another fifty&#8209;seven metres to fall between here and the last glacial maximum, and that floor only moves to seventy point four."
    },
    {
     "t": 0.345,

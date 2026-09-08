@@ -99,6 +99,7 @@ def main():
     gap  = json.load(open(os.path.join(OUT, "wallacea_gap.json"), encoding="utf-8"))
     door = json.load(open(os.path.join(OUT, "doors.json"), encoding="utf-8"))
     pale = json.load(open(os.path.join(OUT, "pale_extent.json"), encoding="utf-8"))
+    sunda = json.load(open(os.path.join(OUT, "bathy_sunda.json"), encoding="utf-8"))
 
     beats = [{"id": b["id"], "y0": b["yearsBP"][0], "y1": b["yearsBP"][1],
               "w": b["scrollWeight"], "title": b["title"], "act": b["act"]}
@@ -159,8 +160,11 @@ def main():
         "sea": sea,
         "temp": thin(temp, y_lo - 2000, y_hi + 2000, 4),
         "measured": {"tiles": tiles, "global": glob,
-                     "tileChecks": json.load(open(os.path.join(OUT, "bathy_sunda.json"),
-                                                  encoding="utf-8"))["checks"],
+                     "tileChecks": sunda["checks"],
+                     # the box tileChecks describes, so the film can check the
+                     # label it puts on screen against the extent that was
+                     # actually measured rather than against the number
+                     "landBox": sunda["checksBox"],
                      "wallacea": gap, "doors": door, "pale": pale},
         "compressionRatio": round(
             max((b["y0"] - b["y1"]) / (b["t1"] - b["t0"]) for b in beats) /

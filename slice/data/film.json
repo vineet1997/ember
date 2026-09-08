@@ -8767,6 +8767,14 @@
     "landFracBox": 33.01
    }
   ],
+  "landBox": {
+   "lon0": 90.0,
+   "lon1": 160.0,
+   "lat0": -50.0,
+   "lat1": 30.0,
+   "what": "land fraction and land-component connectivity",
+   "note": "NOT the render tile. The render tile is 92-156E -30-22N and is a different box."
+  },
   "wallacea": {
    "what": "Minimum-bottleneck water crossing from the Sunda shelf to Sahul.",
    "definition": "Over all island-hopping routes, the smallest achievable longest single hop. Any crossing by any route must include a gap at least this wide.",

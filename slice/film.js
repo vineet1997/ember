@@ -1793,9 +1793,12 @@ var ATLAS = {
 
     { t: 0.3080, id: "02", ev: [], cap:
       "The pale ground is the shelf &mdash; land standing dry here that is under water " +
-      "today. Across the beat, dry land inside the box the film measures, ninety&#8209;two " +
-      "to a hundred and fifty&#8209;six degrees east, grows from 23.75 per cent to " +
-      "30.88 per cent: a gain of thirty per cent on today." },
+      "today. Measured over the box the connectivity test uses, ninety to a hundred and " +
+      "sixty degrees east and fifty south to thirty north: 30.88 per cent of it stands " +
+      "dry at the end of this beat against 23.75 per cent today, a gain of thirty per " +
+      "cent on the present. Across the beat itself the change is small &mdash; 30.44 to " +
+      "30.88 per cent &mdash; because the shelf was already out when the beat opened. " +
+      "Beat 05 exposed it." },
 
     { t: 0.3220, id: "03", ev: [], cap:
       "The light travels east across a shelf that is standing dry. The head is a " +
@@ -1806,9 +1809,9 @@ var ATLAS = {
     { t: 0.3350, id: "04", ev: ["wallacea-crossing"], cap:
       "Seventy point five kilometres. Not the narrowest crossing in Wallacea &mdash; " +
       "the widest single hop that any island&#8209;hopping route from Sunda to Sahul " +
-      "must include, minimised over every route there is. The sea falls a hundred and " +
-      "thirty&#8209;one metres from here to the lowstand and that floor moves to " +
-      "seventy point four." },
+      "must include, minimised over every route there is. The sea has another " +
+      "fifty&#8209;seven metres to fall between here and the last glacial maximum, and " +
+      "that floor only moves to seventy point four." },
 
     { t: 0.3450, id: "05", ev: ["madjedbebe", "sahul-arrival"], cap:
       "The rocks and the genomes disagree about when this happened, and the film does " +
@@ -1923,7 +1926,7 @@ function stateLine(s) {
     var row = nearestBySea(D.measured.tileChecks, s.sea);
     out.push('<span class="k">DRY LAND</span> +' +
       Math.round((row.landFracBox / now.landFracBox - 1) * 100) +
-      "% ON TODAY, 92&ndash;156&deg;E");
+      "% ON TODAY, " + boxLabel(D.measured.landBox));
   }
   /* Beat 05. The southern door, at the film's standard island threshold, so it
      is directly comparable with beat 06's Wallacea figure two beats later - the
@@ -1939,6 +1942,32 @@ function stateLine(s) {
       " KM &middot; WIDEST HOP ANY ROUTE MUST INCLUDE");
   }
   return out;
+}
+
+/* A MEASURED FIGURE NAMES THE BOX IT WAS MEASURED OVER, and the name is built
+   from the box rather than typed next to it.
+
+   This exists because the film spent a phase reading "+30% ON TODAY, 92-156E"
+   for a figure measured over 90-160E, 50S-30N. 92-156E is the RENDER TILE - the
+   frame - and the land fraction is measured over the wider CONNECTIVITY box,
+   because Tasmania and mainland Asia have to be inside the component test. Two
+   boxes, one of them typed beside the other one's number.
+
+   Nothing caught it. The copy check asserted 23.75, 30.88 and the ratio between
+   them - the film agreeing with the film - and never asked what the box was.
+   The doors measurement had shipped its own box in the data since Phase 5; this
+   one had not, so there was nothing to check against. Now there is, and the
+   label is generated, so the label cannot drift from the measurement without
+   the measurement moving too. */
+function boxLabel(b) {
+  function d(v, neg, pos) { return Math.abs(v) + "&deg;" + (v < 0 ? neg : pos); }
+  var lo = (b.lon0 < 0) === (b.lon1 < 0)
+    ? Math.abs(b.lon0) + "&ndash;" + d(b.lon1, "W", "E")
+    : d(b.lon0, "W", "E") + "&ndash;" + d(b.lon1, "W", "E");
+  var la = (b.lat0 < 0) === (b.lat1 < 0)
+    ? Math.abs(b.lat0) + "&ndash;" + d(b.lat1, "S", "N")
+    : d(b.lat0, "S", "N") + "&ndash;" + d(b.lat1, "S", "N");
+  return lo + " " + la;
 }
 
 /* the measured row closest to the sea level we are actually at */
@@ -2659,18 +2688,66 @@ function copyCheck() {
              r.sunda.indexOf("mainland Asia") >= 0 && r.sunda.indexOf("Borneo") >= 0;
     }));
 
-  /* The quantity again. landFracBox is the fraction of the MEASURED BOX that is
-     land - not of the lens, not of the world - and the caption says which box
-     and quotes its edges. The gain is a ratio of two box fractions, which is
-     only meaningful because it is the same box twice. */
+  /* THE FIRST CHECK IN THIS FILE THAT TESTS A REFERENT RATHER THAN A VALUE, and
+     it exists because the version it replaces passed while the sentence it
+     guarded was wrong twice over.
+
+     That version asserted 23.75, 30.88 and the ratio between them. Every one of
+     those was true. What was false was what they were ABOUT: the number is
+     measured over the connectivity box, 90-160E 50S-30N, and the film labelled
+     it with the render tile's bounds, 92-156E; and the atlas caption said the
+     pair described growth "across the beat" when 23.75 is TODAY - the beat
+     opens at 30.44 and closes at 30.88, a change of one and a half per cent,
+     not thirty.
+
+     A check that compares the film's numbers to the film's numbers cannot see
+     either error. So this one asks, for each figure, what it is a figure OF:
+     which box, and which baseline. The box now travels in the data, the label
+     is generated from it, and the caption is pinned to the constant - so moving
+     the box breaks the prose instead of silently relabelling it. */
   check(cap["02"],
-    "23.75% is the box 92-156E, 30S-22N standing dry today and 30.88% is the same box at " +
-    "the beat's -73.9 m; the gain is the ratio of the two and rounds to 30%",
+    "every figure here is checked against its REFERENT, not its value. The box: landBox " +
+    "travels with the measurement now, the on-screen label is generated from it, and the " +
+    "caption's words are pinned to the same constant. The baselines: 23.75% is sea level " +
+    "0 - TODAY - while the beat runs 30.44% to 30.88%, so the thirty per cent is a gain " +
+    "on the present and the beat's own change is 1.4%. The caption says both, and says " +
+    "which is which",
     (function () {
+      var lb = D.measured.landBox;
+      if (!lb) return false;
       var now = tc.filter(function (r) { return r.seaM === 0; })[0];
-      var beat = tc.filter(function (r) { return Math.abs(r.seaM + 73.9) < 0.05; })[0];
-      return !!now && !!beat && now.landFracBox === 23.75 && beat.landFracBox === 30.88 &&
-             Math.round((beat.landFracBox / now.landFracBox - 1) * 100) === 30;
+      var open = tc.filter(function (r) { return Math.abs(r.seaM + 68.3) < 0.05; })[0];
+      var shut = tc.filter(function (r) { return Math.abs(r.seaM + 73.9) < 0.05; })[0];
+      if (!now || !open || !shut) return false;
+
+      /* the box is the CONNECTIVITY box, and it is not the render tile */
+      var tile = D.measured.tiles.sunda;
+      var boxIsConnectivity = lb.lon0 === 90 && lb.lon1 === 160 &&
+                              lb.lat0 === -50 && lb.lat1 === 30;
+      var boxIsNotTile = !tile || lb.lon0 !== tile.lon0 || lb.lon1 !== tile.lon1;
+
+      /* the label the reader sees is BUILT from that box */
+      var onScreen = stateLine(stateFor(0.3350)).join(" ");
+      var labelled = onScreen.indexOf(boxLabel(lb)) >= 0;
+
+      /* and the caption names the same box, in words tied to the same numbers */
+      var capNamesBox = /ninety to a hundred and sixty degrees east/.test(cap["02"]) &&
+                        /fifty south to thirty north/.test(cap["02"]);
+
+      /* the baselines, each said out loud and each matched to its row */
+      var today = now.landFracBox === 23.75 &&
+                  /against 23\.75 per cent today/.test(cap["02"]);
+      var close = shut.landFracBox === 30.88 &&
+                  /30\.88 per cent of it stands dry at the end of this beat/.test(cap["02"]);
+      var gainOnToday = Math.round((shut.landFracBox / now.landFracBox - 1) * 100) === 30 &&
+                        /thirty per cent on the present/.test(cap["02"]);
+      var acrossBeat = open.landFracBox === 30.44 &&
+                       /Across the beat itself the change is small/.test(cap["02"]) &&
+                       /30\.44 to 30\.88 per cent/.test(cap["02"]) &&
+                       Math.round((shut.landFracBox / open.landFracBox - 1) * 1000) === 14;
+
+      return boxIsConnectivity && boxIsNotTile && labelled && capNamesBox &&
+             today && close && gainOnToday && acrossBeat;
     })());
 
   check(cap["03"],
@@ -2688,11 +2765,25 @@ function copyCheck() {
     "the measurement's own definition is 'the smallest achievable longest single hop' " +
     "over all island-hopping routes; the caption denies the reading it is most likely " +
     "to get - narrowest crossing - and quotes 70.4 km at the -131 m lowstand as a " +
-    "FLOOR, which a stricter island threshold can only raise",
-    /smallest achievable longest single hop/.test(D.measured.wallacea.definition) &&
-    w.filter(function (r) { return r.seaM === -131.0; })[0].bottleneckKm === 70.4 &&
-    w.filter(function (r) { return Math.abs(r.seaM + 73.9) < 0.05; })[0].bottleneckKm === 70.5 &&
-    D.measured.wallacea.rows.every(function (r) { return r.bottleneckKm >= 70.4; }));
+    "FLOOR, which a stricter island threshold can only raise.\n   The fifty-seven metres " +
+    "is checked as a FURTHER fall from this shot's own sea level, not as the total from " +
+    "the present. It read 'a hundred and thirty-one metres from here' - which is the " +
+    "depth of the lowstand below TODAY, and the frame is already 74 m down. Right number, " +
+    "wrong origin, and the old check never looked at it",
+    (function () {
+      var low = Math.min.apply(null, D.measured.wallacea.rows.map(function (r) {
+        return r.seaM; }));
+      var shot = A.shots.filter(function (sh) { return sh.id === "04"; })[0];
+      var here = stateFor(shot.t).sea;
+      var further = Math.abs(low) - Math.abs(here);
+      return /smallest achievable longest single hop/.test(D.measured.wallacea.definition) &&
+        w.filter(function (r) { return r.seaM === -131.0; })[0].bottleneckKm === 70.4 &&
+        w.filter(function (r) { return Math.abs(r.seaM + 73.9) < 0.05; })[0].bottleneckKm === 70.5 &&
+        D.measured.wallacea.rows.every(function (r) { return r.bottleneckKm >= 70.4; }) &&
+        Math.round(further) === 57 &&
+        /another fifty&#8209;seven metres to fall/.test(cap["04"]) &&
+        !/hundred and thirty&#8209;one metres from here/.test(cap["04"]);
+    })());
 
   check(cap["05"],
     "both ranges are quoted exactly as their events carry them, both events are marked " +
@@ -2807,6 +2898,7 @@ function measured() {
   var tc = D.measured.tileChecks;
   var now = tc.filter(function (r) { return r.seaM === 0; })[0];
   var beat = tc.reduce(function (a, r) { return Math.abs(r.seaM + 73.9) < Math.abs(a.seaM + 73.9) ? r : a; });
+  var open = tc.reduce(function (a, r) { return Math.abs(r.seaM + 68.3) < Math.abs(a.seaM + 68.3) ? r : a; });
   var dr = D.measured.doors.rows;
   function d10(id) {
     return dr.filter(function (r) { return r.doorId === id && r.minIslandPx === 10; });
@@ -2836,9 +2928,13 @@ function measured() {
     "BEAT 06 - Wallacea bottleneck, the widest hop any\nisland-hopping route must include:\n" +
     w.map(function (r) { return "  " + String(r.seaM).padStart(7) + " m   " + r.bottleneckKm.toFixed(1) + " km"; }).join("\n") +
     "\n  floor " + lo.toFixed(1) + " km. The sea falls 131 m and\n  the gap does not close.\n\n" +
-    "Dry land in this frame:\n  today " + now.landFracBox.toFixed(2) + "%   at " + beat.seaM +
+    "Dry land in the CONNECTIVITY box, " + boxLabel(D.measured.landBox).replace(/&deg;/g, "\u00b0")
+      .replace(/&ndash;/g, "-") + "\n  - which is not the render tile, and is wider:\n" +
+    "  today " + now.landFracBox.toFixed(2) + "%   at " + beat.seaM +
     " m " + beat.landFracBox.toFixed(2) + "%\n  a gain of " +
-    ((beat.landFracBox / now.landFracBox - 1) * 100).toFixed(0) + "%.";
+    ((beat.landFracBox / now.landFracBox - 1) * 100).toFixed(0) + "% on today, and " +
+    ((beat.landFracBox / open.landFracBox - 1) * 100).toFixed(1) +
+    "% across the beat\n  itself - the shelf was already out when it opened.";
 }
 
 /* ═══ 13 · THE LOOP ══════════════════════════════════════════════════════ */

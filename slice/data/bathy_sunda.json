@@ -105,5 +105,13 @@
    "landFracBox": 33.01
   }
  ],
+ "checksBox": {
+  "lon0": 90.0,
+  "lon1": 160.0,
+  "lat0": -50.0,
+  "lat1": 30.0,
+  "what": "land fraction and land-component connectivity",
+  "note": "NOT the render tile. The render tile is 92-156E -30-22N and is a different box."
+ },
  "note": "Gap is the great-circle distance between the coastlines of the component containing mainland Asia and the component containing Australia, on ETOPO 2022 bedrock at 60 arc-seconds."
 }

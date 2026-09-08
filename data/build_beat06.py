@@ -129,6 +129,22 @@ if __name__ == "__main__":
     print("verify (the beat's own sea levels, from data/sealevel_merged.json):")
     checks = verify([0.0, -68.3, -73.9, -77.0, -85.0, -131.0])
     json.dump({"tile": tile, "checks": checks,
+               # THE MEASUREMENT CARRIES ITS OWN EXTENT. landFracBox is the land
+               # fraction of the CONNECTIVITY box - wider than the render tile,
+               # because Tasmania and mainland Asia have to be inside the
+               # component test. Without this field the only record of which box
+               # the number describes was a constant in this file, and the film
+               # labelled it with the RENDER TILE's bounds instead: on screen it
+               # read "92-156E" for a figure measured over 90-160E, 50S-30N. The
+               # doors measurement already shipped its own box; this one did not,
+               # and that asymmetry is the whole bug. Now the film can assert the
+               # label against the extent rather than against the value.
+               "checksBox": {"lon0": CLON0, "lon1": CLON1,
+                             "lat0": CLAT0, "lat1": CLAT1,
+                             "what": "land fraction and land-component connectivity",
+                             "note": "NOT the render tile. The render tile is "
+                                     "%g-%gE %g-%gN and is a different box."
+                                     % (LON0, LON1, LAT0, LAT1)},
                "note": "Gap is the great-circle distance between the coastlines of the "
                        "component containing mainland Asia and the component containing "
                        "Australia, on ETOPO 2022 bedrock at 60 arc-seconds."},

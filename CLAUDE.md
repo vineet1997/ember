@@ -70,6 +70,7 @@ Published storyboard: https://claude.ai/code/artifact/2e20728f-4ebf-4f50-812c-be
 ```
 data/bathymetry.png         4096×2048 terrain-RGB, ETOPO 2022 bedrock, 0.305 m precision
                             elevation = (R*256 + G) * scale + offset
+                            REBUILT 2026-09-08: the old one was misregistered, see below
 data/sealevel_merged.json   322 pts, 300 ka→0. Spratt stack + ICE-6G_C, 0.5 ka deglacial
 data/temperature.json       2,998 pts, 60 ka→0 at 20 yr. NGRIP δ¹⁸O (a PROXY — never °C on screen)
 data/ice_atlas.png          48 ICE-6G_C slices, 26 ka→0, one 27 KB atlas
@@ -95,18 +96,26 @@ waterline edge faithfully draws as frost.
 
 Rebuild, in this order: `python data/build_rasters.py`, `python data/build_sealevel.py`,
 `python data/build_beat06.py`, `python data/verify_wallacea.py`, `python data/build_beat0507.py`,
-`python slice/build_slice.py`, `python slice/build_atlas.py`. (`data/edit_timeline_p5.py` is
-idempotent and already applied —
+`python slice/build_slice.py`, `python slice/build_atlas.py`. `build_rasters.py` ends by
+running `verify_registration()`, which is the only check in the project that compares a
+representation against a *different* one; read it before trusting any new texture.
+(`data/edit_timeline_p5.py` is idempotent and already applied —
 it wrote the northern spine, the pale extent and the Law 06 decision into `timeline.json`.)
 `data/raw/` is 496 MB of source grids — **gitignore it**, it's reproducible from the URLs in
 `timeline.json → earthStateDatasets`.
 
-Numbers not worth re-deriving: land above 0 m = **28.5%** of grid, above −130 m = **34.0%**
-(that gap is the shelf). Ice cover **18.1%** at LGM vs **11.2%** today. Lowstand **−131 m**.
+Numbers not worth re-deriving: land above 0 m = **28.8%** of grid, above −130 m = **34.4%**
+(that gap is the shelf). *(Both moved in the 2026-09-08 rebuild — they were 28.5% and 34.0%,
+measured on a grid that was missing 18.67° of longitude. See the registration bug below.)* Ice cover **18.1%** at LGM vs **11.2%** today. Lowstand **−131 m**.
 Beat 06: Wallacea minimum-bottleneck crossing **70.5 km** at −74 m, floor **70.4 km** at
 *any* sea level — the sea falls 131 m and the gap does not close. Sunda and Sahul each one land
-component at −68 m, Tasmania included. Dry land in the beat's frame **23.75% → 30.88%**, a gain
-of 30%. Sulawesi's four arm tips and 95 km palm circle, for the match cut, are in `slice/film.js`.
+component at −68 m, Tasmania included. Dry land **23.75% → 30.88%**, a gain of 30% — but read
+that carefully, because the film got it wrong twice. It is the **connectivity box, 90–160°E
+50°S–30°N** (which is *not* the render tile, 92–156°E 30°S–22°N — the film labelled it with the
+tile's bounds for a phase), and 23.75% is **today**, not the beat's opening. Across the beat
+itself the change is **30.44% → 30.88%**, about 1.4%: the shelf was already out when beat 06
+opened, and beat 05 is what exposed it. The box now travels with the measurement in
+`film.json → measured.landBox`, and the on-screen label is generated from it. Sulawesi's four arm tips and 95 km palm circle, for the match cut, are in `slice/film.js`.
 
 Beat 05, measured in Phase 5 on the **same bottleneck definition** as Wallacea — deliberately, so
 the two may be spoken in one sentence. Each door needs its **own corridor**: Africa and Eurasia are
@@ -474,6 +483,33 @@ Metanduno's **67,800** as a date when it is a **minimum** — the U-series age i
 number. It prints `≥ 67,800 BP` now, read off the event's own `dateNote`, and the build **stops**
 if a single-value event says neither *minimum* nor *±*.
 
+**And a sixth kind, found by an outside audit on 2026-09-08, which is the one that should
+change how this project checks itself: every check compared the project against the project.**
+
+`block_mean()` downsampled ETOPO with integer block factors and cropped the remainder. 21600 ×
+10800 at 60″, into 4096 × 2048: `fh = fw = 5`, crop to `[:10240, :20480]`. That silently threw
+away **18.67° of longitude and 9.33° of latitude** while the shader went on mapping the result
+across the whole globe — every feature in the global texture pulled sideways by up to 17°,
+**1,040 km at Greenwich, 1,730 km at 120°E.** It shipped for a phase.
+
+Nothing caught it, and nothing *could* have: the terrain-RGB encode and decode are exact, so a
+round trip agrees with itself perfectly on a displaced grid. The beat tiles are cut from the raw
+grid by explicit lon/lat bounds and are correctly registered, so a close orbital shot — which is
+nearly all tile — looks right. Only the limb and the blend at a tile's edge come from the global
+texture. Every test in the panel passed throughout.
+
+The replacement, `box_resample()`, is an exact area average over the full extent (a running sum
+sampled at fractional cell edges, float64). The check that now guards it, `verify_registration()`,
+does the thing none of the others do: it compares the global texture against the **tiles** —
+a different representation of the same world, built by a different path — and scans trial lon/lat
+offsets, requiring the best agreement to sit at zero. On the old raster it reports
+`dlon +17.0, dlat −5.0` at Sunda. On the new one, `+0.0, +0.0`.
+
+**The general lesson, and it applies to the copy check as much as to the raster: agreement
+between two of the project's own representations is not evidence that either is true.** A check
+earns its keep only when the thing it compares against was produced by a path that could have
+disagreed.
+
 Four working rules that follow:
 
 - **Data before documents.** Finish the dataset, then update the storyboard. Doing it the
@@ -488,6 +524,14 @@ Four working rules that follow:
   beat 07's grazing angle the `1/depth` model does not capture how longitude foreshortens across
   the frame, and every pale patch would have been visibly the wrong size. The cheap version of a
   correct calculation is usually a different calculation.
+- **A check must compare against something that could have disagreed.** Encode/decode round
+  trips, value assertions against the same JSON that produced the value, and "the film agrees
+  with the film" all pass on a wrong world. Ask what independent path the check is measuring
+  against; if the answer is "none", it is a regression test, not a verification.
+- **A figure must name its referent, and the name should be generated, not typed.** "+30% on
+  today, 92–156°E" was three correct numbers with the wrong box beside them. The box now travels
+  in the data and `boxLabel()` builds the caption from it — so moving the box breaks the prose
+  instead of quietly relabelling it.
 - **Ask whether a check can still see what it checks.** Five lines shipped unchecked for a
   phase because they were string literals in a draw call while the check read tables — the same
   shape as the check that passed once and then failed on its own output. When a surface moves,
