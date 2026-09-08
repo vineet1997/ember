@@ -69,6 +69,7 @@ function clamp(x, a, b) { return x < a ? a : x > b ? b : x; }
 function ss(x) { x = clamp(x, 0, 1); return x * x * (3 - 2 * x); }
 function lerp(a, b, f) { return a + (b - a) * f; }
 
+var D12 = null;              /* the beat's own record - see the loader */
 var earth = $("earth"), over = $("over"), octx = over.getContext("2d");
 var W = 0, H = 0, DPR = 1, gl = null, prog = null, U = {}, TEXG = null;
 
@@ -546,28 +547,30 @@ function drawEarth(s, F) {
    over it: the transition is what is being tested here, not the beat. Finish
    the dataset - Larson et al. 2014 is already in the bibliography and maps the
    accepted centres - and these become solid.                               */
-var CENTRES = [
-  { id: "china-rice-millet",  lon: 112.0,  lat:  30.5, sourced: true,
-    k: "YANGTZE", v: "RICE  ·  9,000–8,000 BP" },
-  { id: "kuk-swamp",          lon: 144.33, lat:  -5.78, sourced: true,
-    k: "KUK SWAMP", v: "BANANA AND TARO  ·  ~7,000 BP FIRM" },
-  { id: "mesoamerica-maize",  lon: -99.5,  lat:  18.0, sourced: true,
-    k: "BALSAS VALLEY", v: "MAIZE  ·  9,000–8,700 BP" },
-  { id: "fertile-crescent",   lon:  37.0,  lat:  36.0, sourced: false,
-    k: "FERTILE CRESCENT", v: "INDICATIVE  ·  NO EVENT IN THE RECORD YET" },
-  { id: "andes",              lon: -70.0,  lat: -16.0, sourced: false,
-    k: "THE ANDES", v: "INDICATIVE  ·  NO EVENT IN THE RECORD YET" },
-  { id: "sahel",              lon:   0.0,  lat:  14.0, sourced: false,
-    k: "THE SAHEL", v: "INDICATIVE  ·  NO EVENT IN THE RECORD YET" }
-];
+/* THE CENTRES COME FROM THE RECORD, and the first version of this file is the
+   argument for why. It carried them as a literal array, and within one build it
+   had invented an unsourced Fertile Crescent that was ALREADY in the record with
+   coordinates and a citation - under beat 11, because at 11.5 ka that is where
+   it falls - and had drawn the Sahel inside a beat the evidence puts it after.
 
+   Both are Law 07 one level out: a surface the check cannot see is a surface
+   that drifts, and a table in a draw call is exactly that surface. So the slice
+   reads unroll/data/beat12.json, which unroll/build_unroll.py extracts from
+   timeline.json and REFUSES to write if a centre has no coordinates, cites a
+   source that does not resolve, or does not exist by the time the beat closes.
+
+   The array is filled by the loader. Nothing here authors a place. */
+var CENTRES = [];
 var EMBER = "232,112,58", ICE = "143,168,196", ICED = "100,124,153";
 
 /* Beat 12's one line, verbatim from timeline.json's beat 12 onScreen field.
    Declared here rather than beside the loop because the shader's graduated
    filter reads its window: the grade and the sentence are one decision. */
-var VOICE = { t: [0.62, 1.01],
-  line: "In at least six places, with no contact between them, we arrived at the same answer." };
+/* Beat 12's one line, and the slice does not carry a copy of it: it is read
+   from the beat's own onScreen field at load, the way the film's copy check
+   asserts for beats 05-07. A paraphrase is exactly how "all non-Africans"
+   became "everyone" the first time. */
+var VOICE = { t: [0.62, 1.01], line: "" };
 
 /* Law 03's justification, measured live. A centre counts as IN FRAME when it
    projects inside the viewport - so this is a statement about THIS shot, not
@@ -590,7 +593,10 @@ function drawCentres(s, F) {
     var p = project(F, c.lon, c.lat, s.b);
     if (!p) return;
     octx.save();
-    if (!c.sourced) octx.setLineDash([3, 3]);
+    /* the film's own grammar for confidence: solid line for solid, dashed for
+       anything the literature is still refining. It is read off the event
+       rather than chosen here. */
+    if (c.confidence !== "solid") octx.setLineDash([3, 3]);
     octx.strokeStyle = "rgba(" + EMBER + "," + (a * 0.9).toFixed(3) + ")";
     octx.lineWidth = 1.1;
     octx.beginPath(); octx.arc(p[0], p[1], 7.5, 0, 6.2832); octx.stroke();
@@ -600,8 +606,14 @@ function drawCentres(s, F) {
   });
 }
 
-/* the arrival order: one by one, which is the beat's whole shape */
-CENTRES.forEach(function (c, i) { c.tIn = 0.06 + i * 0.055; });
+/* ONE BY ONE, WHICH IS THE BEAT'S WHOLE SHAPE - and the ORDER is read off the
+   evidence, oldest centre first, while the RHYTHM stays the director's. The
+   beat is a montage and not a timeline: 8-5 ka is not when each of these
+   happened, it is when all of them are true at once, which is precisely what
+   the atlas register is for. Order from the record, spacing from the film. */
+function placeCentres() {
+  CENTRES.forEach(function (c) { c.tIn = 0.05 + c.order * 0.052; });
+}
 
 /* ═══ 5 · STATE  (Law 01) ════════════════════════════════════════════════ */
 
@@ -669,7 +681,7 @@ function agreementTest() {
      where a surface definition goes wrong first, and the six centres all sit in
      the comfortable middle of the map. */
   var PROBES = [];
-  CENTRES.forEach(function (c) { PROBES.push([c.lon, c.lat, c.k]); });
+  CENTRES.forEach(function (c) { PROBES.push([c.lon, c.lat, c.label]); });
   [[-175, 0, "WEST OF THE SEAM"], [175, 0, "EAST OF THE SEAM"],
    [LON0, 84, "UNDER THE NORTH POLE"], [LON0, -84, "UNDER THE SOUTH POLE"],
    [LON0 + 90, 45, "A QUARTER TURN EAST"], [LON0 - 90, -45, "A QUARTER TURN WEST"],
@@ -854,7 +866,7 @@ function sixTest() {
     rows.push([kk, countCentres(F, s.b)]);
   });
   var globe = rows[0][1], atlas = rows[rows.length - 1][1];
-  var ok = globe <= 2 && atlas === CENTRES.length;
+  var ok = globe <= 2 && atlas === CENTRES.length && CENTRES.length >= 6;
   $("o-six").innerHTML =
     (ok ? '<span class="ok">PASS</span>\n' : '<span class="bad">FAIL</span>\n') +
     "Centres inside the frame, counted by projecting\nthem through this slice's own camera:\n\n" +
@@ -865,9 +877,63 @@ function sixTest() {
     "\n\nThe globe holds " + globe + ". The atlas holds " + atlas + ".\n" +
     "That gap is the whole reason Law 03 has an atlas\nregister and a second verb to reach it - and it is\n" +
     "re-derived here rather than quoted from the\nstoryboard, on a different camera and a different\nsurface.\n\n" +
-    "THREE OF THE SIX ARE NOT SOURCED YET and are drawn\ndashed: the Fertile Crescent, the Andes and the\n" +
-    "Sahel are named in the storyboard's frame but have\nno event with coordinates in timeline.json. The\n" +
-    "count is honest about what it is counting.";
+    "The line says AT LEAST SIX and the record now\ncarries " + CENTRES.length +
+    ", every one with coordinates, dates\nand a citation. Nothing on this page is drawn from\na table.";
+  return ok;
+}
+
+/* LAW 07 FOR THIS SLICE: nothing on screen that is not in the record.
+
+   The film's copy check diffs every on-screen line against the qualifiers its
+   own event carries. This is the same discipline for a beat whose content is
+   PLACES rather than sentences, and it exists because the first version of this
+   file failed it three times over in one build: it invented a Fertile Crescent
+   that was already in the record under beat 11, it drew a Sahel the evidence
+   puts after the beat closes, and it folded two independent centres 500 km
+   apart into one dot in a beat whose entire subject is independence.
+
+   None of those is a rendering bug and none of them would have shown up in a
+   frame. They are all the same bug: a surface the check cannot see.          */
+function recordTest() {
+  var bad = [], y1 = D12.beat.yearsBP[1];
+  CENTRES.forEach(function (c) {
+    if (!c.id) bad.push("a centre with no id is on screen");
+    if (typeof c.lon !== "number" || typeof c.lat !== "number")
+      bad.push(c.id + " has no coordinates");
+    if (!c.sourceIds || !c.sourceIds.length)
+      bad.push(c.id + " cites nothing");
+    (c.sourceIds || []).forEach(function (s) {
+      if (!D12.sources[s]) bad.push(c.id + " cites " + s + ", which does not resolve");
+    });
+    /* a floor, not a window: the film may not light a centre before it exists.
+       Beat 12's own centres mostly PREDATE the beat, which is what the beat is
+       about - 8-5 ka is when they are all true at once, not when each
+       happened - so the only failure is one that begins after the beat ends. */
+    if (!c.inherited && c.beganBP < y1)
+      bad.push(c.id + " begins " + c.beganBP + " BP and the beat closes at " + y1);
+    if (c.beat !== D12.beat.id && !c.inherited)
+      bad.push(c.id + " belongs to beat " + c.beat + " and says nothing about why");
+  });
+  /* the film voice is the beat's own onScreen field, verbatim, never a
+     paraphrase - which is how "all non-Africans" became "everyone" once */
+  var voiceOK = VOICE.line === D12.beat.onScreen && VOICE.line.length > 0;
+  if (!voiceOK) bad.push("the film voice is not the beat's own onScreen field");
+
+  var q = (D12.openQuestions || []);
+  var ok = bad.length === 0;
+  $("o-record").innerHTML =
+    (ok ? '<span class="ok">PASS &mdash; ' + CENTRES.length + " centres.</span>\n"
+        : '<span class="bad">FAIL &mdash; ' + bad.length + ".</span>\n") +
+    "Every place on screen resolves to an event in\ntimeline.json with its own coordinates, dates and\n" +
+    "citations, and the film voice is the beat's own\nonScreen field verbatim rather than a paraphrase.\n\n" +
+    CENTRES.map(function (c) {
+      return "\u00b7 " + c.label + "\n   " + c.dateRange[0] + "\u2013" + c.dateRange[1] +
+             " BP  \u00b7  " + c.confidence + "  \u00b7  " + c.sourceIds.join(", ") +
+             (c.inherited ? "\n   inherited from beat " + c.beat : "");
+    }).join("\n") +
+    (bad.length ? "\n\n" + bad.map(function (x) { return "\u2717 " + x; }).join("\n") : "") +
+    (q.length ? "\n\nOPEN, AND IT TRAVELS WITH THE DATA:\n" +
+      q.map(function (x) { return "  " + x.question; }).join("\n") : "");
   return ok;
 }
 
@@ -944,7 +1010,7 @@ function start() {
     if (e.key === "d" || e.key === "D") DEBUG = (DEBUG + 1) % 2;
   });
   [["t-agree", agreementTest], ["t-sphere", sphereTest],
-   ["t-purity", purity], ["t-six", sixTest]]
+   ["t-purity", purity], ["t-six", sixTest], ["t-record", recordTest]]
     .forEach(function (p) { $(p[0]).addEventListener("click", p[1]); });
 
   var m = /[#&]k=([\d.]+)/.exec(location.hash);
@@ -958,7 +1024,8 @@ function start() {
                     stateFor: stateFor, hashState: hashState, renderAt: renderAt,
                     tOfK: tOfK, countCentres: countCentres, CENTRES: CENTRES,
                     agreementTest: agreementTest, sphereTest: sphereTest,
-                    purity: purity, sixTest: sixTest, LON0: LON0 };
+                    purity: purity, sixTest: sixTest, recordTest: recordTest,
+                    D12: D12, LON0: LON0 };
   requestAnimationFrame(loop);
   setTimeout(function () { $("load").classList.add("off"); }, 260);
 }
@@ -972,9 +1039,20 @@ function image(src) {
   });
 }
 
-$("lmsg").textContent = "the earth, 2048 x 1024";
-image("../slice/data/bathy_global.png").then(function (i) {
-  TEXG = i;
+$("lmsg").textContent = "the record";
+Promise.all([
+  fetch("data/beat12.json").then(function (r) { return r.json(); })
+    .then(function (j) {
+      D12 = j;
+      CENTRES.length = 0;
+      j.centres.forEach(function (c) { CENTRES.push(c); });
+      placeCentres();
+      VOICE.line = j.beat.onScreen;
+      $("lbar").style.width = "35%";
+      $("lmsg").textContent = "the earth, 2048 x 1024";
+    }),
+  image("../slice/data/bathy_global.png").then(function (i) { TEXG = i; })
+]).then(function () {
   $("lbar").style.width = "100%";
   start();
 }).catch(function (e) {

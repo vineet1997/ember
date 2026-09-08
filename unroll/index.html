@@ -122,6 +122,9 @@ canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block}
   <h4>Law 01 &mdash; the morph is a function of t</h4>
   <button id="t-purity">Run the purity test</button>
   <pre id="o-purity">Hashes the whole state scrubbing forward, then backward, and diffs. The unroll must be a pure function of t like everything else, or it cannot be scrubbed.</pre>
+  <h4>Law 07 &mdash; nothing on screen that is not in the record</h4>
+  <button id="t-record">Check against timeline.json</button>
+  <pre id="o-record">Every place this beat lights has to be an event in timeline.json with its own coordinates, dates and citations, and the film voice has to be the beat's own onScreen field verbatim. The first version of this slice failed all of that and none of it would have shown in a frame.</pre>
   <h4>Why the atlas register exists at all</h4>
   <button id="t-six">Count the centres</button>
   <pre id="o-six">Law 03's justification is a measurement: a globe cannot hold beat 12. Counts how many domestication centres are visible in this frame, at this k, and reports the count at both ends.</pre>

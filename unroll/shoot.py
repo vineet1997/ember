@@ -68,7 +68,8 @@ def main():
 
         print()
         for name, pre in (("sphereTest", "o-sphere"), ("purity", "o-purity"),
-                          ("sixTest", "o-six"), ("agreementTest", "o-agree")):
+                          ("sixTest", "o-six"), ("agreementTest", "o-agree"),
+                          ("recordTest", "o-record")):
             for run in (1, 2):
                 page.evaluate("n => window.UNROLL[n]()", name)
                 txt = page.eval_on_selector("#" + pre, "e => e.textContent")
@@ -79,7 +80,7 @@ def main():
                 if not ok:
                     fails.append("%s (run %d)" % (name, run))
         print()
-        print(page.eval_on_selector("#o-six", "e => e.textContent"))
+        print(page.eval_on_selector("#o-record", "e => e.textContent"))
         if errs:
             fails.append("page errors: %s" % errs)
         b.close()
@@ -87,7 +88,7 @@ def main():
     if fails:
         print("\nFAIL — %s" % "; ".join(sorted(set(fails))))
         return 1
-    print("\nPASS — all four, twice.")
+    print("\nPASS — all five, twice.")
     return 0
 
 

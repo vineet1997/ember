@@ -1,0 +1,169 @@
+{
+ "_readme": "Built by unroll/build_unroll.py from timeline.json. The unroll slice authors nothing: every place it lights is an event in the record, with its own coordinates, dates and sources. Do not edit by hand.",
+ "beat": {
+  "id": 12,
+  "title": "Seeds",
+  "yearsBP": [
+   8000,
+   5000
+  ],
+  "onScreen": "In at least six places, with no contact between them, we arrived at the same answer.",
+  "motion": 1
+ },
+ "centres": [
+  {
+   "id": "fertile-crescent",
+   "label": "Fertile Crescent agriculture",
+   "region": "Southwest Asia",
+   "lon": 38.0,
+   "lat": 36.5,
+   "dateRange": [
+    11500,
+    10000
+   ],
+   "dateNote": "Wheat and barley.",
+   "confidence": "solid",
+   "sourceIds": [
+    "larson2014"
+   ],
+   "beat": 11,
+   "inherited": "beat 11 fixes this one in place at 11.5 ka while the sea is still rising; beat 12 opens on it already lit.",
+   "beganBP": 11500,
+   "order": 0
+  },
+  {
+   "id": "north-china-millet",
+   "label": "The northern millet belt",
+   "region": "Yellow River, north China",
+   "lon": 114.2,
+   "lat": 36.6,
+   "dateRange": [
+    10300,
+    7500
+   ],
+   "dateNote": "Broomcorn millet phytoliths at Cishan are reported from 10,300–8,700 cal BP and the earliest end of that is contested on identification; charred foxtail millet at Xinglonggou at ~8,000–7,500 BP is the conservative figure. The coordinate is Cishan, which is one site in a region and not the extent of the centre.",
+   "confidence": "supported",
+   "sourceIds": [
+    "lu2009",
+    "yang2012",
+    "larson2014"
+   ],
+   "beat": 12,
+   "inherited": null,
+   "beganBP": 10300,
+   "order": 1
+  },
+  {
+   "id": "kuk-swamp",
+   "label": "Kuk Swamp",
+   "region": "New Guinea highlands",
+   "lon": 144.33,
+   "lat": -5.78,
+   "dateRange": [
+    10000,
+    7000
+   ],
+   "dateNote": "Banana and taro cultivation. Firm drainage evidence by ~7 ka.",
+   "confidence": "supported",
+   "sourceIds": [
+    "denham2003"
+   ],
+   "beat": 12,
+   "inherited": null,
+   "beganBP": 10000,
+   "order": 2
+  },
+  {
+   "id": "andes-nanchoc",
+   "label": "The Andes",
+   "region": "Ñanchoc Valley, northern Peru",
+   "lon": -79.2,
+   "lat": -6.9,
+   "dateRange": [
+    9200,
+    5500
+   ],
+   "dateNote": "Directly dated squash at ~9,200 BP, peanut ~7,600 BP and cotton ~5,500 BP. Dillehay's title is ADOPTION, not domestication: these crops may have been domesticated elsewhere and taken up here, and the coordinate is the earliest well-dated agriculture in the region rather than the point a plant was changed. Larson et al. list northwestern South America as an independent centre on other crops - potato, quinoa, chenopods.",
+   "confidence": "supported",
+   "sourceIds": [
+    "dillehay2007",
+    "larson2014"
+   ],
+   "beat": 12,
+   "inherited": null,
+   "beganBP": 9200,
+   "order": 3
+  },
+  {
+   "id": "china-rice-millet",
+   "label": "Yangtze rice",
+   "region": "Middle Yangtze",
+   "lon": 112.0,
+   "lat": 30.5,
+   "dateRange": [
+    9000,
+    8000
+   ],
+   "dateNote": "Rice. The northern millet belt was folded into this event until Phase 6 and is now north-china-millet, with its own coordinate: two independent centres cannot share one dot in a beat about independence.",
+   "confidence": "solid",
+   "sourceIds": [
+    "larson2014"
+   ],
+   "beat": 12,
+   "inherited": null,
+   "beganBP": 9000,
+   "order": 4
+  },
+  {
+   "id": "mesoamerica-maize",
+   "label": "Maize domestication",
+   "region": "Balsas valley, Mexico",
+   "lon": -99.5,
+   "lat": 18.0,
+   "dateRange": [
+    9000,
+    8700
+   ],
+   "dateNote": "From teosinte.",
+   "confidence": "solid",
+   "sourceIds": [
+    "larson2014"
+   ],
+   "beat": 12,
+   "inherited": null,
+   "beganBP": 9000,
+   "order": 5
+  }
+ ],
+ "sources": {
+  "larson2014": {
+   "cite": "Larson, G. et al. (2014). Current perspectives and the future of domestication studies. PNAS 111, 6139–6146.",
+   "checked": "web-2026-09-04"
+  },
+  "lu2009": {
+   "cite": "Lu, H. et al. (2009). Earliest domestication of common millet (Panicum miliaceum) in East Asia extended to 10,000 years ago. PNAS 106, 7367–7372.",
+   "checked": "web-2026-09-08"
+  },
+  "yang2012": {
+   "cite": "Yang, X. et al. (2012). Early millet use in northern China. PNAS 109, 3726–3730.",
+   "checked": "web-2026-09-08"
+  },
+  "denham2003": {
+   "cite": "Denham, T. P. et al. (2003). Origins of agriculture at Kuk Swamp in the highlands of New Guinea. Science 301, 189–193.",
+   "checked": "web-2026-09-04"
+  },
+  "dillehay2007": {
+   "cite": "Dillehay, T. D. et al. (2007). Preceramic adoption of peanut, squash, and cotton in northern Peru. Science 316, 1890–1893.",
+   "checked": "web-2026-09-08"
+  }
+ },
+ "openQuestions": [
+  {
+   "id": "oq-beat12-sahel",
+   "question": "Beat 12's frame lights six places including 'the Sahel', and the Sahel does not fit inside the beat.",
+   "status": "open — for the director",
+   "detail": "Beat 12 runs 8,000-5,000 BP. The earliest defensible West African domestication is pearl millet: ~4,900 BP by genomes, ~4,500 BP by directly dated caryopses in the Tilemsi Valley. That is after the beat closes. THE COUNT SURVIVES WITHOUT IT: inside the window the defensible independent centres are the Yangtze, the northern millet belt, New Guinea, Mesoamerica and the Andes - five - plus the Fertile Crescent, which beat 11 has already fixed in place. Six, which is exactly what the on-screen line claims. Three ways out, and it is a director's call: drop the Sahel from beat 12's frame and keep the six; move the light to the beat 12/13 boundary and let it arrive as beat 13 opens, which is where the data puts it; or widen the beat, which costs beat 13 its opening. The event exists in the record either way, in beat 13, as west-africa-millet.",
+   "raised": "2026-09-08"
+  }
+ ]
+}
