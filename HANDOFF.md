@@ -221,14 +221,38 @@ In the film: `i` = director's panel (five tests), `d` = shader x-ray,
 
 ---
 
-## One thing that did not survive
+## The verification harness
 
-The verification harness I used all session — a small Playwright driver that
-serves `slice/`, waits for `EMBER`, evaluates a JS file and prints JSON, plus
-screenshot and end-to-end variants — lived in the session scratchpad and **is
-gone**. It is perhaps 60 lines and worth promoting into the repo (`slice/tools/`)
-the next time it is needed, rather than rewritten a third time. The audit's own
-equivalents are in `audit/` and are a reasonable starting point.
+`slice/tools/` — promoted out of the session scratchpad, where it would have
+died. Three scattered scripts consolidated into one CLI over a shared Playwright
+boot, because each had re-implemented the server and the browser setup.
+
+```bash
+python slice/tools/check.py verify           # is the film sound; non-zero exit if not
+python slice/tools/check.py probe -e "EMBER.stateFor(0.335).sea"
+python slice/tools/check.py probe q.js       # any JS expression, JSON back
+python slice/tools/check.py shoot film -t 0.4040
+python slice/tools/check.py shoot atlas -w 390 -s "#s04"
+```
+
+**`verify` is the one to run.** It runs the five panel tests twice, then checks
+four things the panel cannot see because they are not functions of `t`:
+
+- the film still letters its own frames, and a bake does not leave the annotation
+  sink armed (measures ink where the margin labels are);
+- all three fallback roads reach the atlas — gate, WebGL failure page, phone width;
+- the atlas is intact with JavaScript off: no script tags, and the voice, captions,
+  labels, ground register, dimension figure and citations all present;
+- the film voice appears exactly **once**.
+
+Mutation-tested when promoted: adding a `<script>` to the atlas and duplicating
+the film voice both fail it, with exit 1. The harness's own docstring carries the
+four facts that shape it — never wait on the render loop, the in-app pane cannot
+render this project at all, headless is SwiftShader so no timing number from it
+means anything, and a lazy `<img>` screenshots as pure black.
+
+`audit/` holds the auditor's independent equivalents, which were written without
+sight of these and are worth reading for a second opinion on method.
 
 ---
 

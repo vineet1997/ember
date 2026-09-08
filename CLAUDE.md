@@ -168,6 +168,9 @@ slice/index.html   shell + THE TYPE SYSTEM (three voices, three placement laws, 
 slice/film.js      the whole engine, in 13 numbered sections
 slice/serve.py     dev server with no-cache headers — use this, not http.server
 slice/build_slice.py   rebuilds data/film.json + the half-size global texture
+slice/build_atlas.py   bakes beat 06's stills and writes atlas.html
+slice/tools/check.py   verify / probe / shoot — ask the film questions from a shell
+slice/tools/harness.py the Playwright boot the three of them share
 ```
 
 Eight invariants. Breaking any of them breaks a law, not just a frame:
@@ -256,6 +259,13 @@ instead of sliding off it, and it deliberately does **not** scroll.
 - **A lazy `<img>` is empty when you screenshot it.** Two passes were lost to an atlas page that
   screenshotted as pure black while the stills were provably 20–60 mean luminance on disk. Force
   `loading="eager"`, reassign `src`, and `await img.decode()` before the shot.
+- **`python slice/tools/check.py verify` before believing the film is sound.** It runs the
+  five panel tests *twice* and then checks four things the panel cannot see, because they are
+  not functions of `t`: that the film still letters its own frames and a bake does not leave the
+  annotation sink armed; that all three fallback roads reach the atlas; that the atlas is intact
+  with JavaScript disabled; and that the film voice appears on it exactly once. Non-zero exit on
+  failure. `check.py probe -e "<js>"` answers anything else in JSON, which is cheaper and more
+  precise than a screenshot — and works when screenshots do not.
 - **Always serve with `slice/serve.py`.** A caching static server hands you yesterday's
   shader and you will debug code that is not running. A browser that visited an earlier
   build may still hold it — add `?v=2` to the URL once to break that.
