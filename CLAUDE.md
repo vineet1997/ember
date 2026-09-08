@@ -17,12 +17,13 @@ essay, same art and writing, no scroll-cinema. That one artifact is also the
 
 | File | What it is |
 |---|---|
+| `CONTINUE.md` | **The front door.** Written for someone picking this up cold: what exists, how to run it, how this project fails, and what to do next in order. Start there. |
 | `storyboard.html` | **The single source of truth.** All 14 beats: frame, camera, earth state, on-screen copy, evidence, why it's here. If a shot isn't specified there, it isn't in the film. |
 | `timeline.json` | Every dated claim with range, coordinates, confidence, citation. 63 events, 13 routes, 65 sources, 3 open questions. **Nothing goes on screen that is not in here.** |
 | `data/` | The environmental channels. All acquired and built. |
 | `slice/` | **Beats 05, 06 and 07 at final quality, on one continuous `t`.** The renderer, the type system, the ruler, the match cut, the hold, the plume, permanent absence, and five tests. This code *is* the film. |
 | `slice/atlas.html` | **Beat 06 as a static artifact.** Eight stills baked from the film's own shader; every word live HTML. Mobile, reduced motion, no-JS, crawlers, and a browser with WebGL off all land here. Generated — edit `film.js` and rebuild, never this file. |
-| `unroll/` | **Law 03's second verb, built.** Beat 12's orbital→atlas transition as one continuous surface, with four tests. Phase 6. |
+| `unroll/` | **Law 03's second verb, built.** Beat 12's orbital→atlas transition as one continuous surface, joined to the film's camera, six tests. Phase 6. |
 | `evidence/` | Things only a picture or a deliberate break can establish, kept where a clone can find them. |
 | `spike/` | Phase 3 throwaway prototypes. **Do not promote this code** — rewrite from scratch, keep only what it taught. |
 
@@ -508,12 +509,26 @@ reads the shader's own answer back off the GPU at 24 bits; and Law 03's justific
 **re-derived rather than quoted** — 2 of 6 centres in frame from the globe, 6 of 6 from the
 atlas, measured on this slice's own camera. Frames in `evidence/unroll-k*.png`.
 
-**What is deliberately not built:** the slice's camera is its own — a height, a pitch, a bearing
-and a lens shift — and **not** the film's sine-rule `frame()`, so **the join to beat 11 is
-unbuilt** and is the next piece of work. And **three of beat 12's six centres have no
-coordinates in `timeline.json`** — the Fertile Crescent, the Andes and the Sahel are named in
-the storyboard's frame and sourced nowhere, so the slice draws them **dashed** and its own test
-says so. Data before documents: that is the other next piece.
+**Both of that phase's open items are now closed.**
+
+**The join.** The slice uses **the film's camera**, generalised to a sphere that is growing:
+R = r + alt against r = 1/b, so the stand-back arc is `(asin((1+alt·b)·sin p) − p)/b`, which is
+the film's formula exactly at b=1 and tends to `alt·tan(pitch)` — the flat-plane answer — as the
+surface flattens. `joinTest` requires position, forward, up and right to equal the film's own
+`frame()` across five poses and gets **0.0**. It found that **a high camera cannot pitch**: the
+ceiling is `asin(r/(r+alt))`, which is 12.2° at 3.6 earth radii, and a keyframe asking for more
+was being *silently clamped* — which puts the look-at on the limb and made the entry pose a cap
+at the bottom of an empty frame. A clamped keyframe is a test failure now, at every `t` and not
+just at the rows, because a lerp can cross the ceiling when both ends clear it.
+
+**The data.** `unroll/build_unroll.py` extracts beat 12 from `timeline.json` and the slice reads
+it; nothing on that page comes from a table. Doing it properly found that only one of the three
+"unsourced" centres was a data gap: the **Fertile Crescent was already in the record** under
+beat 11, the **northern millet belt** was folded into the Yangtze's event and one dot cannot
+carry two independent centres in a beat about independence, and **the Sahel does not fit the
+beat** — West African pearl millet begins ~4,900 BP against a beat that closes at 5,000, so it
+is written into beat 13 and raised as an open question. The count survives untouched: six.
+A sixth test, `recordTest`, is Law 07 for a beat whose content is places rather than sentences.
 
 **The type system now exists** — three voices, three placement laws, in the head of
 `slice/index.html`. One law had to be rewritten during the build: *no scrims anywhere* does

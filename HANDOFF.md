@@ -1,5 +1,9 @@
 # Handoff — 2026-09-08 (second session of the day)
 
+> **New here? Read `CONTINUE.md` first.** It is the front door: what exists,
+> how to run it, how this project fails, and what to do next in order. This
+> file is the session delta and it expires; that one does not.
+
 `CLAUDE.md` is loaded automatically and carries the thesis, the eight laws, the
 architecture and the standing traps. **This file is the delta.** Read `CLAUDE.md`
 first; read this second; do not re-derive either.
@@ -91,7 +95,21 @@ and the waterline lit the entire grazing limb white. Both are now scaled by the
 frame's own degrees-per-pixel, which is also Law 08's argument from the other
 end: **below a resolution there is no coastline to draw.**
 
-### What the unroll deliberately does not have
+### Closed since, in the same session
+
+**The join.** The slice uses the film's camera now, generalised to a growing
+sphere, and `joinTest` requires it to equal the film's own `frame()` at k = 0
+across five poses. Worst 0.0. It found that a high camera cannot pitch — the
+ceiling is 12.2° at 3.6 earth radii — and that the entry keyframe was being
+silently clamped, which put the look-at on the limb.
+
+**Beat 12's data.** Three centres had no event behind them and only one was a
+real gap. The Fertile Crescent was already in the record under beat 11; the
+northern millet belt was folded into the Yangtze's event; and the Sahel does not
+fit the beat, so it is in beat 13 with an open question attached. Six centres,
+all sourced, all read from `timeline.json` through `unroll/build_unroll.py`.
+
+### What the unroll still does not have
 
 - **The camera is the slice's own** — height, pitch, bearing and a lens shift —
   and **not** the film's sine-rule `frame()`. **The join to beat 11 is unbuilt**
