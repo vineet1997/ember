@@ -1,0 +1,15 @@
+{
+  "samples": 588,
+  "rmse_m_regional_vs_global_corrected_crop_coordinates": 0.10533527572811144,
+  "rmse_m_regional_vs_global_shader_coordinates": 2667.4571163574365,
+  "native_shape": [
+    10800,
+    21600
+  ],
+  "retained_shape": [
+    10240,
+    20480
+  ],
+  "lost_longitude_degrees": 18.666666666666668,
+  "lost_latitude_degrees": 9.333333333333334
+}

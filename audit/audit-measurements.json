@@ -1,0 +1,66 @@
+{
+  "actual_render_tile_box": [
+    92.0,
+    156.0,
+    -30.0,
+    22.0
+  ],
+  "fractions_on_decoded_render_tile": [
+    {
+      "sea": 0,
+      "pixel_percent": 27.183710603632477,
+      "area_weighted_percent": 26.673130426757524
+    },
+    {
+      "sea": -68.3,
+      "pixel_percent": 36.91483039529915,
+      "area_weighted_percent": 36.55781318016801
+    },
+    {
+      "sea": -73.9,
+      "pixel_percent": 37.47276475694444,
+      "area_weighted_percent": 37.12536652315813
+    }
+  ],
+  "stored_comparison_box_start_to_end_percent_gain": 1.4454664914586024,
+  "film_image_bytes": 36754434,
+  "atlas_image_bytes": 844888,
+  "ice_dim_on_void_contrast": 4.396440927606601,
+  "sea_max": {
+    "yrBP": 121000,
+    "m": 3.13,
+    "src": "spratt"
+  },
+  "largest_adjacent_rises_acts_I_II": [
+    {
+      "older": 130000,
+      "younger": 129000,
+      "rise": 20.769999999999996,
+      "metres_per_ka": 20.769999999999996
+    },
+    {
+      "older": 132000,
+      "younger": 131000,
+      "rise": 19.209999999999994,
+      "metres_per_ka": 19.209999999999994
+    },
+    {
+      "older": 246000,
+      "younger": 245000,
+      "rise": 18.629999999999995,
+      "metres_per_ka": 18.629999999999995
+    },
+    {
+      "older": 129000,
+      "younger": 128000,
+      "rise": 16.82,
+      "metres_per_ka": 16.82
+    },
+    {
+      "older": 127000,
+      "younger": 126000,
+      "rise": 14.38,
+      "metres_per_ka": 14.38
+    }
+  ]
+}

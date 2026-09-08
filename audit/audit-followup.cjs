@@ -1,0 +1,35 @@
+const {chromium}=require('C:/Users/Asus/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const fs=require('fs'), path=require('path');
+(async()=>{
+ const browser=await chromium.launch({headless:true,args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader','--ignore-gpu-blocklist']});
+ const out={};
+ const page=await browser.newPage({viewport:{width:1440,height:900}});
+ await page.addInitScript(()=>{window.requestAnimationFrame=()=>0;});
+ await page.goto('http://127.0.0.1:8123/index.html?still=1');
+ await page.waitForFunction(()=>window.EMBER?.renderAt);
+ await page.waitForFunction(()=>document.querySelector('#load').classList.contains('off'),null,{polling:100});
+ await page.evaluate(()=>{document.querySelector('#load').style.display='none';});
+ await page.evaluate(()=>EMBER.renderAt(.280));
+ await page.screenshot({path:path.join(__dirname,'audit-film-05-settled.png')});
+ out.pathDependentText=await page.evaluate(()=>{
+  EMBER.renderAt(.28);EMBER.renderAt(.31);const forward=document.querySelector('#record').textContent;
+  EMBER.renderAt(.345);EMBER.renderAt(.31);return {forward,backward:document.querySelector('#record').textContent};
+ });
+ await page.keyboard.press('Tab');
+ out.tab=await page.evaluate(()=>({active:document.activeElement.outerHTML,scrollY}));
+ const m=await browser.newPage({viewport:{width:1440,height:900}});
+ await m.route('**/film.js',r=>r.fulfill({contentType:'application/javascript',body:fs.readFileSync(path.join(__dirname,'../slice/film.js'),'utf8').replace('var c = camAt(t);','var c = camAt(t); sea -= 100 * Math.exp(-Math.pow((t-0.42725)/0.003,2));')}));
+ await m.goto('http://127.0.0.1:8123/index.html?nogl=1');await m.waitForFunction(()=>window.EMBER);
+ out.seaMutation=await m.evaluate(()=>({passes:EMBER.law06(),text:document.querySelector('#o-law06').innerText}));
+ const a=await browser.newPage({viewport:{width:390,height:844}});
+ await a.goto('http://127.0.0.1:8123/atlas.html');
+ await a.evaluate(async()=>{for(const i of document.images){i.loading='eager';await i.decode();}});
+ await a.screenshot({path:path.join(__dirname,'audit-atlas-mobile-loaded.png'),fullPage:true});
+ await a.locator('#s04').scrollIntoViewIfNeeded();await a.screenshot({path:path.join(__dirname,'audit-atlas-mobile-gap.png')});
+ const f=await browser.newPage({viewport:{width:1440,height:900}});
+ await f.route('**/data/bathy_sunda.png',r=>r.abort());
+ await f.goto('http://127.0.0.1:8123/index.html');
+ await f.waitForFunction(()=>document.querySelector('#lbar').style.width==='80%');
+ out.assetFailure=await f.evaluate(()=>({message:document.querySelector('#lmsg').innerText,load:getComputedStyle(document.querySelector('#load')).opacity,visibleAtlasLinks:[...document.querySelectorAll('a[href="atlas.html"]')].filter(e=>e.checkVisibility()).length}));
+ fs.writeFileSync(path.join(__dirname,'audit-followup-results.json'),JSON.stringify(out,null,2));console.log(JSON.stringify(out,null,2));await browser.close();
+})().catch(e=>{console.error(e);process.exit(1);});
