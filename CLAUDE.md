@@ -50,10 +50,30 @@ Published storyboard: https://claude.ai/code/artifact/2e20728f-4ebf-4f50-812c-be
    reading is drawn **on the time rail, not on the map** — so the grammar existed and worked.
    The widening is **not** a loosening: it ships with a bar the old law lacked, and the bar is
    machine-checked. **An epistemic object may not perturb `stateFor(t)`.** It may be a marker,
-   a horizon and a sentence; it may not grey a sky, dim a light or move a camera. `law06()`
-   proves it by continuity: halve the sample spacing across the eruption's instant and every
-   channel's largest step halves — a jump would not. Under the old law the CI was cut for a
-   **staging** no test would have caught.)*
+   a horizon and a sentence; it may not grey a sky, dim a light or move a camera. Under the old
+   law the CI was cut for a **staging** no test would have caught.
+
+   **What `law06()` actually shows, corrected 2026-09-08 after an outside audit.** It halves the
+   sample spacing across the eruption's instant and requires every channel's largest step to
+   halve with it — which a jump would not. That catches a **staged discontinuity**, which is the
+   bug the film committed. **It is not a proof of non-influence, and the law used to say it was.**
+   Continuity is not independence: a channel driven smoothly by the eruption passes every line
+   of it, and the audit demonstrated exactly that by injecting a smooth 100 m sea-level
+   depression centred on the eruption.
+
+   Worse, until 2026-09-08 the walk **omitted the one channel the decision was about.** `temp`
+   drives `uChill`, which tints the sky and the limb — and `chill` was computed inside
+   `drawEarth` rather than in `stateFor`, so it was not state, not in the hash, and not in
+   `CHANNELS`. The test that exists to prove the eruption does not grey the sky was not watching
+   the greying. **An exhaustive walk over an incomplete set reads exactly like an exhaustive
+   walk.** `chill` is state now, both it and `temp` are channels, and injecting a step in the
+   temperature record at 39,850 BP fails the test on both while the same step 550 years away
+   passes.
+
+   **The test that would prove non-influence is a different one and is not built:** remove the
+   eruption from the data entirely and assert the world is bit-identical at every `t`. That
+   compares against a configuration that could have disagreed, which is the only kind of check
+   worth the word "proves".)*
 7. **Copy is checked against the data, not just dates.** Every on-screen line gets diffed
    against the qualifiers its own event carries.
 8. **Change is an edge that moves, never a fill that fades.** The eye tracks edges. A
@@ -524,6 +544,10 @@ Four working rules that follow:
   beat 07's grazing angle the `1/depth` model does not capture how longitude foreshortens across
   the frame, and every pale patch would have been visibly the wrong size. The cheap version of a
   correct calculation is usually a different calculation.
+- **An exhaustive walk is only exhaustive over the set it walks.** `law06()` reported "all 14
+  channels are continuous" while the channel the law was written about sat outside `CHANNELS`,
+  because it was computed in a draw call instead of in `stateFor`. A list-driven test hides its
+  own omissions: it reads as coverage whatever is in the list.
 - **A check must compare against something that could have disagreed.** Encode/decode round
   trips, value assertions against the same JSON that produced the value, and "the film agrees
   with the film" all pass on a wrong world. Ask what independent path the check is measuring

@@ -456,6 +456,20 @@ function stateFor(t) {
   var c = camAt(t);
   return {
     t: t, yr: yr, sea: sea, temp: temp,
+    /* THE CHANNEL THAT GREYS THE SKY, lifted out of drawEarth so that it is
+       state rather than a local. Law 06 was widened for the Campanian
+       Ignimbrite on the promise that an epistemic object may not perturb
+       stateFor - and the failure it was guarding against was, precisely, the
+       eruption greying the European sky. This is the number that does that: it
+       drives uChill, which tints the sky and the limb. It was computed inside
+       the draw call, so it was not in the state, not in the hash, and not in
+       the list of channels law06 walks. The test that exists to prove the
+       eruption does not grey the sky was not watching the greying.
+
+       temp is nullable - the NGRIP record stops at 60 ka - and chill is not:
+       0.45 is the value the renderer already used for "no record". So chill is
+       the total channel and temp is the raw one, and law06 now walks both. */
+    chill: temp === null ? 0.45 : clamp((-temp - 34) / 12, 0, 1),
     beat: beatAt(t).id,
     cut: cutAt(t),
     lon: c.lon, lat: c.lat, alt: c.alt, pitch: c.pitch, bearing: c.bearing,
@@ -479,7 +493,8 @@ function stateFor(t) {
 }
 function hashState(s) {
   return [s.t.toFixed(5), s.yr.toFixed(2), s.sea.toFixed(4),
-          s.temp === null ? "n" : s.temp.toFixed(4), s.beat, s.cut.toFixed(5),
+          s.temp === null ? "n" : s.temp.toFixed(4), s.chill.toFixed(5),
+          s.beat, s.cut.toFixed(5),
           s.lon.toFixed(4), s.lat.toFixed(4), s.alt.toFixed(5),
           s.pitch.toFixed(4), s.bearing.toFixed(4),
           s.plume.toFixed(5), s.head.toFixed(5), s.head7.toFixed(5),
@@ -857,7 +872,7 @@ function gpuTimerPoll() {
 var boundTile = "";
 
 function drawEarth(s, F) {
-  var chill = s.temp === null ? 0.45 : clamp((-s.temp - 34) / 12, 0, 1);
+  var chill = s.chill;                       /* computed in stateFor - see there */
 
   /* the frame tile, chosen by t. Rebinding only when it actually changes keeps
      this off the per-frame path entirely for all but two frames in the film. */
@@ -2129,11 +2144,24 @@ function purity() {
     : '<span class="bad">FAIL &mdash; ' + bad + " differing" + (mono ? "" : ", and time went backwards") + ".</span>";
 }
 
-/* ---- the numeric channels of the world, by name. Both Phase 5 invariants
-   walk these rather than naming fields one at a time, so a channel added later
-   is covered by default instead of quietly escaping the tests. */
-var CHANNELS = ["yr", "sea", "lon", "lat", "alt", "pitch", "bearing",
-                "plume", "head", "head7", "pale", "paleOut", "expose", "cut"];
+/* ---- the numeric channels of the world, by name. law06 walks these rather
+   than naming fields one at a time, so a channel added later is covered by
+   default instead of quietly escaping the test.
+
+   THAT IS THE THEORY. IN PRACTICE IT FAILED, and the way it failed is worth
+   keeping: a channel is only covered by default if it is in stateFor, and the
+   one that greys the sky was computed inside drawEarth instead. So the list
+   looked exhaustive, the test reported "all 14 channels", and the single
+   channel the Law 06 decision was actually about was not among them. An
+   exhaustive walk over an incomplete set reads exactly like an exhaustive walk.
+
+   temp is nullable and chill is not; both are here because they answer
+   different questions. temp: did the RECORD move at the eruption. chill: did
+   the PICTURE. law06 asserts temp is non-null across its own window before it
+   differences it, so the null at 60 ka can never be silently differenced. */
+var CHANNELS = ["yr", "sea", "temp", "chill", "lon", "lat", "alt", "pitch",
+                "bearing", "plume", "head", "head7", "pale", "paleOut",
+                "expose", "cut"];
 
 /* t of a year, by inverting the beat table - the eruption is a DATE and the
    film has to find where that date lands on the scroll axis. */
@@ -2164,6 +2192,16 @@ function tOfYear(y) {
    and the palette is bit-identical either side.                              */
 function law06() {
   var tCI = tOfYear(39850), half = 0.003;
+
+  /* PRECONDITION, not decoration. temp is null before 60 ka, and differencing
+     null against a number would produce a step the size of the number and fail
+     for a reason that has nothing to do with the eruption. 60 ka is t 0.23 and
+     the eruption is t 0.427, so this holds by a wide margin - but it holds by
+     accident of where the beat sits, and an accident should be checked. */
+  var tempOK = true;
+  for (var q = 0; q <= 40; q++) {
+    if (stateFor(tCI - half + (2 * half) * (q / 40)).temp === null) tempOK = false;
+  }
 
   /* CONTINUITY BY HALVING, which is the test that actually means something.
 
@@ -2208,7 +2246,7 @@ function law06() {
   }).length === 1;
   var onRail = !!$("ci");
 
-  var ok = bad.length === 0 && paletteHeld && marker && onRail;
+  var ok = bad.length === 0 && paletteHeld && marker && onRail && tempOK;
   $("o-law06").innerHTML =
     (ok ? '<span class="ok">PASS</span>\n' : '<span class="bad">FAIL</span>\n') +
     "The eruption falls at t " + tCI.toFixed(5) + ", 39,850 BP.\n\n" +
@@ -2217,10 +2255,19 @@ function law06() {
     (onRail ? "· " : "✗ ") + "ON SCREEN: a horizon on the linear rail, where the\n" +
     "   film keeps how it knows things.\n" +
     (bad.length === 0 ? "· " : "✗ ") + "NOT IN THE WORLD: all " + CHANNELS.length +
-    " channels are continuous\n   across it. Halving the sample spacing halves\n" +
-    "   every channel's largest step, which a jump\n   would not do.\n" +
+    " channels are continuous\n   across it - temperature and the sky tint among\n" +
+    "   them, which they were not until 2026-09-08.\n   Halving the sample spacing halves every\n" +
+    "   channel's largest step, which a jump would not.\n" +
+    (tempOK ? "· " : "✗ ") + "The temperature record covers this window, so\n" +
+    "   no channel is differenced against a null.\n" +
     (paletteHeld ? "· " : "✗ ") + "NOT IN THE PALETTE: the pale light is unchanged\n" +
     "   either side of it.\n" +
+    "\nWHAT THIS DOES NOT SHOW. Continuity is not\nindependence. A world channel could be driven by\n" +
+    "the eruption perfectly smoothly and pass every\nline above - an outside audit demonstrated it, by\n" +
+    "injecting a smooth sea-level depression centred\non the eruption. This test catches a STAGED\n" +
+    "discontinuity, which is the bug the film actually\ncommitted, and it now watches the sky tint, which\n" +
+    "is the channel that bug moved. It does not prove\nnon-influence. The test that would is a different\n" +
+    "one: remove the eruption from the data and assert\nthe world is bit-identical at every t.\n" +
     (bad.length ? "\n" + bad.join("\n") : "");
   return ok;
 }
