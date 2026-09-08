@@ -134,48 +134,142 @@ function surfNormal(q, b) {
   return [n[0] / l, n[1] / l, n[2] / l];
 }
 
-/* ═══ 2 · THE CAMERA ═════════════════════════════════════════════════════
+/* ═══ 2 · THE CAMERA  —  THE JOIN ════════════════════════════════════════
 
-   This slice's own, and deliberately simpler than the film's: the camera looks
-   at the anchor from a height h, pitched back by `pitch` from straight down
-   and swung by `bearing`. Look-at is the anchor at every k, which is what
-   makes the morph read as one move instead of two - the thing at the centre of
-   the frame never changes, and everything else opens out around it.
+   THE FILM'S CAMERA, GENERALISED TO A SPHERE THAT IS GROWING.
 
-   h is keyframed and it CLIMBS, which is not a workaround: "the camera pulls
-   back and the globe flattens" is the storyboard's own description, and the
-   arithmetic agrees. At b = 0 the map is 2π wide in these units, so a 26°
-   lens has to stand about 13 earth radii off to hold it. That is the shot. */
+   The first version of this slice had its own camera - a height above the
+   anchor, a pitch and a bearing - and that was the right thing to build first,
+   because the question was whether the transition reads and a camera argument
+   would have eaten the session. It is the wrong thing to keep. Beat 12 is
+   entered from beat 11, beat 11 is a globe shot with the film's camera, and a
+   transition whose first frame is a different camera is a cut with extra steps.
+
+   So this is the film's camera, unchanged in shape. A keyframe names the
+   LOOK-AT point, which is what a director actually cares about, and the camera
+   position falls out of it by the sine rule. On the unit sphere, with the
+   camera at R = 1 + alt from the centre:
+
+        gamma = asin((1+alt)·sin pitch) − pitch
+
+   is the arc the camera must stand back along the reverse bearing. On a sphere
+   of radius r = 1/b the same triangle has sides R = r + alt and r, so
+
+        gamma = asin((R/r)·sin pitch) − pitch = asin((1 + alt·b)·sin p) − p
+
+   and the ARC LENGTH is s = gamma/b. At b = 1 that is the film's formula
+   exactly. As b → 0 it is a 0/0 whose limit is s → alt·tan(pitch) — which is
+   the flat-plane answer, a camera standing back by its own height times the
+   tangent of its pitch, and it is what a rig on a copy stand does.
+
+   The pitch ceiling generalises the same way: asin(r/R), which is the film's
+   asin(1/(1+alt)) at b = 1 and goes to 90° as the surface flattens. Over a
+   plane there is no horizon to look over, and that falls out rather than being
+   special-cased.
+
+   ONE THRESHOLD, AND IT IS TESTED. Both the arc and the geodesic step below
+   are 0/0 as the bend vanishes, so each has a small-bend branch. The branch is
+   on b, which is uniform, and joinTest() measures the discontinuity at the
+   threshold in PIXELS rather than trusting it.                              */
 
 var FOV = 26, TAN_HALF = Math.tan(FOV / 2 * RAD);
+var B_EPS = 1e-3;          /* below this the surface is flat enough to say so */
 
-/* t -> the whole move. Five keyframes: hold on the globe, unroll, hold on the
-   atlas. Lerped, and every channel is a pure function of t (Law 01). */
-/* h IS SET BY ARITHMETIC, NOT BY EYE, at both ends.
+/* THE FILM'S OWN frame(), COPIED VERBATIM, and it earns its keep by being a
+   second implementation rather than the same one. joinTest() requires the
+   generalised camera at b = 1 to equal this to machine precision - a
+   comparison against a path that could have disagreed, which is the only kind
+   worth running. It is in the FILM's world convention: y is the pole and x
+   runs through (0E, 0N), which is not this slice's. The test rotates. */
+function xyzFilm(lon, lat) {
+  var cl = Math.cos(lat * RAD);
+  return [cl * Math.cos(lon * RAD), Math.sin(lat * RAD), cl * Math.sin(lon * RAD)];
+}
+function v3sub(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; }
+function v3add(a, b) { return [a[0] + b[0], a[1] + b[1], a[2] + b[2]]; }
+function v3mul(a, k) { return [a[0] * k, a[1] * k, a[2] * k]; }
+function v3dot(a, b) { return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]; }
+function v3cross(a, b) {
+  return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2],
+          a[0] * b[1] - a[1] * b[0]];
+}
+function v3norm(a) {
+  var l = Math.hypot(a[0], a[1], a[2]) || 1; return v3mul(a, 1 / l);
+}
+function filmFrame(c) {
+  var nL = xyzFilm(c.lon, c.lat);
+  var east = v3norm(v3cross(nL, [0, 1, 0])), north = v3cross(east, nL);
+  var br = c.bearing * RAD;
+  var hL = v3add(v3mul(north, Math.cos(br)), v3mul(east, Math.sin(br)));
+  var R = 1 + c.alt;
+  var pmax = Math.asin(Math.min(1, 1 / R)) * DEG - 0.35;
+  var p = Math.min(c.pitch, pmax) * RAD;
+  var g = Math.asin(clamp(R * Math.sin(p), -1, 1)) - p;
+  var nS = v3norm(v3add(v3mul(nL, Math.cos(g)), v3mul(hL, -Math.sin(g))));
+  var pos = v3mul(nS, R);
+  var fwd = v3norm(v3sub(nL, pos));
+  var eS = v3norm(v3cross(nS, [0, 1, 0])), nN = v3cross(eS, nS);
+  var hS = v3add(v3mul(nN, Math.cos(br)), v3mul(eS, Math.sin(br)));
+  var up = v3norm(v3sub(hS, v3mul(fwd, v3dot(hS, fwd))));
+  return { pos: pos, fwd: fwd, up: up, right: v3cross(up, fwd), d: R };
+}
 
-   To hold the whole globe the frame has to be at least 2 wide at the globe's
-   distance: 2·(1+h)·tan(FOV/2) >= 2, so h >= 3.33. To hold the whole atlas it
-   has to be 2π wide: 2·h·tan(FOV/2) >= 2π, so h >= 13.6. Those two numbers ARE
-   the move - "the camera pulls back and the globe flattens" is not a metaphor,
-   it is a factor of four in altitude, and the storyboard wrote it down before
-   anyone measured it. */
-/* The fifth channel is a LENS SHIFT, not a pan: the camera slides along its
-   own up-axis while the view direction stays put, which is what a rise-and-fall
-   lens does and what an architectural photographer uses to keep verticals
-   straight. It exists because placement law 1 says copy lives in the left
-   column and nothing is ever written across the middle of the frame - and a
-   world map centred in a 16:10 frame lands exactly on the film voice. Shifting
-   the map up is the photographic answer; moving the sentence would be the
-   caption answer. */
+/* THE MOVE. A keyframe names where the camera is LOOKING, not where it is.
+
+   The look-at travels from beat 11's last pose to the map's own centre, which
+   is what makes the unroll one move instead of two: the thing at the middle of
+   the frame goes on being the thing at the middle of the frame while
+   everything else opens out around it.
+
+   ALTITUDE IS ARITHMETIC AT BOTH ENDS, not taste. To hold the whole globe the
+   frame must be 2 wide at the globe's distance: 2·(1+alt)·tan(FOV/2) ≥ 2, so
+   alt ≥ 3.33. To hold the whole atlas it must be 2π wide, and at this aspect
+   that is alt ≈ 9.6. Those two numbers ARE the move — "the camera pulls back
+   and the globe flattens" is not a metaphor, it is a factor of three in
+   altitude, and the storyboard wrote it down before anyone measured it.
+
+   BEAT 11 DOES NOT EXIST YET, so the entry pose is a placeholder that is
+   honest about being one: a wide globe over the Fertile Crescent, which is the
+   light beat 11 ends on. When beat 11 is built, its last keyframe replaces
+   row 0 and joinTest keeps the two cameras identical at k = 0.
+
+   The last channel is a LENS SHIFT — the camera slides along its own up-axis
+   while the view direction stays put, which is what a rise-and-fall lens does.
+   Placement law 1 says nothing is written across the middle of the frame, and
+   a world map centred in a 16:10 frame lands exactly on the film voice.
+   Shifting the map up is the photographic answer; moving the sentence would be
+   the caption answer. */
+/* A HIGH CAMERA CANNOT PITCH, and adopting the film's camera is what made
+   that true here. The ceiling is asin(r/(r+alt)): at 3.6 earth radii up it is
+   12.2 degrees, at 9.6 it is 5.4, and past it the camera is looking over the
+   horizon and there is no ground at frame centre. The first version of this
+   table carried 16 degrees at alt 3.6 - inherited from the slice's own camera,
+   where pitch meant a different thing - and frame() silently clamped it to the
+   ceiling, which puts the look-at exactly ON the limb. The globe came out as a
+   cap at the bottom of an empty frame.
+
+   Silently is the problem, so joinTest now fails on a clamped keyframe: asking
+   for a shot the geometry cannot make should be an error, not a shrug.
+
+   As the surface flattens the ceiling opens to 90 - a plane has no horizon to
+   look over - so the constraint is tightest at k = 0 and vanishes at the
+   atlas end. */
 var KEYS = [
-  /*  t      k     h     pitch  bearing  shift */
-  [0.000, 0.000,  3.60, 16,  0,   0.00],
-  [0.180, 0.000,  3.60, 16,  0,   0.00],  /* the whole globe, held: the entry */
-  [0.300, 0.060,  4.30, 13,  0,   0.00],  /* it begins as a pull-back */
-  [0.620, 0.640,  7.60,  6,  0,  -0.10],
-  [0.840, 1.000,  9.60,  0,  0,  -0.30],  /* flat on, square: the atlas */
-  [1.000, 1.000,  9.60,  0,  0,  -0.30]
+  /*  t       k     lon    lat   alt   pitch bearing shift */
+  [0.000, 0.000,  38.0,  36.5, 3.60,   6,  0,   0.00],   /* beat 11's light */
+  [0.180, 0.000,  38.0,  36.5, 3.60,   6,  0,   0.00],   /* held: the entry */
+  [0.300, 0.060,  30.0,  27.0, 4.30,   5,  0,   0.00],   /* a pull-back first */
+  [0.620, 0.640,  16.0,  10.0, 7.60,   3,  0,  -0.10],
+  [0.840, 1.000,  10.0,   0.0, 9.60,   0,  0,  -0.30],   /* flat on: the atlas */
+  [1.000, 1.000,  10.0,   0.0, 9.60,   0,  0,  -0.30]
 ];
+
+/* the pitch ceiling at a given bend and altitude, which is the film's
+   asin(1/(1+alt)) generalised to a sphere of radius r = 1/b */
+function pitchMax(alt, b) {
+  return b > B_EPS ? Math.asin(Math.min(1, (1 / b) / (1 / b + alt))) * DEG - 0.35
+                   : 90 - 0.35;
+}
 
 function camAt(t) {
   var K = KEYS, i;
@@ -183,46 +277,93 @@ function camAt(t) {
   for (i = 1; i < K.length; i++) {
     if (t <= K[i][0]) {
       var a = K[i - 1], b = K[i], f = ss((t - a[0]) / (b[0] - a[0]));
-      return { k: lerp(a[1], b[1], f), h: lerp(a[2], b[2], f),
-               pitch: lerp(a[3], b[3], f), bearing: lerp(a[4], b[4], f),
-               shift: lerp(a[5], b[5], f) };
+      return { k: lerp(a[1], b[1], f), lon: lerp(a[2], b[2], f),
+               lat: lerp(a[3], b[3], f), alt: lerp(a[4], b[4], f),
+               pitch: lerp(a[5], b[5], f), bearing: lerp(a[6], b[6], f),
+               shift: lerp(a[7], b[7], f) };
     }
   }
   return key(K[K.length - 1]);
 }
-function key(r) { return { k: r[1], h: r[2], pitch: r[3], bearing: r[4],
-                           shift: r[5] }; }
+function key(r) {
+  return { k: r[1], lon: r[2], lat: r[3], alt: r[4],
+           pitch: r[5], bearing: r[6], shift: r[7] };
+}
 
-/* The camera frame in anchor space. The anchor's normal is z-hat by
-   construction, north is y-hat and east is x-hat, so this is short. */
+/* how far back along the surface the camera stands, in arc length. The film's
+   gamma divided by the bend, with the flat limit written out. */
+function standBack(alt, p, b) {
+  if (b <= B_EPS) return alt * Math.tan(p);
+  var g = Math.asin(clamp((1 + alt * b) * Math.sin(p), -1, 1)) - p;
+  return g / b;
+}
+
+/* the point arc-distance s from (lon,lat) along a bearing, on the sphere the
+   surface currently is. Map coordinates are that sphere's own spherical angles
+   divided by the bend, so this is the standard direct geodesic with every
+   angle scaled - and the flat limit is a straight line in the plane. */
+function walk(lon, lat, br, s, b) {
+  if (b <= B_EPS) {
+    return [lon + s * Math.sin(br) * DEG, lat + s * Math.cos(br) * DEG];
+  }
+  var f1 = b * lat * RAD, l1 = b * wrapLon(lon - LON0) * RAD, d = s * b;
+  var f2 = Math.asin(clamp(Math.sin(f1) * Math.cos(d) +
+                           Math.cos(f1) * Math.sin(d) * Math.cos(br), -1, 1));
+  var dl = Math.atan2(Math.sin(br) * Math.sin(d) * Math.cos(f1),
+                      Math.cos(d) - Math.sin(f1) * Math.sin(f2));
+  return [LON0 + (l1 + dl) / b * DEG, f2 / b * DEG];
+}
+
+/* THE CAMERA FRAME IN ANCHOR SPACE. One definition for every value of the
+   bend, and at b = 1 it is the film's, which joinTest measures rather than
+   asserts. */
 function frame(c) {
-  var p = c.pitch * RAD, br = c.bearing * RAD;
-  /* back off along a direction `pitch` degrees from the anchor normal */
-  var back = [Math.sin(p) * Math.sin(br), Math.sin(p) * Math.cos(br), Math.cos(p)];
-  var pos = [back[0] * c.h, back[1] * c.h, back[2] * c.h];
-  var fwd = [-back[0], -back[1], -back[2]];
-  /* up is north, projected out of the view direction */
-  var north = [0, 1, 0];
-  var d = north[0] * fwd[0] + north[1] * fwd[1] + north[2] * fwd[2];
-  var up = [north[0] - fwd[0] * d, north[1] - fwd[1] * d, north[2] - fwd[2] * d];
-  var l = Math.hypot(up[0], up[1], up[2]) || 1;
-  up = [up[0] / l, up[1] / l, up[2] / l];
+  var b = 1 - c.k;
+  var r = b > B_EPS ? 1 / b : Infinity;
+  /* the pitch ceiling: past it the camera looks over the horizon and there is
+     no ground at frame centre. asin(r/R) on a sphere; 90 on a plane. */
+  var pmax = pitchMax(c.alt, b);
+  var p = Math.min(c.pitch, pmax) * RAD, br = c.bearing * RAD;
+
+  var A = surf(c.lon, c.lat, b);                       /* the look-at */
+  var s = standBack(c.alt, p, b);
+  /* stand back along the REVERSE bearing, then rise along the surface normal */
+  var sub = walk(c.lon, c.lat, br + Math.PI, s, b);
+  var S = surf(sub[0], sub[1], b);
+  var n = surfNormal(S, b);
+  var pos = v3add(S, v3mul(n, c.alt));
+
+  var fwd = v3norm(v3sub(A, pos));
+  /* up is the bearing direction at the CAMERA's foot, projected out of fwd -
+     which is the film's construction and is why a pitched shot keeps its
+     horizon level instead of rolling. */
+  var e = tangentEast(sub[0], sub[1], b), nn = tangentNorth(sub[0], sub[1], b);
+  var hS = v3add(v3mul(nn, Math.cos(br)), v3mul(e, Math.sin(br)));
+  var up = v3norm(v3sub(hS, v3mul(fwd, v3dot(hS, fwd))));
   /* cross(FWD, UP), not cross(up, fwd) - and the difference is a mirrored
      world. The film writes cross(up, fwd) and is right to, because ITS world
      has x through (0E,0N) and z pointing east. Anchor space is the other
      chirality: x is east, y is north, z points back at the camera. Copying the
-     film's line put east on the left of frame, and the first shot out of the
+     film's line put east on the left of frame, and the first shot out of this
      renderer was a mirror-image Africa that read convincingly enough as
-     somewhere else entirely. Two frames of the same earth, one of them
-     reflected, and nothing in the arithmetic complains. */
-  var right = [fwd[1] * up[2] - fwd[2] * up[1],
-               fwd[2] * up[0] - fwd[0] * up[2],
-               fwd[0] * up[1] - fwd[1] * up[0]];
-  /* the lens shift: slide along up, leave fwd alone. One half-frame of shift
-     is h*tanHalf at the anchor's distance. */
-  var sh = (c.shift || 0) * c.h * TAN_HALF;
-  pos = [pos[0] + up[0] * sh, pos[1] + up[1] * sh, pos[2] + up[2] * sh];
-  return { pos: pos, fwd: fwd, up: up, right: right, h: c.h, shift: c.shift || 0 };
+     somewhere else entirely. Nothing in the arithmetic complains. */
+  var right = v3cross(fwd, up);
+  var sh = (c.shift || 0) * c.alt * TAN_HALF;
+  pos = v3add(pos, v3mul(up, sh));
+  return { pos: pos, fwd: fwd, up: up, right: right,
+           h: c.alt, shift: c.shift || 0, lookAt: A };
+}
+
+/* the surface's own tangent directions, by finite difference on surf() rather
+   than by a second derivation of it - so they cannot disagree with the surface
+   they are tangent to. */
+function tangentEast(lon, lat, b) {
+  var d = 1e-4;
+  return v3norm(v3sub(surf(lon + d, lat, b), surf(lon - d, lat, b)));
+}
+function tangentNorth(lon, lat, b) {
+  var d = 1e-4;
+  return v3norm(v3sub(surf(lon, lat + d, b), surf(lon, lat - d, b)));
 }
 
 /* project a lon/lat to screen pixels; null if the surface hides it or it is
@@ -332,8 +473,14 @@ var FRAG =
 "  vec3 sky = mix(vec3(0.055,0.083,0.125), vec3(0.012,0.019,0.032), 0.55);\n" +
 "  sky = mix(sky, vec3(0.016,0.024,0.039), uChill*0.5);\n" +
 "\n" +
+"  // NO EARTH GETS AN EXACT SENTINEL in the debug passes. It used to get\n" +
+"  // the sky colour, and the test had to guess which latitude that\n" +
+"  // decoded to. It guessed below -84.32 by three degrees, so one pixel\n" +
+"  // of sky at the limb scored as a 444-pixel drift and two rounds went\n" +
+"  // into explaining a bug that was a sentinel. Zero is exact, and the\n" +
+"  // only place that decodes to it is the map corner nothing probes.\n" +
 "  float t = hit(uCam, dir);\n" +
-"  if (t <= 0.0){ frag = vec4(sky, 1.0); return; }\n" +
+"  if (t <= 0.0){ frag = vec4(uDebug > 0 ? vec3(0.0) : sky, 1.0); return; }\n" +
 "  vec3 q = uCam + dir*t;\n" +
 "  vec2 ll = lonlat(q);\n" +
 "\n" +
@@ -345,7 +492,7 @@ var FRAG =
 "  float ex = 180.0 - abs(llw.x);\n" +
 "  float ey =  90.0 - abs(llw.y);\n" +
 "  float edge = min(ex, ey);\n" +
-"  if (edge < 0.0){ frag = vec4(sky, 1.0); return; }\n" +
+"  if (edge < 0.0){ frag = vec4(uDebug > 0 ? vec3(0.0) : sky, 1.0); return; }\n" +
 "\n" +
 "  vec2 g = vec2(ll.x/360.0 + 0.5, 0.5 - ll.y/180.0);\n" +
 "  vec2 ax = dFdx(g)*uGlobalSize, ay = dFdy(g)*uGlobalSize;\n" +
@@ -619,7 +766,8 @@ function placeCentres() {
 
 function stateFor(t) {
   var c = camAt(t);
-  return { t: t, k: c.k, b: 1 - c.k, h: c.h, pitch: c.pitch, bearing: c.bearing,
+  return { t: t, k: c.k, b: 1 - c.k, alt: c.alt, h: c.alt,
+           lon: c.lon, lat: c.lat, pitch: c.pitch, bearing: c.bearing,
            shift: c.shift,
            /* beat 12 is 8–5 ka: the sea is at its modern level and the sky is
               Holocene. Both constant here, and both still read off state. */
@@ -627,7 +775,8 @@ function stateFor(t) {
            lit: CENTRES.filter(function (x) { return t > x.tIn; }).length };
 }
 function hashState(s) {
-  return [s.t.toFixed(5), s.k.toFixed(6), s.b.toFixed(6), s.h.toFixed(5),
+  return [s.t.toFixed(5), s.k.toFixed(6), s.b.toFixed(6), s.alt.toFixed(5),
+          s.lon.toFixed(4), s.lat.toFixed(4),
           s.pitch.toFixed(4), s.bearing.toFixed(4), s.shift.toFixed(5),
           s.sea.toFixed(4),
           s.chill.toFixed(4), s.lit].join("|");
@@ -675,7 +824,8 @@ function hashState(s) {
    SEEN to disagree, and being seen is the entire claim: a light that sits off
    its coastline is what this is guarding against.                            */
 function agreementTest() {
-  var rows = [], worst = null, tested = 0, edges = 0, hidden = 0, detail = [];
+  var rows = [], worst = null, tested = 0, edges = 0, hidden = 0,
+      unresolved = 0, detail = [];
 
   /* a spread of places, not just the six centres: the seam and the poles are
      where a surface definition goes wrong first, and the six centres all sit in
@@ -687,6 +837,29 @@ function agreementTest() {
    [LON0 + 90, 45, "A QUARTER TURN EAST"], [LON0 - 90, -45, "A QUARTER TURN WEST"],
    [LON0 + 150, 60, "THE FAR NORTH-EAST"], [LON0 - 150, -60, "THE FAR SOUTH-WEST"]]
     .forEach(function (p) { PROBES.push(p); });
+
+  /* HOW WELL THE FRAME RESOLVES A PLACE, in pixels per degree of map, and it
+     is the WORSE of the two directions - which is the whole point and was max
+     in the first version.
+
+     At the limb the surface is edge-on: along the limb a degree still spans a
+     comfortable few pixels, while radially it spans almost none. Taking the max
+     reports the comfortable direction and calls the place well resolved; the
+     inverse map is ill-conditioned in the OTHER direction, and that is where
+     the round trip blows up. It cost a 444-pixel disagreement at the Andes,
+     which sits 0.009 in cosine above the horizon at k = 0.25 - visible by a
+     sliver, and unresolvable in exactly one direction.
+
+     The same mistake as measuring a coastline separation when the claim is a
+     bottleneck: right arithmetic, wrong quantity. If a direction is degenerate
+     the point is degenerate. */
+  function resolvedPxPerDeg(F, b, lon, lat) {
+    var a = project(F, lon, lat, b);
+    var u = project(F, lon + 0.25, lat, b), v = project(F, lon, lat + 0.25, b);
+    if (!a || !u || !v) return 0;
+    return Math.min(Math.hypot(u[0] - a[0], u[1] - a[1]),
+                    Math.hypot(v[0] - a[0], v[1] - a[1])) / 0.25;
+  }
 
   var b4 = new Uint8Array(4);
   function sampleAt(p) {
@@ -700,12 +873,29 @@ function agreementTest() {
   }
   function read24(sm) {
     gl.readPixels(sm.X, sm.Ygl, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, b4);
+    if (b4[0] === 0 && b4[1] === 0 && b4[2] === 0) return null;   /* no earth */
     return (b4[0] + b4[1] / 255 + b4[2] / 65025) / 255;
+  }
+
+  /* HOW FAR A PLACE IS FROM THE HORIZON, IN PIXELS. A horizon is not a sharp
+     line in a raster: the shader's discriminant goes negative somewhere inside
+     a pixel or two of it, and which side of that a floored pixel lands on is
+     not a fact about the surface. Converted from an angle on the current
+     sphere, to degrees of map, to pixels - so the tolerance can be stated in
+     the unit the claim is made in. */
+  function horizonPx(F, b, lon, lat, ppd) {
+    if (b <= 1e-4) return 1e9;                   /* a plane has no horizon */
+    var q = surf(lon, lat, b), n = surfNormal(q, b), R = 1 / b;
+    var vc = [F.pos[0], F.pos[1], F.pos[2] + R];
+    var dc = Math.hypot(vc[0], vc[1], vc[2]);
+    var dotN = (n[0] * vc[0] + n[1] * vc[1] + n[2] * vc[2]) / dc;
+    var sin = Math.sqrt(Math.max(1e-12, 1 - dotN * dotN));
+    return Math.abs((dotN - R / dc) / sin) * DEG / b * ppd;
   }
 
   [0.0, 0.25, 0.5, 0.75, 1.0].forEach(function (kk) {
     var t = tOfK(kk), s = stateFor(t), F = frame(s);
-    var mx = 0, n = 0, ed = 0, hid = 0;
+    var mx = 0, n = 0, ed = 0, hid = 0, un = 0;
 
     var sm = PROBES.map(function (p) {
       var q = project(F, p[0], p[1], s.b);
@@ -720,24 +910,46 @@ function agreementTest() {
 
     PROBES.forEach(function (p, i) {
       if (!sm[i]) { hid++; hidden++; return; }
+      var ppd0 = resolvedPxPerDeg(F, s.b, p[0], p[1]);
+
+      /* THE SHADER HAS THREE ANSWERS, NOT TWO, and conflating them is what
+         made the first two versions of this test unreadable. It can say
+         "earth, and it is here"; it can say "NO EARTH AT ALL" - past the
+         map's edge or past the horizon; and it can be wrong. Only the third
+         is a drift.
+
+         project() and the shader disagree about the last half pixel of an
+         edge by construction and neither is wrong there, so a no-earth
+         reading is allowed within THREE PIXELS of the map's edge or of the
+         horizon - in pixels, because that is the unit the claim is made in.
+         Anywhere else it is a real failure and gets named. */
+      if (gotLon[i] === null || gotLat[i] === null) {
+        ed++; edges++;
+        var edgeDeg = Math.min(180 - Math.abs(wrapLon(p[0] - LON0)),
+                               90 - Math.abs(p[1]));
+        var edgePx = edgeDeg * (ppd0 || 0);
+        var horPx = horizonPx(F, s.b, p[0], p[1], ppd0 || 0);
+        if (Math.min(edgePx, horPx) > 3.0)
+          detail.push("k " + kk.toFixed(2) + "  " + p[2] +
+            ": NO EARTH, and it is " + edgePx.toFixed(1) +
+            " px from the map\u2019s edge and " + horPx.toFixed(1) +
+            " px from the horizon");
+        return;
+      }
       /* a MAP coordinate, so lon0 + it is the world longitude and
          project() wraps it straight back to the same number */
       var lo = LON0 + (gotLon[i] * 360 - 180), la = gotLat[i] * 180 - 90;
 
-      /* THE SHADER HAS THREE ANSWERS, NOT TWO, and conflating them made the
-         first version unreadable. It can say "earth, and it is here"; it can
-         say "no earth at all" - sky, past the map's edge or past the horizon;
-         and it can be wrong. Only the third is a drift. A probe deliberately
-         placed a degree inside the seam WILL land within a pixel of the edge,
-         and which side of it a floored pixel falls on is not a fact about the
-         surface. Sky decodes to a latitude below -88, which no probe is at. */
-      if (la < -88) {
-        ed++; edges++;
-        var inset = Math.min(180 - Math.abs(wrapLon(p[0] - LON0)), 90 - Math.abs(p[1]));
-        if (inset > 8) detail.push("k " + kk.toFixed(2) + "  " + p[2] +
-          ": the shader says NO EARTH " + inset.toFixed(0) + "\u00b0 inside the map");
-        return;
-      }
+      /* AND A THIRD THING THE SHADER CAN BE: UNRESOLVABLE. At the limb one
+         pixel covers many degrees of map, so project() and the shader name
+         different places inside the same pixel and neither is wrong. The
+         threshold is not invented for this test - it is the same 4 degrees per
+         pixel at which the shader stops drawing a waterline, for the same
+         reason, which is Law 08 from the other end: below a resolution there
+         is no coastline and there is no position either. Counted, not scored,
+         and reported. */
+      var ppd = ppd0;
+      if (ppd < 0.25) { un++; unresolved++; return; }
 
       /* back through project(): both sides now name the same pixel centre */
       var p2 = project(F, lo, la, s.b);
@@ -745,14 +957,25 @@ function agreementTest() {
       var d = Math.hypot(p2[0] - sm[i].centre[0], p2[1] - sm[i].centre[1]);
       n++; tested++;
       if (d > mx) mx = d;
-      if (!worst || d > worst.px) worst = { px: d, k: kk, name: p[2] };
+      /* A FAILING TEST HAS TO SAY WHAT IT SAW. The first version reported only
+         a number and a name, and two rounds went into guessing at the cause
+         from the outside. */
+      if (!worst || d > worst.px) worst = {
+        px: d, k: kk, name: p[2],
+        want: [p[0], p[1]], got: [lo, la],
+        at: sm[i].centre, back: p2, ppd: ppd
+      };
     });
-    rows.push("  k " + kk.toFixed(2) + "   " + n + " on the map, worst " +
+    rows.push("  k " + kk.toFixed(2) + "   " + n + " scored, worst " +
               mx.toFixed(3) + " px" +
               (ed ? "   " + ed + " at an edge" : "") +
+              (un ? "   " + un + " unresolvable" : "") +
               (hid ? "   " + hid + " over the horizon" : ""));
   });
 
+  /* tested >= 30 is not decoration: it is what stops the three
+     counted-not-scored buckets from quietly swallowing the whole test. If the
+     gates ever start hiding everything, this floor fails first. */
   var ok = tested >= 30 && worst && worst.px < 0.5 && detail.length === 0;
   $("o-agree").innerHTML =
     (ok ? '<span class="ok">PASS</span>\n' : '<span class="bad">FAIL</span>\n') +
@@ -763,11 +986,19 @@ function agreementTest() {
     "pixel by construction, nothing to do with the\nsurface. It showed up as every probe at k = 1\n" +
     "being wrong by exactly 0.2249\u00b0: one number, which\nis never a drift.\n\n" +
     rows.join("\n") + "\n\n" +
-    tested + " probes on the map over five values of k, plus\n" + edges +
-    " at the map\u2019s edge and " + hidden + " the surface itself\nhides. Both are counted, not scored.\n\n" +
+    tested + " probes scored over five values of k, plus " + edges +
+    "\nat the map\u2019s edge, " + unresolved + " where one pixel covers more\nthan four degrees of map, and " +
+    hidden + " the surface itself\nhides. All three are counted, not scored.\n\n" +
     "worst " + (worst ? worst.px.toFixed(4) + " px, " + worst.name +
                 " at k " + worst.k.toFixed(2) : "\u2014") +
     "\nThe bar is half a pixel.\n" +
+    (worst && worst.px >= 0.5
+      ? "\n   asked for  " + worst.want[0].toFixed(3) + ", " + worst.want[1].toFixed(3) +
+        "\n   pixel      " + worst.at[0].toFixed(1) + ", " + worst.at[1].toFixed(1) +
+        "\n   shader says" + worst.got[0].toFixed(3) + ", " + worst.got[1].toFixed(3) +
+        "\n   which is at" + worst.back[0].toFixed(1) + ", " + worst.back[1].toFixed(1) +
+        "\n   resolved at " + worst.ppd.toFixed(2) + " px per degree\n"
+      : "") +
     (detail.length ? "\n" + detail.join("\n") + "\n" : "") +
     (ok ? "\nOne surface, two languages, no daylight between\nthem."
         : "\nThe two definitions have drifted, and that is the\nbug this slice exists to make impossible.");
@@ -794,10 +1025,6 @@ function tOfK(k) {
    imported so this slice stands alone, and it is a different formula: xyz
    builds the sphere from cos/sin directly, surf builds it from sinc and hav
    and a bend of exactly 1. They could disagree. */
-function xyzFilm(lon, lat) {
-  var cl = Math.cos(lat * RAD);
-  return [cl * Math.cos(lon * RAD), Math.sin(lat * RAD), cl * Math.sin(lon * RAD)];
-}
 function sphereTest() {
   var worst = 0, n = 0, wl = null;
   for (var i = 0; i <= 72; i++) {
@@ -833,6 +1060,117 @@ function sphereTest() {
   return ok;
 }
 
+/* THE JOIN, MEASURED.
+
+   Beat 12 is entered from beat 11 and beat 11 is a globe shot with the film's
+   camera. If this slice's camera at k = 0 is only NEARLY the film's, the unroll
+   opens with a jump - which is the exact failure the Phase 3 spike had, moved
+   from the surface to the lens.
+
+   So the generalised camera is required to equal the film's at b = 1 to
+   machine precision, against filmFrame() above, which is the film's own
+   function copied verbatim rather than re-derived. Two implementations, one
+   camera: the same discipline as the surface, one level up.
+
+   THE CONVENTIONS DIFFER AND THAT IS THE POINT. The film's world has y as the
+   pole and x through (0E, 0N); anchor space has x east, y north and z back at
+   the camera, with longitude measured from LON0. The rotation between them is
+   written out here, so if either convention ever moves this test says so
+   instead of a frame quietly reflecting.
+
+   It also walks the bend down through B_EPS, where standBack() and walk() each
+   swap to their flat-limit branch, and measures the step IN PIXELS. A branch on
+   a uniform is allowed; a branch you have not measured is not.              */
+function joinTest() {
+  var CASES = [
+    { lon: 38.0, lat: 36.5, alt: 3.60, pitch: 16, bearing: 0 },
+    { lon: -99.5, lat: 18.0, alt: 1.20, pitch: 34, bearing: 120 },
+    { lon: 144.33, lat: -5.78, alt: 0.42, pitch: 44, bearing: 305 },
+    { lon: 10.0, lat: 0.0, alt: 9.60, pitch: 0, bearing: 0 },
+    { lon: -175.0, lat: 62.0, alt: 2.10, pitch: 25, bearing: 210 }
+  ];
+  /* film world -> anchor space: rotate longitude by LON0, then relabel axes.
+     The film's xyz is (cos lat cos lon, sin lat, cos lat sin lon) with lon
+     measured from Greenwich; surf at b=1 is (cos lat sin X, sin lat,
+     cos lat cos X) with X measured from LON0. So x_anchor = z_film and
+     z_anchor = x_film, once the film's lon has been shifted by LON0. */
+  function toAnchor(v) { return [v[2], v[1], v[0]]; }
+
+  var worst = 0, worstCase = null;
+  CASES.forEach(function (c, i) {
+    var mine = frame({ k: 0, lon: c.lon, lat: c.lat, alt: c.alt,
+                       pitch: c.pitch, bearing: c.bearing, shift: 0 });
+    var theirs = filmFrame({ lon: wrapLon(c.lon - LON0), lat: c.lat,
+                             alt: c.alt, pitch: c.pitch, bearing: c.bearing });
+    /* the film's position is from the sphere's CENTRE; anchor space measures
+       from a point on the surface, so shift by one radius along z. */
+    var tp = toAnchor(theirs.pos); tp[2] -= 1;
+    [[mine.pos, tp, "position"],
+     [mine.fwd, toAnchor(theirs.fwd), "forward"],
+     [mine.up, toAnchor(theirs.up), "up"],
+     [mine.right, toAnchor(theirs.right), "right"]].forEach(function (pair) {
+      var d = Math.hypot(pair[0][0] - pair[1][0], pair[0][1] - pair[1][1],
+                         pair[0][2] - pair[1][2]);
+      if (d > worst) { worst = d; worstCase = pair[2] + ", case " + (i + 1); }
+    });
+  });
+
+  /* the flat-limit branch, measured in pixels either side of the threshold */
+  var step = 0, stepAt = null;
+  [B_EPS * 1.0001, B_EPS * 0.9999].forEach(function () {});
+  var probe = { lon: 10, lat: 0, alt: 9.6, pitch: 20, bearing: 40, shift: 0 };
+  var above = frame({ k: 1 - B_EPS * 1.02, lon: probe.lon, lat: probe.lat,
+                      alt: probe.alt, pitch: probe.pitch,
+                      bearing: probe.bearing, shift: 0 });
+  var below = frame({ k: 1 - B_EPS * 0.98, lon: probe.lon, lat: probe.lat,
+                      alt: probe.alt, pitch: probe.pitch,
+                      bearing: probe.bearing, shift: 0 });
+  [[38, 36.5], [-99.5, 18], [144.33, -5.78], [10, 0]].forEach(function (pl) {
+    var pa = project(above, pl[0], pl[1], B_EPS * 1.02);
+    var pb = project(below, pl[0], pl[1], B_EPS * 0.98);
+    if (!pa || !pb) return;
+    var d = Math.hypot(pa[0] - pb[0], pa[1] - pb[1]);
+    if (d > step) { step = d; stepAt = pl[0].toFixed(0) + ", " + pl[1].toFixed(0); }
+  });
+
+  /* NO KEYFRAME MAY BE CLAMPED. A pitch past the ceiling is a shot the
+     geometry cannot make, and frame() quietly making a different one instead
+     is how the entry pose came out as a cap at the bottom of an empty frame.
+     Every row, and every t between them, because a lerp can cross the ceiling
+     even when both ends clear it. */
+  var clamped = [];
+  for (var ci = 0; ci <= 400; ci++) {
+    var ct = ci / 400, cc = camAt(ct), cm = pitchMax(cc.alt, 1 - cc.k);
+    if (cc.pitch > cm + 1e-9) {
+      clamped.push("t " + ct.toFixed(3) + ": pitch " + cc.pitch.toFixed(1) +
+                   "\u00b0 against a ceiling of " + cm.toFixed(1) + "\u00b0");
+      if (clamped.length > 2) break;
+    }
+  }
+
+  var ok = worst < 1e-9 && step < 0.5 && clamped.length === 0;
+  $("o-join").innerHTML =
+    (ok ? '<span class="ok">PASS</span>\n' : '<span class="bad">FAIL</span>\n') +
+    "At k = 0 this slice's camera must BE the film's,\nnot resemble it: beat 12 is entered from beat 11 " +
+    "and\na transition whose first frame is a different\ncamera is a cut with extra steps.\n\n" +
+    (worst < 1e-9 ? "\u00b7 " : "\u2717 ") + "position, forward, up and right all match\n   filmFrame() across " +
+    CASES.length + " poses. worst " + worst.toExponential(2) +
+    (worstCase ? "\n   (" + worstCase + ")" : "") + "\n" +
+    (step < 0.5 ? "\u00b7 " : "\u2717 ") + "the flat-limit branch at b = " + B_EPS +
+    " costs\n   " + step.toFixed(4) + " px" + (stepAt ? " at " + stepAt : "") +
+    ". standBack() and walk()\n   are each 0/0 as the bend vanishes and each has\n" +
+    "   a small-bend branch; a branch you have not\n   measured is not allowed.\n" +
+    (clamped.length === 0 ? "\u00b7 " : "\u2717 ") + "no keyframe asks for a pitch past the\n" +
+    "   horizon. A high camera cannot pitch - the\n   ceiling is 12.2\u00b0 at 3.6 earth radii and 5.4\u00b0\n" +
+    "   at 9.6 - and frame() clamping quietly is how\n   the entry pose came out as a cap at the\n" +
+    "   bottom of an empty frame.\n" +
+    (clamped.length ? "   " + clamped.join("\n   ") + "\n" : "") + "\n" +
+    "filmFrame() is the film's own function copied\nverbatim, in the FILM's convention - y is the pole,\n" +
+    "x runs through 0E - and this slice's is the other\nchirality. The rotation between them is written\n" +
+    "out in the test, so if either convention moves\nthis says so instead of a frame quietly\nreflecting.";
+  return ok;
+}
+
 function purity() {
   var N = 400, a = [], b = [], i;
   for (i = 0; i <= N; i++) a.push(hashState(stateFor(i / N)));
@@ -859,26 +1197,79 @@ function purity() {
    the atlas register existing, so this slice measures it rather than repeating
    it - and measures it on ITS OWN camera and ITS OWN surface, which could have
    produced a different answer.                                             */
+/* LAW 03'S JUSTIFICATION, RE-DERIVED RATHER THAN QUOTED.
+
+   The storyboard has said since Phase 3 that from an Africa-centred globe only
+   2 of 6 agricultural centres are visible and the atlas shows 6 of 6, and that
+   measurement is the entire argument for the atlas register existing. So this
+   slice measures it again, on its own camera and its own surface, which could
+   have produced a different answer.
+
+   IT DOES PRODUCE A DIFFERENT ANSWER FOR THE BEAT'S OWN POSE, and that is not
+   a contradiction - it is the reason the test asserts the GAP and not a number.
+   The published 2-of-6 is a fact about an AFRICA-CENTRED globe. Beat 12 opens
+   on the Fertile Crescent, because that is the light beat 11 fixes in place,
+   and a globe centred there is turned about thirty degrees east and holds one
+   more. Both are true; they are measurements of different shots.
+
+   So the number is reported for both, and what is ASSERTED is the thing Law 03
+   actually claims: no globe holds them all, and the atlas does. The first
+   version of this test asserted "the globe holds at most 2", which is a fact
+   about a shot rather than about the film, and it failed the moment the entry
+   pose was corrected - for a reason that had nothing to do with the claim. */
 function sixTest() {
   var rows = [];
   [0, 0.25, 0.5, 0.75, 1].forEach(function (kk) {
     var t = tOfK(kk), s = stateFor(t), F = frame(s);
-    rows.push([kk, countCentres(F, s.b)]);
+    rows.push(["k " + kk.toFixed(2) + (kk === 0 ? "  the beat's entry, on the"
+                 : kk === 1 ? "  the atlas" : ""),
+               countCentres(F, s.b), kk === 0 ? "         Fertile Crescent" : ""]);
   });
-  var globe = rows[0][1], atlas = rows[rows.length - 1][1];
-  var ok = globe <= 2 && atlas === CENTRES.length && CENTRES.length >= 6;
+  /* the storyboard's own shot: an Africa-centred globe, same altitude */
+  var sAfr = stateFor(0);
+  var fAfr = frame({ k: 0, lon: 20, lat: 0, alt: sAfr.alt, pitch: 0,
+                     bearing: 0, shift: 0 });
+  var afr = countCentres(fAfr, 1);
+
+  var entry = rows[0][1], atlas = rows[rows.length - 1][1], N = CENTRES.length;
+  /* THE CLAIM IS ABOUT THE TWO ENDS, and an earlier version asserted it about
+     every sampled k - which is false, and interestingly so: by the halfway
+     point the surface is already flat enough to hold all six. The register
+     stops being a globe long before it finishes becoming an atlas, and where
+     the sixth light arrives is a thing to notice rather than a thing to fail
+     on. What Law 03 claims is that the ORBITAL register cannot hold them and
+     the ATLAS can. */
+  var ok = atlas === N && entry < N && afr < N && N >= 6;
+
+  /* where the last one arrives, reported because it is the shape of the move */
+  var full = null;
+  for (var fi = 0; fi <= 200; fi++) {
+    var ft = fi / 200, fs = stateFor(ft);
+    if (countCentres(frame(fs), fs.b) === N) { full = fs.k; break; }
+  }
+
   $("o-six").innerHTML =
     (ok ? '<span class="ok">PASS</span>\n' : '<span class="bad">FAIL</span>\n') +
     "Centres inside the frame, counted by projecting\nthem through this slice's own camera:\n\n" +
     rows.map(function (r) {
-      return "  k " + r[0].toFixed(2) + "    " + r[1] + " of " + CENTRES.length +
-             (r[0] === 0 ? "   the globe" : r[0] === 1 ? "   the atlas" : "");
+      return "  " + r[0] + "    " + r[1] + " of " + N + (r[2] ? "\n" + r[2] : "");
     }).join("\n") +
-    "\n\nThe globe holds " + globe + ". The atlas holds " + atlas + ".\n" +
-    "That gap is the whole reason Law 03 has an atlas\nregister and a second verb to reach it - and it is\n" +
-    "re-derived here rather than quoted from the\nstoryboard, on a different camera and a different\nsurface.\n\n" +
-    "The line says AT LEAST SIX and the record now\ncarries " + CENTRES.length +
-    ", every one with coordinates, dates\nand a citation. Nothing on this page is drawn from\na table.";
+    "\n\n  an Africa-centred globe        " + afr + " of " + N + "\n" +
+    "  which is the storyboard's own shot.\n\n" +
+    "THE STORYBOARD'S PUBLISHED NUMBER IS 2 OF 6 AND\nTHIS SHOT NOW HOLDS " + afr +
+    ". The difference is the\nSahel: it was one of the two visible from Africa,\n" +
+    "and the data moved it to beat 13 because it\nbegins 4,900 BP against a beat that closes at\n" +
+    "5,000. The gap Law 03 rests on got WIDER, not\nnarrower - but the published figure is stale and\n" +
+    "the storyboard should say " + afr + " of " + N + ".\n\n" +
+    (full !== null ? "All " + N + " are in frame from k " + full.toFixed(2) +
+      " onward: the\nregister stops being a globe well before it\nfinishes becoming an atlas.\n\n" : "") +
+    "WHAT IS ASSERTED IS THE GAP, not a number: no\nglobe holds them all and the atlas does. The beat\n" +
+    "opens on the Fertile Crescent rather than on\nAfrica, so its entry pose holds " + entry +
+    " and not " + afr + " -\nboth true, measurements of different shots. An\n" +
+    "earlier version asserted 'at most two', which is\na fact about a shot rather than about the film,\n" +
+    "and it failed the moment the entry pose was\ncorrected for an unrelated reason.\n\n" +
+    "The line says AT LEAST SIX and the record carries\n" + N +
+    ", every one with coordinates, dates and a\ncitation. Nothing on this page is drawn from a\ntable.";
   return ok;
 }
 
@@ -976,7 +1367,8 @@ function drawFrame(s) {
     $("p-k").textContent = s.k.toFixed(4) + " · " + s.b.toFixed(4);
     $("p-r").textContent = s.b < 1e-4 ? "flat" : (1 / s.b).toFixed(2);
     $("p-h").textContent = s.h.toFixed(2) + " earth radii";
-    $("p-pb").textContent = s.pitch.toFixed(1) + "° · " + s.bearing.toFixed(0) + "°";
+    $("p-pb").textContent = s.pitch.toFixed(1) + "° of " +
+      pitchMax(s.alt, s.b).toFixed(1) + "° · bearing " + s.bearing.toFixed(0) + "°";
     $("p-lon0").textContent = LON0 + "°E";
     $("p-vis").textContent = countCentres(F, s.b) + " of " + CENTRES.length;
   }
@@ -1010,6 +1402,7 @@ function start() {
     if (e.key === "d" || e.key === "D") DEBUG = (DEBUG + 1) % 2;
   });
   [["t-agree", agreementTest], ["t-sphere", sphereTest],
+   ["t-join", joinTest],
    ["t-purity", purity], ["t-six", sixTest], ["t-record", recordTest]]
     .forEach(function (p) { $(p[0]).addEventListener("click", p[1]); });
 
@@ -1025,6 +1418,7 @@ function start() {
                     tOfK: tOfK, countCentres: countCentres, CENTRES: CENTRES,
                     agreementTest: agreementTest, sphereTest: sphereTest,
                     purity: purity, sixTest: sixTest, recordTest: recordTest,
+                    joinTest: joinTest, filmFrame: filmFrame, pitchMax: pitchMax,
                     D12: D12, LON0: LON0 };
   requestAnimationFrame(loop);
   setTimeout(function () { $("load").classList.add("off"); }, 260);

@@ -119,6 +119,9 @@ canvas{position:fixed;inset:0;width:100vw;height:100vh;display:block}
   <h4>Is k=0 still the film's globe</h4>
   <button id="t-sphere">Run the sphere test</button>
   <pre id="o-sphere">At k=0 the morph must be the unit sphere EXACTLY, not nearly - otherwise entering the unroll costs a pop. Compares surf() against the film's own xyz() at a few thousand points.</pre>
+  <h4>The join &mdash; is this the film's camera</h4>
+  <button id="t-join">Run the join test</button>
+  <pre id="o-join">Beat 12 is entered from beat 11, which is a globe shot with the film's camera. At k=0 this slice's camera must BE that camera, not resemble it. Compares against the film's own frame(), copied verbatim, across five poses &mdash; and measures what the flat-limit branch costs in pixels.</pre>
   <h4>Law 01 &mdash; the morph is a function of t</h4>
   <button id="t-purity">Run the purity test</button>
   <pre id="o-purity">Hashes the whole state scrubbing forward, then backward, and diffs. The unroll must be a pure function of t like everything else, or it cannot be scrubbed.</pre>
