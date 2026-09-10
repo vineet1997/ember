@@ -21,7 +21,7 @@
   function tick(){if(ready){target=clamp(scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight),0,1);cur+=(target-cur)*.14;apply(cur)}requestAnimationFrame(tick)}
   function buildRuler(){$("ticks").innerHTML=D.beats.map(function(b){return '<span class="tick" style="left:'+(b.t0*100).toFixed(3)+'%"><i>'+year(b.yearsBP[0])+'</i></span>';}).join("")+'<span class="tick hot" style="left:100%"><i style="transform:translateX(-100%)">now</i></span>';}
   function childReady(){var w=frame.contentWindow,id=D.beats[0].id;return w&&(id===12?w.UNROLL:w["EMBER"+id]);}
-  function wait(){if(!childReady())return setTimeout(wait,60);ready=true;renderAt(0);$("bar").style.width="100%";$("status").textContent="ready · one renderer";$("load").classList.add("off")}
+  function wait(){if(!childReady())return setTimeout(wait,60);ready=true;renderAt(0);frame.classList.add("on");$("bar").style.width="100%";$("status").textContent="ready · one renderer";$("load").classList.add("off")}
   function purity(){var f=[],b=[],i;for(i=0;i<=400;i++)f.push(JSON.stringify(stateFor(i/400)));for(i=400;i>=0;i--)b.unshift(JSON.stringify(stateFor(i/400)));return f.every(function(v,n){return v===b[n]})}
   Promise.all([fetch("data/film.json").then(function(r){return r.json()}),fetch("../story/narration.json").then(function(r){return r.json()})]).then(function(x){D=x[0];N=x[1];buildRuler();frame=document.createElement("iframe");frame.setAttribute("aria-label","One Ember visual scene");$("stack").appendChild(frame);frame.src=D.beats[0].src;active=1;window.FILM={D:D,stateFor:stateFor,renderAt:renderAt,purity:purity,get active(){return active},get ready(){return ready}};wait();requestAnimationFrame(tick)}).catch(function(e){$("status").textContent=String(e.message||e)});
 }());
