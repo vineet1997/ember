@@ -264,13 +264,14 @@ body.still #record{transition:none !important}
   <div class="r"><span>frame tile</span><b id="p-tile">&mdash;</b></div>
   <h4>Frame time &mdash; measured here, on this screen</h4>
   <div class="r"><span>median / p95 / worst</span><b id="p-frame">&mdash;</b></div>
+  <div class="r"><span>worst since reload</span><b id="p-frame-reload">&mdash;</b></div>
   <div class="r"><span>rate</span><b id="p-fps">&mdash;</b></div>
   <div class="r"><span>earth pass, on the GPU</span><b id="p-gpums" style="font-size:9.5px">&mdash;</b></div>
   <div class="r"><span>overlay, on the CPU</span><b id="p-ovms" style="font-size:9.5px">&mdash;</b></div>
   <div class="r"><span>renderer</span><b id="p-gpu" style="font-size:9px;text-align:right">&mdash;</b></div>
   <pre id="o-frame" style="margin-top:6px">The earth pass is the SHADER; the overlay is the 2D canvas. Everything Phase 5 added - the plume, the pale field - is overlay work, and the GPU timer cannot see any of it. Two numbers, because one of them would have been honest and useless.
 
-Scroll for a few seconds first. The worst frame is what matters: one 40 ms hitch is felt, a slightly low average is not. Green under 20 ms at p95.
+Scroll for a few seconds first. The first row is a rolling two-second window; “worst since reload” keeps a one-time hitch visible. One 40 ms hitch is felt, a slightly low average is not. Green under 20 ms at p95.
 
 Only meaningful in a VISIBLE window. A hidden tab or a headless browser throttles the frame loop and will report a whole second per frame.</pre>
   <h4>Deferred terrain tile &mdash; main-thread phases</h4>
@@ -280,7 +281,7 @@ Only meaningful in a VISIBLE window. A hidden tab or a headless browser throttle
   <div class="r"><span>mipmap / total</span><b id="p-defer-total" style="font-size:9.5px">&mdash;</b></div>
   <pre id="o-defer" style="margin-top:6px">These are the one-time main-thread phases for a background terrain tile. “Image decode” is the canvas draw that forces decoded image pixels into the canvas; “texture upload” and “mipmap” time the issuing calls, not hidden GPU completion.
 
-On one visible Slow-4G reload, wait for the two background tiles. Read this beside the worst-frame line above. Do not optimise or chunk a phase until this says which phase is actually large.</pre>
+On one visible Slow-4G reload, wait for the two background tiles. While bytes are still arriving, the tile/state row names the tile and the phase clocks remain blank by design; they begin at “waiting for an idle gap.” Read the completed clocks beside “worst since reload.” Do not optimise or chunk a phase until this says which phase is actually large.</pre>
   <h4>Law 01 &mdash; one number governs everything</h4>
   <button id="t-purity">Run purity test</button>
   <pre id="o-purity">Hashes the full state at 401 points scrubbing forward, then again backward, and diffs them.

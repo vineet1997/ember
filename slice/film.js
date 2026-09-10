@@ -178,6 +178,12 @@ function loadRest() {
   (function next() {
     var k = rest.shift();
     if (!k) return;
+    /* A slow network can hold this here for minutes. Say which tile is still
+       arriving instead of leaving the reader to mistake blank phase clocks for
+       a completed zero-cost conversion. The clocks begin only after image(). */
+    TILE_TIMING = { tile: k, state: "downloading in background",
+                    imageDecode: null, readback: null, terrainDecode: null,
+                    upload: null, mipmap: null, total: null };
     image(TILES[k].src).then(function (i) {
       TEX[k] = i;
       TILE_TIMING = { tile: k, state: "waiting for an idle gap",
@@ -3385,6 +3391,10 @@ function tFor(s) { return D.tSpan[0] + (D.tSpan[1] - D.tSpan[0]) * clamp(s, 0, 1
    The worst frame matters more than the mean: one 40 ms hitch is felt, a
    slightly low average is not. */
 var FT = new Float32Array(120), ftAt = 0, ftPrev = 0, ftN = 0;
+/* FT deliberately stays a short, readable rolling window. This second value
+   is the counterpart for reload diagnostics: a one-time tile decode must not
+   disappear from the evidence two seconds after it happens. */
+var FT_RELOAD_WORST = 0;
 var OV = new Float32Array(120), ovAt = 0, ovN = 0;
 
 function stats(buf, n) {
@@ -3464,7 +3474,11 @@ function loop(now) {
      right response to "stop moving" is to stop, not to keep drawing behind a
      panel that says the film has stopped. applyGate() starts it again. */
   if (GATED) { running = false; ftPrev = 0; return; }
-  if (ftPrev) { FT[ftAt] = now - ftPrev; ftAt = (ftAt + 1) % FT.length; ftN++; }
+  if (ftPrev) {
+    var interval = now - ftPrev;
+    FT[ftAt] = interval; ftAt = (ftAt + 1) % FT.length; ftN++;
+    FT_RELOAD_WORST = Math.max(FT_RELOAD_WORST, interval);
+  }
   ftPrev = now;
 
   if (EXTERNAL_T !== null) target = EXTERNAL_T;
@@ -3607,6 +3621,9 @@ function panel(s) {
   $("p-frame").innerHTML = f
     ? f.med.toFixed(1) + " / " + f.p95.toFixed(1) + " / " + f.max.toFixed(1) + " ms"
     : "&mdash;";
+  $("p-frame-reload").textContent = FT_RELOAD_WORST
+    ? FT_RELOAD_WORST.toFixed(1) + " ms"
+    : "—";
   $("p-fps").textContent = f ? Math.round(1000 / f.med) + " fps" : "—";
   var ov = overlayStats();
   $("p-ovms").textContent = ov

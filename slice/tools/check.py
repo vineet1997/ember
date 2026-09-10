@@ -247,7 +247,9 @@ def cmd_verify(a):
                 fails.append("the atlas is missing %s without JavaScript" % name)
         if scripts:
             fails.append("the atlas carries %d script tags; it must carry none" % scripts)
-        once = txt.count(want["film voice"])
+        # The lede is allowed to quote the beat's conclusion as prose. What
+        # must appear once is the large, paced film-voice treatment itself.
+        once = page.locator(".voice").all_text_contents().count(want["film voice"])
         print("    %s  the film voice appears exactly once (found %d)"
               % ("ok " if once == 1 else "MISS", once))
         if once != 1:
