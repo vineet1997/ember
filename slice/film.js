@@ -3393,8 +3393,11 @@ function tFor(s) { return D.tSpan[0] + (D.tSpan[1] - D.tSpan[0]) * clamp(s, 0, 1
 var FT = new Float32Array(120), ftAt = 0, ftPrev = 0, ftN = 0;
 /* FT deliberately stays a short, readable rolling window. This second value
    is the counterpart for reload diagnostics: a one-time tile decode must not
-   disappear from the evidence two seconds after it happens. */
+   disappear from the evidence two seconds after it happens. Browser suspension
+   is not a frame, though; a tab that returns after minutes must never turn that
+   absence into a fictitious "worst" result. */
 var FT_RELOAD_WORST = 0;
+document.addEventListener("visibilitychange", function () { ftPrev = 0; });
 var OV = new Float32Array(120), ovAt = 0, ovN = 0;
 
 function stats(buf, n) {
@@ -3476,8 +3479,13 @@ function loop(now) {
   if (GATED) { running = false; ftPrev = 0; return; }
   if (ftPrev) {
     var interval = now - ftPrev;
-    FT[ftAt] = interval; ftAt = (ftAt + 1) % FT.length; ftN++;
-    FT_RELOAD_WORST = Math.max(FT_RELOAD_WORST, interval);
+    /* Five seconds is not a frame we can use to judge the film. A real
+       main-thread tile conversion is hundreds of milliseconds, so this clears
+       only a browser/system suspension while preserving the hitch we seek. */
+    if (!document.hidden && interval < 5000) {
+      FT[ftAt] = interval; ftAt = (ftAt + 1) % FT.length; ftN++;
+      FT_RELOAD_WORST = Math.max(FT_RELOAD_WORST, interval);
+    }
   }
   ftPrev = now;
 
