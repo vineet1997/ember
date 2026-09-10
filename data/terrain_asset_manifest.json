@@ -1,0 +1,185 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Phase 1 delivery contract; an evidence-preserving terrain asset inventory.",
+  "sourceDataset": "ETOPO 2022 bedrock at 60 arc-seconds; original grid is excluded by .gitignore and builders name their derivation.",
+  "encoding": {
+    "scale": 0.30518043793392846,
+    "offset": -11000.0,
+    "channels": "R/G Terrain-RGB; B is unused."
+  },
+  "deliveryTiers": {
+    "initial": {
+      "status": "built",
+      "fields": [
+        "global-overview"
+      ]
+    },
+    "medium": {
+      "status": "not-built",
+      "fields": [],
+      "note": "No medium corridor fields exist yet. Phase 2 must derive them from the original elevation grid; they must not be downscaled screenshots."
+    },
+    "full": {
+      "status": "built",
+      "fields": [
+        "red-sea",
+        "sunda-wallacea",
+        "europe-west-asia"
+      ]
+    }
+  },
+  "selectedFormat": {
+    "delivery": "lossless WebP",
+    "fallback": "Retained PNG with identical Terrain-RGB bytes.",
+    "loaderStatus": "Not selected by the current loader; Phase 3 must use WebP only after feature detection and request the PNG fallback if unavailable."
+  },
+  "benchmark": {
+    "encoder": "Pillow 12.3.0, lossless WebP, method 6",
+    "allFields": {
+      "pngBytes": 36729566,
+      "pngMiB": 35.028,
+      "webpBytes": 27324476,
+      "webpMiB": 26.059,
+      "savingBytes": 9405090,
+      "savingPercent": 25.61
+    },
+    "startupGlobalAndRedSea": {
+      "pngBytes": 8887064,
+      "pngMiB": 8.475,
+      "webpBytes": 6586274,
+      "webpMiB": 6.281,
+      "slow4gTransferOnlySeconds": {
+        "png": 49.37,
+        "webp": 36.59
+      }
+    }
+  },
+  "fields": [
+    {
+      "id": "global-overview",
+      "deliveryTier": "initial",
+      "sceneWindow": "Global fallback for the Beat 05\u201307 slice and Beat 12 unroll.",
+      "dimensions": {
+        "width": 2048,
+        "height": 1024
+      },
+      "extent": {
+        "lon0": -180.0,
+        "lon1": 180.0,
+        "lat0": -90.0,
+        "lat1": 90.0
+      },
+      "source": "ETOPO 2022 bedrock, area-resampled from data/bathymetry.png by slice/build_slice.py.",
+      "precision": "Terrain-RGB: elevation_m = (R*256 + G)*0.30518043793392846 - 11000; max quantisation error 0.3061 m.",
+      "formats": {
+        "pngFallback": {
+          "file": "bathy_global.png",
+          "bytes": 3510136,
+          "mib": 3.348
+        },
+        "losslessWebP": {
+          "file": "bathy_global.webp",
+          "bytes": 2658760,
+          "mib": 2.536,
+          "pixelIdenticalToPng": true
+        }
+      }
+    },
+    {
+      "id": "red-sea",
+      "deliveryTier": "full",
+      "sceneWindow": "Beat 05 \u2014 both possible Red Sea/Persian Gulf doors out of Africa.",
+      "dimensions": {
+        "width": 2040,
+        "height": 1920
+      },
+      "extent": {
+        "lon0": 28.0,
+        "lon1": 62.0,
+        "lat0": 4.0,
+        "lat1": 36.0
+      },
+      "source": "ETOPO 2022 bedrock at native 60 arc-seconds, cropped by data/build_beat0507.py.",
+      "precision": "Terrain-RGB: elevation_m = (R*256 + G)*0.30518043793392846 - 11000; native 60-arc-second source, max quantisation error 0.3052 m.",
+      "formats": {
+        "pngFallback": {
+          "file": "bathy_redsea.png",
+          "bytes": 5376928,
+          "mib": 5.128
+        },
+        "losslessWebP": {
+          "file": "bathy_redsea.webp",
+          "bytes": 3927514,
+          "mib": 3.746,
+          "pixelIdenticalToPng": true
+        }
+      },
+      "kmPerPixel": 1.853,
+      "maxDecodeErrorM": 0.3052
+    },
+    {
+      "id": "sunda-wallacea",
+      "deliveryTier": "full",
+      "sceneWindow": "Beat 06 \u2014 Sunda, Wallacea and Sahul crossing.",
+      "dimensions": {
+        "width": 3840,
+        "height": 3120
+      },
+      "extent": {
+        "lon0": 92.0,
+        "lon1": 156.0,
+        "lat0": -30.0,
+        "lat1": 22.0
+      },
+      "source": "ETOPO 2022 bedrock at native 60 arc-seconds, cropped by data/build_beat06.py.",
+      "precision": "Terrain-RGB: elevation_m = (R*256 + G)*0.30518043793392846 - 11000; native 60-arc-second source, max quantisation error 0.3052 m.",
+      "formats": {
+        "pngFallback": {
+          "file": "bathy_sunda.png",
+          "bytes": 17127700,
+          "mib": 16.334
+        },
+        "losslessWebP": {
+          "file": "bathy_sunda.webp",
+          "bytes": 12891762,
+          "mib": 12.295,
+          "pixelIdenticalToPng": true
+        }
+      },
+      "kmPerPixel": 1.853,
+      "maxDecodeErrorM": 0.3052
+    },
+    {
+      "id": "europe-west-asia",
+      "deliveryTier": "full",
+      "sceneWindow": "Beat 07 \u2014 Europe and west Asia close orbital view.",
+      "dimensions": {
+        "width": 4320,
+        "height": 1860
+      },
+      "extent": {
+        "lon0": -12.0,
+        "lon1": 60.0,
+        "lat0": 30.0,
+        "lat1": 61.0
+      },
+      "source": "ETOPO 2022 bedrock at native 60 arc-seconds, cropped by data/build_beat0507.py.",
+      "precision": "Terrain-RGB: elevation_m = (R*256 + G)*0.30518043793392846 - 11000; native 60-arc-second source, max quantisation error 0.3052 m.",
+      "formats": {
+        "pngFallback": {
+          "file": "bathy_europe.png",
+          "bytes": 10714802,
+          "mib": 10.218
+        },
+        "losslessWebP": {
+          "file": "bathy_europe.webp",
+          "bytes": 7846440,
+          "mib": 7.483,
+          "pixelIdenticalToPng": true
+        }
+      },
+      "kmPerPixel": 1.853,
+      "maxDecodeErrorM": 0.3052
+    }
+  ]
+}
