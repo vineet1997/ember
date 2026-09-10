@@ -12,7 +12,15 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parent.parent
 MANIFEST = json.loads((ROOT / "data" / "terrain_asset_manifest.json").read_text(encoding="utf-8"))
+PYRAMID_PATH = ROOT / "data" / "terrain_pyramid_manifest.json"
 BASE = "http://127.0.0.1:8899/slice/data/"
+
+FIELDS = list(MANIFEST["fields"])
+if PYRAMID_PATH.exists():
+    pyramid = json.loads(PYRAMID_PATH.read_text(encoding="utf-8"))
+    FIELDS += [{"id": row["id"], "dimensions": row["dimensions"], "formats": {
+        "losslessWebP": row["webp"], "pngFallback": row["png"]}}
+        for row in pyramid["levels"]]
 
 
 with sync_playwright() as playwright:
@@ -33,11 +41,11 @@ with sync_playwright() as playwright:
         rows.push({ id: field.id, webp: await decode(field.formats.losslessWebP.file), png: await decode(field.formats.pngFallback.file) });
       }
       return {webpCanvasSupport, rows};
-    }""", MANIFEST["fields"])
+    }""", FIELDS)
     browser.close()
 
 assert result["webpCanvasSupport"], "target Chromium reports no WebP canvas support"
-for expected, actual in zip(MANIFEST["fields"], result["rows"]):
+for expected, actual in zip(FIELDS, result["rows"]):
     dimensions = expected["dimensions"]
     for fmt in ("webp", "png"):
         assert actual[fmt] == dimensions, (expected["id"], fmt, actual[fmt], dimensions)

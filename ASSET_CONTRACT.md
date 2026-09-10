@@ -21,8 +21,8 @@ visual approximation test.
 
 | Delivery tier | Field | Current use | Extent / resolution | Status |
 |---|---|---|---|---|
-| Initial | Global overview | Far-world fallback for Beats 05–07 and 12 | 180°W–180°E, 90°S–90°N; 2048×1024 | Built |
-| Medium | — | Corridor-level first usable view | — | **Not built** — Phase 2 must derive it from ETOPO, never a rendered image |
+| Initial | Global overview | Whole-world first meaningful state | 180°W–180°E, 90°S–90°N; 1024×512 | Built in Phase 2 |
+| Medium | Red Sea, Sunda/Wallacea, Europe/west Asia | Corridor-level first usable view | 1020×960, 1920×1560, 2160×930 | Built in Phase 2 |
 | Full | Red Sea | Beat 05 | 28–62°E, 4–36°N; 2040×1920 | Built |
 | Full | Sunda / Wallacea | Beat 06 | 92–156°E, 30°S–22°N; 3840×3120 | Built |
 | Full | Europe / west Asia | Beat 07 | 12°W–60°E, 30–61°N; 4320×1860 | Built |
@@ -32,6 +32,22 @@ Every built field is Terrain-RGB derived from ETOPO 2022 bedrock. The decode is
 metadata records a maximum quantisation error of 0.3061 m for the global
 overview and 0.3052 m for each native-resolution corridor. Builders and the
 per-field source/extent/byte records are named in the manifest.
+
+## Phase 2 pyramid
+
+[`data/terrain_pyramid_manifest.json`](data/terrain_pyramid_manifest.json)
+records seven new fields: one 1024×512 global overview plus medium (2×) and
+overview (4×) levels for every corridor. Their lossless WebPs total 9,209,802
+bytes (8.78 MiB). Each is an exact area-average of decoded 16-bit Terrain-RGB
+elevation and then re-encoded; no rendered frame is used as an input.
+
+The validator checks source/output hashes, lossless WebP identity, shelf-area
+change at the film’s sea levels, and the recorded source evidence for the Red
+Sea doors and Wallacea bottleneck. Exact Red Sea door measurements, the 70.5 km
+Wallacea bottleneck, and Beat 07 close relief are explicitly full-only claims.
+The manifest gives a screen-space gate for each lower level: its averaging
+footprint must be under 0.75 screen pixel at the camera pose. Phase 3 must also
+measure the switch pose before using a lower level in the live renderer.
 
 ## Current baseline and selected format
 

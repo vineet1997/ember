@@ -1,0 +1,480 @@
+{
+  "schemaVersion": 1,
+  "source": "ETOPO-derived Terrain-RGB fields already audited in Phase 1; no rendered image is an input.",
+  "representativeFrames": [
+    {
+      "t": 0.28,
+      "field": "red-sea"
+    },
+    {
+      "t": 0.335,
+      "field": "sunda-wallacea"
+    },
+    {
+      "t": 0.404,
+      "field": "europe-west-asia"
+    }
+  ],
+  "fullOnlyClaims": [
+    "Red Sea door bottleneck measurements",
+    "Wallacea minimum 70.5 km bottleneck",
+    "Beat 07 close relief"
+  ],
+  "levels": [
+    {
+      "id": "global-overview-overview",
+      "field": "global-overview",
+      "tier": "overview",
+      "source": "data/bathymetry.png",
+      "sourceSha256": "59e22b96249b7aae8ce14447eb74a9a9fdeaf3809e5b0935a9d88693750b48c6",
+      "derivation": "Decoded 16-bit Terrain-RGB elevation; exact 4x4 area average; re-encoded Terrain-RGB.",
+      "extent": {
+        "lon0": -180.0,
+        "lon1": 180.0,
+        "lat0": -90.0,
+        "lat1": 90.0
+      },
+      "dimensions": {
+        "width": 1024,
+        "height": 512
+      },
+      "precision": {
+        "metresPerQuantisationStep": 0.30518043793392846,
+        "extraAverageRoundingErrorM": 0.1526
+      },
+      "png": {
+        "file": "bathy_global_overview.png",
+        "bytes": 917005,
+        "sha256": "41f1e079f6f0b843acd9e9f2fc8e0afda63133af1391c5974dd09210117e8fbf"
+      },
+      "webp": {
+        "file": "bathy_global_overview.webp",
+        "bytes": 690778,
+        "pixelIdenticalToPng": true
+      },
+      "coastlineAgainstFull": {
+        "0.0": {
+          "changedHighGridFraction": 0.012534,
+          "landFractionDeltaPercent": 0.081
+        },
+        "-68.3": {
+          "changedHighGridFraction": 0.0124,
+          "landFractionDeltaPercent": 0.185
+        },
+        "-73.9": {
+          "changedHighGridFraction": 0.012434,
+          "landFractionDeltaPercent": 0.204
+        },
+        "-77.0": {
+          "changedHighGridFraction": 0.012475,
+          "landFractionDeltaPercent": 0.216
+        },
+        "-85.0": {
+          "changedHighGridFraction": 0.012538,
+          "landFractionDeltaPercent": 0.234
+        },
+        "-131.0": {
+          "changedHighGridFraction": 0.012552,
+          "landFractionDeltaPercent": 0.313
+        }
+      },
+      "screenSelection": {
+        "maximumCoastDisagreementScreenPx": 0.75,
+        "averagingFootprintFullTexels": 2.828,
+        "maximumProjectedFullTexelPx": 0.26521,
+        "rule": "Use only if the projected full-resolution terrain texel is at or below maximumProjectedFullTexelPx; Phase 3 must also test the measured coast at its switch pose."
+      },
+      "claimScope": "Whole-world opening fallback; no local geographic claim is permitted."
+    },
+    {
+      "id": "red-sea-medium",
+      "field": "red-sea",
+      "tier": "medium",
+      "source": "slice/data/bathy_redsea.png",
+      "sourceSha256": "ee578c903553e416a8ae628e3b163f9f54d03d1d6a123950aca1134b9d8ddc3a",
+      "derivation": "Decoded 16-bit Terrain-RGB elevation; exact 2x2 area average; re-encoded Terrain-RGB.",
+      "extent": {
+        "lon0": 28.0,
+        "lon1": 62.0,
+        "lat0": 4.0,
+        "lat1": 36.0
+      },
+      "dimensions": {
+        "width": 1020,
+        "height": 960
+      },
+      "precision": {
+        "metresPerQuantisationStep": 0.30518043793392846,
+        "extraAverageRoundingErrorM": 0.1526
+      },
+      "png": {
+        "file": "bathy_redsea_medium.png",
+        "bytes": 1446863,
+        "sha256": "5912aab1b2a443f926ab90b12386a00e7e4ef94826fd3da32ba29c40f8896298"
+      },
+      "webp": {
+        "file": "bathy_redsea_medium.webp",
+        "bytes": 1080902,
+        "pixelIdenticalToPng": true
+      },
+      "coastlineAgainstFull": {
+        "0.0": {
+          "changedHighGridFraction": 0.002289,
+          "landFractionDeltaPercent": 0.088
+        },
+        "-68.3": {
+          "changedHighGridFraction": 0.001798,
+          "landFractionDeltaPercent": 0.038
+        },
+        "-73.9": {
+          "changedHighGridFraction": 0.001687,
+          "landFractionDeltaPercent": 0.046
+        },
+        "-77.0": {
+          "changedHighGridFraction": 0.001636,
+          "landFractionDeltaPercent": 0.047
+        },
+        "-85.0": {
+          "changedHighGridFraction": 0.001488,
+          "landFractionDeltaPercent": 0.053
+        },
+        "-131.0": {
+          "changedHighGridFraction": 0.001004,
+          "landFractionDeltaPercent": 0.042
+        }
+      },
+      "screenSelection": {
+        "maximumCoastDisagreementScreenPx": 0.75,
+        "averagingFootprintFullTexels": 1.414,
+        "maximumProjectedFullTexelPx": 0.53041,
+        "rule": "Use only if the projected full-resolution terrain texel is at or below maximumProjectedFullTexelPx; Phase 3 must also test the measured coast at its switch pose."
+      },
+      "claimScope": "Beat 05; broad shelf only below full resolution. Exact door bottlenecks require full."
+    },
+    {
+      "id": "red-sea-overview",
+      "field": "red-sea",
+      "tier": "overview",
+      "source": "slice/data/bathy_redsea.png",
+      "sourceSha256": "ee578c903553e416a8ae628e3b163f9f54d03d1d6a123950aca1134b9d8ddc3a",
+      "derivation": "Decoded 16-bit Terrain-RGB elevation; exact 4x4 area average; re-encoded Terrain-RGB.",
+      "extent": {
+        "lon0": 28.0,
+        "lon1": 62.0,
+        "lat0": 4.0,
+        "lat1": 36.0
+      },
+      "dimensions": {
+        "width": 510,
+        "height": 480
+      },
+      "precision": {
+        "metresPerQuantisationStep": 0.30518043793392846,
+        "extraAverageRoundingErrorM": 0.1526
+      },
+      "png": {
+        "file": "bathy_redsea_overview.png",
+        "bytes": 387983,
+        "sha256": "a812b8ca559fdd39adc578c30c232ba08c1d030f523d3d4b7dd8f7ee13be62c1"
+      },
+      "webp": {
+        "file": "bathy_redsea_overview.webp",
+        "bytes": 289992,
+        "pixelIdenticalToPng": true
+      },
+      "coastlineAgainstFull": {
+        "0.0": {
+          "changedHighGridFraction": 0.003737,
+          "landFractionDeltaPercent": 0.093
+        },
+        "-68.3": {
+          "changedHighGridFraction": 0.00382,
+          "landFractionDeltaPercent": 0.111
+        },
+        "-73.9": {
+          "changedHighGridFraction": 0.003623,
+          "landFractionDeltaPercent": 0.127
+        },
+        "-77.0": {
+          "changedHighGridFraction": 0.003514,
+          "landFractionDeltaPercent": 0.128
+        },
+        "-85.0": {
+          "changedHighGridFraction": 0.003306,
+          "landFractionDeltaPercent": 0.134
+        },
+        "-131.0": {
+          "changedHighGridFraction": 0.002362,
+          "landFractionDeltaPercent": 0.123
+        }
+      },
+      "screenSelection": {
+        "maximumCoastDisagreementScreenPx": 0.75,
+        "averagingFootprintFullTexels": 2.828,
+        "maximumProjectedFullTexelPx": 0.26521,
+        "rule": "Use only if the projected full-resolution terrain texel is at or below maximumProjectedFullTexelPx; Phase 3 must also test the measured coast at its switch pose."
+      },
+      "claimScope": "Beat 05; broad shelf only below full resolution. Exact door bottlenecks require full."
+    },
+    {
+      "id": "sunda-wallacea-medium",
+      "field": "sunda-wallacea",
+      "tier": "medium",
+      "source": "slice/data/bathy_sunda.png",
+      "sourceSha256": "d39aabed6082dfb10c8785496d8fa634a51210669c3789a678401d6b00420a09",
+      "derivation": "Decoded 16-bit Terrain-RGB elevation; exact 2x2 area average; re-encoded Terrain-RGB.",
+      "extent": {
+        "lon0": 92.0,
+        "lon1": 156.0,
+        "lat0": -30.0,
+        "lat1": 22.0
+      },
+      "dimensions": {
+        "width": 1920,
+        "height": 1560
+      },
+      "precision": {
+        "metresPerQuantisationStep": 0.30518043793392846,
+        "extraAverageRoundingErrorM": 0.1526
+      },
+      "png": {
+        "file": "bathy_sunda_medium.png",
+        "bytes": 4650082,
+        "sha256": "3493091d9abb994c8eedc860481ce86417575b8c4a0d4ad5ea47035984cf5be8"
+      },
+      "webp": {
+        "file": "bathy_sunda_medium.webp",
+        "bytes": 3484110,
+        "pixelIdenticalToPng": true
+      },
+      "coastlineAgainstFull": {
+        "0.0": {
+          "changedHighGridFraction": 0.003455,
+          "landFractionDeltaPercent": 0.065
+        },
+        "-68.3": {
+          "changedHighGridFraction": 0.003887,
+          "landFractionDeltaPercent": 0.114
+        },
+        "-73.9": {
+          "changedHighGridFraction": 0.003606,
+          "landFractionDeltaPercent": 0.12
+        },
+        "-77.0": {
+          "changedHighGridFraction": 0.003434,
+          "landFractionDeltaPercent": 0.12
+        },
+        "-85.0": {
+          "changedHighGridFraction": 0.003112,
+          "landFractionDeltaPercent": 0.123
+        },
+        "-131.0": {
+          "changedHighGridFraction": 0.002066,
+          "landFractionDeltaPercent": 0.114
+        }
+      },
+      "screenSelection": {
+        "maximumCoastDisagreementScreenPx": 0.75,
+        "averagingFootprintFullTexels": 1.414,
+        "maximumProjectedFullTexelPx": 0.53041,
+        "rule": "Use only if the projected full-resolution terrain texel is at or below maximumProjectedFullTexelPx; Phase 3 must also test the measured coast at its switch pose."
+      },
+      "claimScope": "Beat 06; broad connectivity only below full resolution. The 70.5 km bottleneck requires full."
+    },
+    {
+      "id": "sunda-wallacea-overview",
+      "field": "sunda-wallacea",
+      "tier": "overview",
+      "source": "slice/data/bathy_sunda.png",
+      "sourceSha256": "d39aabed6082dfb10c8785496d8fa634a51210669c3789a678401d6b00420a09",
+      "derivation": "Decoded 16-bit Terrain-RGB elevation; exact 4x4 area average; re-encoded Terrain-RGB.",
+      "extent": {
+        "lon0": 92.0,
+        "lon1": 156.0,
+        "lat0": -30.0,
+        "lat1": 22.0
+      },
+      "dimensions": {
+        "width": 960,
+        "height": 780
+      },
+      "precision": {
+        "metresPerQuantisationStep": 0.30518043793392846,
+        "extraAverageRoundingErrorM": 0.1526
+      },
+      "png": {
+        "file": "bathy_sunda_overview.png",
+        "bytes": 1248820,
+        "sha256": "4be1d49b699d1a11b78d1830d2282176817541a99b805a13ac9c3fa57ede4bbf"
+      },
+      "webp": {
+        "file": "bathy_sunda_overview.webp",
+        "bytes": 930910,
+        "pixelIdenticalToPng": true
+      },
+      "coastlineAgainstFull": {
+        "0.0": {
+          "changedHighGridFraction": 0.005954,
+          "landFractionDeltaPercent": 0.087
+        },
+        "-68.3": {
+          "changedHighGridFraction": 0.007818,
+          "landFractionDeltaPercent": 0.317
+        },
+        "-73.9": {
+          "changedHighGridFraction": 0.007375,
+          "landFractionDeltaPercent": 0.339
+        },
+        "-77.0": {
+          "changedHighGridFraction": 0.007132,
+          "landFractionDeltaPercent": 0.344
+        },
+        "-85.0": {
+          "changedHighGridFraction": 0.006647,
+          "landFractionDeltaPercent": 0.346
+        },
+        "-131.0": {
+          "changedHighGridFraction": 0.00491,
+          "landFractionDeltaPercent": 0.333
+        }
+      },
+      "screenSelection": {
+        "maximumCoastDisagreementScreenPx": 0.75,
+        "averagingFootprintFullTexels": 2.828,
+        "maximumProjectedFullTexelPx": 0.26521,
+        "rule": "Use only if the projected full-resolution terrain texel is at or below maximumProjectedFullTexelPx; Phase 3 must also test the measured coast at its switch pose."
+      },
+      "claimScope": "Beat 06; broad connectivity only below full resolution. The 70.5 km bottleneck requires full."
+    },
+    {
+      "id": "europe-west-asia-medium",
+      "field": "europe-west-asia",
+      "tier": "medium",
+      "source": "slice/data/bathy_europe.png",
+      "sourceSha256": "6024066144ce560d40e9f998823e573b6aaf490feaede671f4919c514176a1f9",
+      "derivation": "Decoded 16-bit Terrain-RGB elevation; exact 2x2 area average; re-encoded Terrain-RGB.",
+      "extent": {
+        "lon0": -12.0,
+        "lon1": 60.0,
+        "lat0": 30.0,
+        "lat1": 61.0
+      },
+      "dimensions": {
+        "width": 2160,
+        "height": 930
+      },
+      "precision": {
+        "metresPerQuantisationStep": 0.30518043793392846,
+        "extraAverageRoundingErrorM": 0.1526
+      },
+      "png": {
+        "file": "bathy_europe_medium.png",
+        "bytes": 2869883,
+        "sha256": "796f70fa5d1144e36842d39ced9e7ff00652cfcc271b8e65cd16fae153d1823c"
+      },
+      "webp": {
+        "file": "bathy_europe_medium.webp",
+        "bytes": 2160254,
+        "pixelIdenticalToPng": true
+      },
+      "coastlineAgainstFull": {
+        "0.0": {
+          "changedHighGridFraction": 0.00421,
+          "landFractionDeltaPercent": 0.147
+        },
+        "-68.3": {
+          "changedHighGridFraction": 0.002184,
+          "landFractionDeltaPercent": 0.01
+        },
+        "-73.9": {
+          "changedHighGridFraction": 0.002157,
+          "landFractionDeltaPercent": 0.008
+        },
+        "-77.0": {
+          "changedHighGridFraction": 0.00212,
+          "landFractionDeltaPercent": 0.006
+        },
+        "-85.0": {
+          "changedHighGridFraction": 0.002076,
+          "landFractionDeltaPercent": 0.007
+        },
+        "-131.0": {
+          "changedHighGridFraction": 0.00192,
+          "landFractionDeltaPercent": 0.048
+        }
+      },
+      "screenSelection": {
+        "maximumCoastDisagreementScreenPx": 0.75,
+        "averagingFootprintFullTexels": 1.414,
+        "maximumProjectedFullTexelPx": 0.53041,
+        "rule": "Use only if the projected full-resolution terrain texel is at or below maximumProjectedFullTexelPx; Phase 3 must also test the measured coast at its switch pose."
+      },
+      "claimScope": "Beat 07; broad shelf and relief only below full resolution."
+    },
+    {
+      "id": "europe-west-asia-overview",
+      "field": "europe-west-asia",
+      "tier": "overview",
+      "source": "slice/data/bathy_europe.png",
+      "sourceSha256": "6024066144ce560d40e9f998823e573b6aaf490feaede671f4919c514176a1f9",
+      "derivation": "Decoded 16-bit Terrain-RGB elevation; exact 4x4 area average; re-encoded Terrain-RGB.",
+      "extent": {
+        "lon0": -12.0,
+        "lon1": 60.0,
+        "lat0": 30.0,
+        "lat1": 61.0
+      },
+      "dimensions": {
+        "width": 1080,
+        "height": 465
+      },
+      "precision": {
+        "metresPerQuantisationStep": 0.30518043793392846,
+        "extraAverageRoundingErrorM": 0.1526
+      },
+      "png": {
+        "file": "bathy_europe_overview.png",
+        "bytes": 761805,
+        "sha256": "f923e26d2b7fb8469e155a26610351f58b5e1d4cfe314904e19ea07e4460b5db"
+      },
+      "webp": {
+        "file": "bathy_europe_overview.webp",
+        "bytes": 572856,
+        "pixelIdenticalToPng": true
+      },
+      "coastlineAgainstFull": {
+        "0.0": {
+          "changedHighGridFraction": 0.007511,
+          "landFractionDeltaPercent": 0.251
+        },
+        "-68.3": {
+          "changedHighGridFraction": 0.004308,
+          "landFractionDeltaPercent": 0.011
+        },
+        "-73.9": {
+          "changedHighGridFraction": 0.004221,
+          "landFractionDeltaPercent": 0.002
+        },
+        "-77.0": {
+          "changedHighGridFraction": 0.004163,
+          "landFractionDeltaPercent": 0.005
+        },
+        "-85.0": {
+          "changedHighGridFraction": 0.004068,
+          "landFractionDeltaPercent": 0.035
+        },
+        "-131.0": {
+          "changedHighGridFraction": 0.00392,
+          "landFractionDeltaPercent": 0.135
+        }
+      },
+      "screenSelection": {
+        "maximumCoastDisagreementScreenPx": 0.75,
+        "averagingFootprintFullTexels": 2.828,
+        "maximumProjectedFullTexelPx": 0.26521,
+        "rule": "Use only if the projected full-resolution terrain texel is at or below maximumProjectedFullTexelPx; Phase 3 must also test the measured coast at its switch pose."
+      },
+      "claimScope": "Beat 07; broad shelf and relief only below full resolution."
+    }
+  ]
+}
