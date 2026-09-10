@@ -46,8 +46,32 @@ change at the film’s sea levels, and the recorded source evidence for the Red
 Sea doors and Wallacea bottleneck. Exact Red Sea door measurements, the 70.5 km
 Wallacea bottleneck, and Beat 07 close relief are explicitly full-only claims.
 The manifest gives a screen-space gate for each lower level: its averaging
-footprint must be under 0.75 screen pixel at the camera pose. Phase 3 must also
-measure the switch pose before using a lower level in the live renderer.
+footprint must be under 0.75 screen pixel at the camera pose. Phase 3 uses only
+one field per frame: full at the close and matching cuts, medium elsewhere,
+and the global overview when neither corridor field is ready. It never blends
+two resolutions, so it cannot draw duplicate or interpolated coasts during a
+refinement. The global fallback is the same field bound to both shader inputs,
+not an image-derived substitute.
+
+## Phase 3 progressive delivery
+
+The film blocks only on `film.json` and the 1024×512 global overview. It
+feature-detects WebP, requests it first, and retries the retained PNG only when
+the WebP request or decode fails. The opening corridor medium field begins in
+parallel but is optional: the first world frame can use the overview while it
+arrives.
+
+After startup, the queue requests the current corridor’s medium field, then
+the nearest upcoming corridor media, before any full fields. Network fetching
+continues while an earlier field waits for its idle GPU conversion. A scroll
+jump may cancel an obsolete *full* request; it never discards the current
+medium field. A completed full field is selected only when the scene is not in
+a matching cut, preserving a single authoritative coastline per frame.
+
+`window.EMBER.terrainDelivery()` and the director panel expose each field as
+`full`, `medium`, or `global fallback`, plus active and queued work. The
+automated failure path aborts two corridor families and confirms that Beat 06
+still renders from the global field and reports that fallback honestly.
 
 ## Current baseline and selected format
 
@@ -64,12 +88,8 @@ bound to **36.59 seconds**. That is material but still misses the experience
 budget, which is why a terrain pyramid and prioritised delivery remain Phase 2
 and Phase 3 work.
 
-The PNG source files remain the explicit fallback. Phase 1 intentionally does
-not change the film loader: Phase 3 must feature-detect WebP before choosing
-its URL, fall back to the retained PNG when unavailable, and never mix an
-in-flight old field with a refined field at a camera pose where their coasts
-disagree. The browser-format contract confirms that target Chromium decodes
-both formats at every expected dimension.
+The PNG source files remain the explicit fallback. The browser-format contract
+confirms that target Chromium decodes both formats at every expected dimension.
 
 Lossy WebP, AVIF and image-derived screenshots are rejected for elevation
 delivery unless a future candidate proves the decoded Terrain-RGB measurement
@@ -92,6 +112,11 @@ If the initial overview cannot arrive, the reader must receive a clear,
 non-technical fallback state. If it does arrive, the film should resolve rather
 than expose loading mechanics. The next phase must report the selected field,
 its resolution level and whether the global fallback appeared.
+
+Phase 3 verifies ordering, format fallback, cancellation scope, renderer
+continuity, and the failure state in headless Chromium. It does **not** claim
+the three time budgets above: those still require a visible-browser, cold-cache
+Slow 4G trace at the target display and a representative switch-pose capture.
 
 ## Benchmark result
 

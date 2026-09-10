@@ -61,8 +61,11 @@ var MAIN_VAO = null, DECODE_PASS = null;
 /* The three frame tiles, by id. Only ONE is bound at a time - see section 7,
    tileFor(t): the camera is only ever in one of them, and swapping on the CPU
    keeps the shader at two elevation fetches instead of eight. */
-var TEX = { sunda: null, redsea: null, europe: null };
-var TXO = { sunda: null, redsea: null, europe: null };   /* the decoded GL textures */
+/* Each corridor has a first-usable medium field and its existing full field.
+   Keeping the levels under the same named corridor means a delivery decision
+   cannot alter the geographical box the shader receives. */
+var TEX = { sunda: {}, redsea: {}, europe: {} };
+var TXO = { sunda: {}, redsea: {}, europe: {} };          /* decoded GL textures */
 /* The background tiles arrive after the film. Their one-time conversion has
    already produced a felt hitch on Slow-4G, but the first benchmark established
    only that the float loop is not all of it. Keep the phases separate: a clock
@@ -84,7 +87,7 @@ window.addEventListener("keydown", function (e) {
    finished when it returns instead of being 0.9s into a fade. */
 if (/[?&]still=1/.test(location.search)) document.body.classList.add("still");
 
-var steps = 0, STEPS = 3, LOAD_FAILED = false;
+var steps = 0, STEPS = 2, LOAD_FAILED = false;
 function step(msg) {
   /* A LATER SUCCESS MUST NOT ERASE AN EARLIER FAILURE. Five parallel loads all
      wrote into this one line, so a tile that failed said so only until the next
@@ -104,17 +107,25 @@ function step(msg) {
    1 Mbit one - and two of those tiles are for beats the reader cannot reach for
    another several thousand words of scroll.
 
-   So the blocking set is three files: the record, the globe, and the ONE tile
-   the opening frame stands on. The other two are fetched after the film is
-   running, nearest first. Until one arrives its beat draws from the global
+   So the blocking set is the record and the globe. The opening corridor starts
+   beside them, but never holds the first world frame hostage. The other tiles
+   are fetched after the film is running, nearest first. Until one arrives its
+   beat draws from the global
    texture instead, which is a resolution change and never a value change - see
    bindTile(), where the fallback is arranged so the shader mixes the global
    field with ITSELF and the frame is that field exactly.                    */
+function terrainAsset(stem) {
+  return { webp: "data/" + stem + ".webp", png: "data/" + stem + ".png" };
+}
+var GLOBE = terrainAsset("bathy_global_overview");
 var TILES = {
-  redsea: { src: "data/bathy_redsea.png", msg: "both doors out of Africa" },
-  sunda:  { src: "data/bathy_sunda.png",  msg: "Wallacea, 1.85 km per pixel" },
-  europe: { src: "data/bathy_europe.png", msg: "Europe and west Asia" }
+  redsea: { msg: "both doors out of Africa", levels: { medium: terrainAsset("bathy_redsea_medium"), full: terrainAsset("bathy_redsea") } },
+  sunda:  { msg: "Wallacea", levels: { medium: terrainAsset("bathy_sunda_medium"), full: terrainAsset("bathy_sunda") } },
+  europe: { msg: "Europe and west Asia", levels: { medium: terrainAsset("bathy_europe_medium"), full: terrainAsset("bathy_europe") } }
 };
+var WEBP = document.createElement("canvas").toDataURL("image/webp").indexOf("data:image/webp") === 0;
+var TERRAIN = { queue: [], active: null, converting: [], state: {}, fallback: false, requested: [] };
+Object.keys(TILES).forEach(function (k) { TERRAIN.state[k] = { medium: "new", full: "new" }; });
 
 /* Which tile the film will open on: the hash if there is one, otherwise
    whatever scroll position the browser has restored. A wrong guess is not an
@@ -127,19 +138,30 @@ function entryTile() {
 
 var pRecord = fetch("data/film.json").then(function (r) { return r.json(); })
   .then(function (j) { D = j; step("the record"); });
-var pGlobe = image("data/bathy_global.png")
-  .then(function (i) { TEXG = i; step("the earth, 2048 x 1024"); });
+var pGlobe = image(GLOBE)
+  .then(function (i) { TEXG = i; step("the earth, 1024 x 512"); });
 /* The record decides which tile is first - it carries tSpan and the beat table
    - so this one waits on it. film.json is 120 KB and the globe is coming down
    through that wait, so the cost is one round trip and not one download. */
 var pFirst = pRecord.then(function () {
   var k = entryTile();
-  return image(TILES[k].src).then(function (i) { TEX[k] = i; step(TILES[k].msg); });
+  TERRAIN.state[k].medium = "downloading";
+  return image(TILES[k].levels.medium).then(function (i) {
+    TEX[k].medium = i; TERRAIN.state[k].medium = "downloaded";
+    /* It may finish before or after initGL(). In the first case initGL picks
+       it up; in the second, give it the same idle conversion as every other
+       background terrain field. */
+    if (gl) { TERRAIN.converting.push({ tile: k, level: "medium" }); convertTerrain(); }
+  }, function () {
+    /* The overview is still an honest field. A failed optional corridor must
+       not replace the blocking globe failure message or trap the reader. */
+    TERRAIN.state[k].medium = "failed";
+  });
 });
 
-Promise.all([pRecord, pGlobe, pFirst]).then(function () {
+Promise.all([pRecord, pGlobe]).then(function () {
   start();
-  loadRest();
+  queueTerrain(entryTile());
 }, assetFailure);
 
 /* AN ASSET DID NOT ARRIVE, and the reader is looking at an opaque black page.
@@ -172,42 +194,63 @@ function assetFailure(e) {
    promise that it happens at all. That is a mitigation, not a guarantee, and
    the trade is the honest one: one possible hitch, once per tile, against
    twenty-nine seconds of black screen before the first frame. */
-function loadRest() {
+/* Phase 3 delivery: fetching keeps moving while an earlier image waits for an
+   idle conversion. A large scroll jump can abort only an obsolete full fetch;
+   a current medium field is never sacrificed. */
+function queueTerrain(current) {
   if (!gl) return;
-  var rest = Object.keys(TILES).filter(function (k) { return !TEX[k]; });
-  rest.sort(function (a, b) { return tileReach(a) - tileReach(b); });
-  (function next() {
-    var k = rest.shift();
-    if (!k) return;
-    /* A slow network can hold this here for minutes. Say which tile is still
-       arriving instead of leaving the reader to mistake blank phase clocks for
-       a completed zero-cost conversion. The clocks begin only after image(). */
-    TILE_TIMING = { tile: k, state: "downloading in background",
-                    imageDecode: null, readback: null, terrainDecode: null,
-                    upload: null, mipmap: null, total: null };
-    image(TILES[k].src).then(function (i) {
-      TEX[k] = i;
-      TILE_TIMING = { tile: k, state: "waiting for an idle gap",
-                      imageDecode: null, readback: null, terrainDecode: null,
-                      upload: null, mipmap: null, total: null };
-      idle(function () {
-        var started = performance.now();
-        TILE_TIMING.state = "measuring conversion";
-        gl.activeTexture(gl.TEXTURE1);
-        TXO[k] = elevTexture(TEX[k], gl.CLAMP_TO_EDGE, D.measured.tiles.sunda, TILE_TIMING);
-        TILE_TIMING.total = performance.now() - started;
-        TILE_TIMING.state = "complete";
-        /* elevTexture leaves ITS texture bound to the unit; drop the cached
-           binding so the next frame re-states the box and the size. */
-        boundTile = "";
-        next();
-      });
-    }, function () {
-      /* A background tile that never arrives is not fatal - its beat draws from
-         the globe - but it must not stop the tile behind it. */
-      next();
-    });
-  })();
+  var order = Object.keys(TILES).sort(function (a, b) {
+    return (a === current ? -10 : tileReach(a)) - (b === current ? -10 : tileReach(b));
+  });
+  var wanted = [];
+  order.forEach(function (k) { wanted.push({ tile: k, level: "medium" }); });
+  order.forEach(function (k) { wanted.push({ tile: k, level: "full" }); });
+  wanted.forEach(function (task, priority) {
+    var state = TERRAIN.state[task.tile][task.level];
+    if (state === "new") {
+      task.priority = priority; TERRAIN.queue.push(task); TERRAIN.state[task.tile][task.level] = "queued";
+    }
+  });
+  TERRAIN.queue.sort(function (a, b) { return a.priority - b.priority; });
+  var next = TERRAIN.queue[0];
+  if (TERRAIN.active && next && TERRAIN.active.level === "full" && next.priority < TERRAIN.active.priority) {
+    TERRAIN.active.controller.abort();
+  }
+  pumpTerrain();
+}
+
+function pumpTerrain() {
+  if (TERRAIN.active || !TERRAIN.queue.length) return;
+  var task = TERRAIN.queue.shift(), controller = new AbortController();
+  TERRAIN.active = { tile: task.tile, level: task.level, priority: task.priority, controller: controller };
+  TERRAIN.state[task.tile][task.level] = "downloading";
+  TILE_TIMING = { tile: task.tile + " " + task.level, state: "downloading in background",
+                  imageDecode: null, readback: null, terrainDecode: null, upload: null, mipmap: null, total: null };
+  image(TILES[task.tile].levels[task.level], controller.signal).then(function (img) {
+    TEX[task.tile][task.level] = img; TERRAIN.state[task.tile][task.level] = "downloaded";
+    TERRAIN.converting.push(task); TERRAIN.active = null;
+    /* The next small necessary request starts BEFORE GPU preparation. */
+    pumpTerrain(); convertTerrain();
+  }, function (e) {
+    TERRAIN.active = null;
+    if (e && e.name === "AbortError") TERRAIN.state[task.tile][task.level] = "new";
+    else TERRAIN.state[task.tile][task.level] = "failed";
+    pumpTerrain();
+  });
+}
+
+function convertTerrain() {
+  var task = TERRAIN.converting.shift(); if (!task) return;
+  TERRAIN.state[task.tile][task.level] = "waiting for an idle gap";
+  idle(function () {
+    var timing = TILE_TIMING = { tile: task.tile + " " + task.level, state: "measuring conversion",
+      imageDecode: null, readback: null, terrainDecode: null, upload: null, mipmap: null, total: null };
+    var started = performance.now(); gl.activeTexture(gl.TEXTURE1);
+    TXO[task.tile][task.level] = elevTexture(TEX[task.tile][task.level], gl.CLAMP_TO_EDGE, D.measured.tiles.sunda, timing);
+    timing.total = performance.now() - started; timing.state = "complete";
+    TERRAIN.state[task.tile][task.level] = "ready"; boundTile = "";
+    convertTerrain();
+  });
 }
 
 /* the nearest t at which this tile is the one the film would bind, measured
@@ -232,16 +275,41 @@ function idle(fn) {
    2048-wide globe, which is a true picture of the wrong resolution and would
    silently become the atlas. */
 function tilesReady() {
-  return Object.keys(TILES).every(function (k) { return !!TXO[k]; });
+  return Object.keys(TILES).every(function (k) { return !!TXO[k].full; });
 }
 
-function image(src) {
-  return new Promise(function (res, rej) {
-    var i = new Image();
-    i.onload = function () { res(i); };
-    i.onerror = function () { rej(new Error("could not load " + src)); };
-    i.src = src;
+function terrainDelivery() {
+  var levels = {};
+  Object.keys(TILES).forEach(function (k) {
+    levels[k] = TXO[k].full ? "full" : TXO[k].medium ? "medium" : "global fallback";
   });
+  return { levels: levels, fallbackAppeared: TERRAIN.fallback,
+           active: TERRAIN.active && { tile: TERRAIN.active.tile, level: TERRAIN.active.level },
+           queued: TERRAIN.queue.map(function (x) { return x.tile + " " + x.level; }) };
+}
+
+function image(asset, signal) {
+  var urls = WEBP ? [asset.webp, asset.png] : [asset.png];
+  function attempt(i) {
+    return fetch(urls[i], { signal: signal }).then(function (r) {
+      if (!r.ok) throw new Error("could not load " + urls[i]); return r.blob();
+    }).then(function (blob) {
+      return new Promise(function (res, rej) {
+        var img = new Image(), url = URL.createObjectURL(blob);
+        img.onload = function () { URL.revokeObjectURL(url); res(img); };
+        img.onerror = function () { URL.revokeObjectURL(url); rej(new Error("could not decode " + urls[i])); };
+        img.src = url;
+      });
+    }).catch(function (e) {
+      if (e && e.name === "AbortError") throw e;
+      if (i + 1 < urls.length) return attempt(i + 1);
+      /* Browser fetch errors often say only “Failed to fetch”. Keep the asset
+         name in the reader-facing failure so the cause cannot be erased by an
+         unrelated optional request. */
+      throw new Error("could not load " + urls[i] + ": " + String(e && e.message || e));
+    });
+  }
+  return attempt(0);
 }
 
 /* ═══ 2 · THE TIME CURVE  (Laws 01 and 05) ═══════════════════════════════ */
@@ -1133,11 +1201,14 @@ function initGL() {
      same reason the stencil plate is built at load. Only the binding changes
      per frame, and a binding is free.
 
-     ONLY THE TILES THAT HAVE ARRIVED. The other two are uploaded by loadRest()
-     as they land, in an idle callback, for the reason above. */
+     ONLY THE FIELDS THAT HAVE ARRIVED. The rest are uploaded by the Phase 3
+     delivery queue as they land, in an idle callback, for the reason above. */
   gl.activeTexture(gl.TEXTURE1);
   Object.keys(TEX).forEach(function (k) {
-    if (TEX[k]) TXO[k] = elevTexture(TEX[k], gl.CLAMP_TO_EDGE, any);
+    if (TEX[k].medium) {
+      TXO[k].medium = elevTexture(TEX[k].medium, gl.CLAMP_TO_EDGE, any);
+      TERRAIN.state[k].medium = "ready";
+    }
   });
   gl.uniform1i(U.uTile, 1);
 
@@ -1183,19 +1254,26 @@ var boundTile = "";
 
    The key carries the pending state, so the arrival of a tile rebinds instead
    of being cached out. */
-function bindTile(name) {
-  var key = (TXO[name] ? "" : "~") + name;
+function bindTile(name, s) {
+  /* An atomic bind replaces one elevation field with another; it never
+     crossfades two coastlines. Do not refine during the ground/orbital match
+     cut, where either field could be read as a second edge. */
+  var level = TXO[name].full && (s.cut === 0 || s.cut === 1) ? "full" :
+              TXO[name].medium ? "medium" : "global";
+  var key = level + ":" + name;
   if (key === boundTile) return;
   gl.activeTexture(gl.TEXTURE1);
-  if (TXO[name]) {
+  if (level !== "global") {
     var tl = D.measured.tiles[name];
-    gl.bindTexture(gl.TEXTURE_2D, TXO[name]);
+    var img = TEX[name][level];
+    gl.bindTexture(gl.TEXTURE_2D, TXO[name][level]);
     gl.uniform4f(U.uBox, tl.lon0, tl.lon1, tl.lat0, tl.lat1);
-    gl.uniform2f(U.uTileSize, tl.w, tl.h);
+    gl.uniform2f(U.uTileSize, img.width, img.height);
   } else {
     gl.bindTexture(gl.TEXTURE_2D, TXG);
     gl.uniform4f(U.uBox, -180, 180, -90, 90);
     gl.uniform2f(U.uTileSize, TEXG.width, TEXG.height);
+    TERRAIN.fallback = true;
   }
   boundTile = key;
 }
@@ -1203,7 +1281,8 @@ function bindTile(name) {
 function drawEarth(s, F) {
   var chill = s.chill;                       /* computed in stateFor - see there */
 
-  bindTile(s.tile);
+  queueTerrain(s.tile);
+  bindTile(s.tile, s);
 
   gl.uniform2f(U.uRes, earth.width, earth.height);
   gl.uniform1f(U.uSea, s.sea);
@@ -3745,8 +3824,12 @@ function panel(s) {
   $("p-pale").innerHTML = s.paleRGB === null
     ? '<span style="color:#647C99">not in the palette</span>'
     : pale + " of " + D.measured.pale.points.length + " lit  ·  rgb(" + s.paleRGB + ")";
-  $("p-tile").textContent = s.tile +
-    (TXO[s.tile] ? "" : "  ·  in flight, drawing from the globe");
+  var level = TXO[s.tile].full ? "full" : TXO[s.tile].medium ? "medium" : "global fallback";
+  $("p-tile").textContent = s.tile + "  ·  " + level +
+    (level === "global fallback" ? "  ·  in flight" : "");
+  var delivery = terrainDelivery();
+  $("p-delivery").textContent = delivery.fallbackAppeared ? "global fallback appeared" :
+    (delivery.active ? delivery.active.tile + " " + delivery.active.level + " downloading" : "all requested levels settled");
 
   var f = frameStats();
   $("p-frame").innerHTML = f
@@ -3946,6 +4029,7 @@ function start() {
                    ROUTES: ROUTES, tileFor: tileFor, renderAt: renderAt, bench: bench,
                    tilesReady: tilesReady, readerCopy: readerCopy,
                    tileTiming: function () { return Object.assign({}, TILE_TIMING); },
+                   terrainDelivery: terrainDelivery,
                    independence: independence,
                    /* "reduced motion means stop moving" is a claim about the
                       loop, not about a panel, so the loop is askable. */

@@ -136,6 +136,7 @@ def cmd_verify(a):
         # getImageData() first.
         settle(page)
         terrain = page.evaluate("() => window.EMBER.tileTiming()")
+        delivery = page.evaluate("() => window.EMBER.terrainDelivery()")
         gpu_ok = (terrain.get("state") == "complete" and
                   terrain.get("path") == "gpu" and
                   terrain.get("readback") is None and
@@ -147,6 +148,9 @@ def cmd_verify(a):
         if not gpu_ok:
             fails.append("the deferred terrain tile did not use the GPU conversion route: %r"
                          % terrain)
+        if any(level != "full" for level in delivery["levels"].values()):
+            fails.append("normal delivery did not settle every corridor at full resolution: %r"
+                         % delivery)
 
     # ── the two background tiles, aborted ────────────────────────────────
     # 1280x800 exactly, which is the smallest viewport the gate lets through -
@@ -163,7 +167,7 @@ def cmd_verify(a):
           const px = x.getImageData(0, 0, over.width, over.height).data;
           let ink = 0;
           for (let i = 3; i < px.length; i += 4) if (px[i] > 12) ink++;
-          return { ready: E.tilesReady(), tile: s.tile, ink,
+          return { ready: E.tilesReady(), tile: s.tile, ink, delivery: E.terrainDelivery(),
                    cleared: document.getElementById('load').classList.contains('off') };
         }""")
         print("\n  with sunda and europe aborted: film started, loader cleared: %s"
@@ -174,6 +178,8 @@ def cmd_verify(a):
             fails.append("a background tile blocked the film's loader")
         if d["ready"]:
             fails.append("tilesReady() is true with two tiles aborted; the abort missed")
+        if d["delivery"]["levels"].get("sunda") != "global fallback" or not d["delivery"]["fallbackAppeared"]:
+            fails.append("an absent corridor did not report the global elevation fallback: %r" % d["delivery"])
         if d["ink"] < 100:
             fails.append("beat 06 drew nothing without its tile")
         if errs:
