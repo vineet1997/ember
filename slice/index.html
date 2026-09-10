@@ -63,6 +63,11 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:var(--void);scrollbar-width:none}
 html::-webkit-scrollbar{display:none}
+/* A parent integration shell supplies the narration, time ruler and controls.
+   The child keeps only its map while receiving the shared deep-time t. */
+html.presentation #head,html.presentation #copy,html.presentation #state,
+html.presentation #ruler,html.presentation #hint,html.presentation #panel,
+html.presentation #skip{display:none!important}
 body{
   background:var(--void);color:var(--bone);font-family:var(--body);font-weight:300;
   -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
@@ -268,6 +273,14 @@ body.still #record{transition:none !important}
 Scroll for a few seconds first. The worst frame is what matters: one 40 ms hitch is felt, a slightly low average is not. Green under 20 ms at p95.
 
 Only meaningful in a VISIBLE window. A hidden tab or a headless browser throttles the frame loop and will report a whole second per frame.</pre>
+  <h4>Deferred terrain tile &mdash; main-thread phases</h4>
+  <div class="r"><span>tile / state</span><b id="p-defer-tile" style="font-size:9.5px">&mdash;</b></div>
+  <div class="r"><span>image decode / canvas readback</span><b id="p-defer-canvas" style="font-size:9.5px">&mdash;</b></div>
+  <div class="r"><span>Terrain-RGB decode / texture upload</span><b id="p-defer-upload" style="font-size:9.5px">&mdash;</b></div>
+  <div class="r"><span>mipmap / total</span><b id="p-defer-total" style="font-size:9.5px">&mdash;</b></div>
+  <pre id="o-defer" style="margin-top:6px">These are the one-time main-thread phases for a background terrain tile. “Image decode” is the canvas draw that forces decoded image pixels into the canvas; “texture upload” and “mipmap” time the issuing calls, not hidden GPU completion.
+
+On one visible Slow-4G reload, wait for the two background tiles. Read this beside the worst-frame line above. Do not optimise or chunk a phase until this says which phase is actually large.</pre>
   <h4>Law 01 &mdash; one number governs everything</h4>
   <button id="t-purity">Run purity test</button>
   <pre id="o-purity">Hashes the full state at 401 points scrubbing forward, then again backward, and diffs them.

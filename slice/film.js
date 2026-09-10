@@ -62,6 +62,13 @@ var D = null, TEXG = null, TXG = null, gl = null, prog = null, U = {};
    keeps the shader at two elevation fetches instead of eight. */
 var TEX = { sunda: null, redsea: null, europe: null };
 var TXO = { sunda: null, redsea: null, europe: null };   /* the decoded GL textures */
+/* The background tiles arrive after the film. Their one-time conversion has
+   already produced a felt hitch on Slow-4G, but the first benchmark established
+   only that the float loop is not all of it. Keep the phases separate: a clock
+   around the whole conversion would be a number without a next decision. */
+var TILE_TIMING = { tile: null, state: "waiting for a background tile",
+                    imageDecode: null, readback: null, terrainDecode: null,
+                    upload: null, mipmap: null, total: null };
 var earth = $("earth"), over = $("over"), octx = over.getContext("2d");
 var W = 0, H = 0, DPR = 1;
 
@@ -173,9 +180,16 @@ function loadRest() {
     if (!k) return;
     image(TILES[k].src).then(function (i) {
       TEX[k] = i;
+      TILE_TIMING = { tile: k, state: "waiting for an idle gap",
+                      imageDecode: null, readback: null, terrainDecode: null,
+                      upload: null, mipmap: null, total: null };
       idle(function () {
+        var started = performance.now();
+        TILE_TIMING.state = "measuring conversion";
         gl.activeTexture(gl.TEXTURE1);
-        TXO[k] = elevTexture(TEX[k], gl.CLAMP_TO_EDGE, D.measured.tiles.sunda);
+        TXO[k] = elevTexture(TEX[k], gl.CLAMP_TO_EDGE, D.measured.tiles.sunda, TILE_TIMING);
+        TILE_TIMING.total = performance.now() - started;
+        TILE_TIMING.state = "complete";
         /* elevTexture leaves ITS texture bound to the unit; drop the cached
            binding so the next frame re-states the box and the size. */
         boundTile = "";
@@ -852,33 +866,52 @@ var ANISO = 0, FLOAT_ELEV = false;
    So the bytes are decoded once, on load, into a real float texture. Mip
    averaging of a float elevation IS elevation averaging, which makes the
    pyramid valid, the derivatives clean, and the shader shorter: no decode. */
-function decodePNG(img, meta) {
+function decodePNG(img, meta, timing) {
   var c = document.createElement("canvas");
   c.width = img.width; c.height = img.height;
   var x = c.getContext("2d", { willReadFrequently: false });
+  var t0 = performance.now();
   x.drawImage(img, 0, 0);
+  /* drawImage is where the browser must make decoded PNG pixels available to
+     the canvas. It can include a canvas copy too, so call it image decode on
+     the panel only with that boundary stated there. */
+  if (timing) timing.imageDecode = performance.now() - t0;
+  t0 = performance.now();
   var d = x.getImageData(0, 0, img.width, img.height).data;
+  if (timing) timing.readback = performance.now() - t0;
   var n = img.width * img.height, out = new Float32Array(n);
   var sc = meta.scale, off = meta.offset;
+  t0 = performance.now();
   for (var i = 0, j = 0; i < n; i++, j += 4) out[i] = (d[j] * 256 + d[j + 1]) * sc + off;
+  if (timing) timing.terrainDecode = performance.now() - t0;
   return out;
 }
 
-function elevTexture(img, wrap, meta) {
+function elevTexture(img, wrap, meta, timing) {
   var tx = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tx);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
   gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
 
   if (FLOAT_ELEV) {
+    /* Decode before starting the upload clock. JavaScript evaluates call
+       arguments first; timing texImage2D(decodePNG(...)) would quietly time
+       the very phases this instrument is supposed to separate. */
+    var elev = decodePNG(img, meta, timing);
+    var uploadAt = performance.now();
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.R16F, img.width, img.height, 0,
-                  gl.RED, gl.FLOAT, decodePNG(img, meta));
+                  gl.RED, gl.FLOAT, elev);
+    if (timing) timing.upload = performance.now() - uploadAt;
   } else {
+    var uploadAt = performance.now();
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE, img);
+    if (timing) timing.upload = performance.now() - uploadAt;
   }
   var mip = FLOAT_ELEV;
   if (mip) {
+    var mipAt = performance.now();
     try { gl.generateMipmap(gl.TEXTURE_2D); } catch (e) { mip = false; }
+    if (timing) timing.mipmap = performance.now() - mipAt;
     if (gl.getError() !== gl.NO_ERROR) mip = false;
   }
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER,
@@ -1832,19 +1865,23 @@ function drawCut(s, F) {
 
 /* ═══ 10 · COPY  (Laws 04 and 07) ════════════════════════════════════════ */
 
-/* One film-voice line per beat, and never more - that is the whole discipline
-   of the voice. Each string here is the beat's own onScreen field in
-   timeline.json, verbatim; copyCheck asserts that rather than trusting it. */
+/* The film voice is paced narration, not a slogan. Each beat may use a few
+   short passages, separated by room for the image to speak. Their joined text
+   is the beat's own onScreen field in timeline.json; copyCheck asserts that
+   rather than trusting it. */
 var VOICES = [
-  /* Beat 05. It lands in the dead stretch, where the sea has gone flat and the
-     plume has stopped and the only thing still moving is the year. The line has
-     to be read against a frame in which nothing is happening, because that is
-     what it is about. */
-  { t: [0.2680, 0.2950], lines: ["This one did not go out."] },
-  { t: [0.3280, 0.3580], lines: ["They could not see it.", "They went anyway."] },
-  /* Beat 07. It lands AFTER the pale light is gone, on the one-colour frame. */
-  { t: [0.4415, 0.4550], lines: ["If your ancestors left Africa,",
-                                 "two percent of you is them."] }
+  /* Beat 05. The final sentence lands in the held frame, then leaves silence. */
+  { beat: 5, t: [0.2370, 0.2475], lines: ["Later, another dispersal began."] },
+  { beat: 5, t: [0.2490, 0.2615], lines: ["It was not the first, and it was not guaranteed to succeed."] },
+  { beat: 5, t: [0.2630, 0.2735], lines: ["Along the way, these travellers met other human peoples and had children together."] },
+  { beat: 5, t: [0.2750, 0.2860], lines: ["But it endured."] },
+  { beat: 6, t: [0.3030, 0.3160], lines: ["Falling seas joined many islands to the continents around them."] },
+  { beat: 6, t: [0.3175, 0.3315], lines: ["But the water east of Asia never became a bridge."] },
+  { beat: 6, t: [0.3330, 0.3425], lines: ["The people who reached Sahul crossed open sea."] },
+  /* Beat 07. The unanswered disappearance arrives after the pale light goes. */
+  { beat: 7, t: [0.4100, 0.4250], lines: ["Other human peoples still lived across Eurasia."] },
+  { beat: 7, t: [0.4415, 0.4500], lines: ["By the end of this beat, Neanderthals are gone."] },
+  { beat: 7, t: [0.4510, 0.4625], lines: ["We do not know exactly why."] }
 ];
 /* The record. Law 07 lives in this voice: whatever the film says out loud, the
    qualifiers its own evidence carries are stated in full, in the same frame.
@@ -1941,9 +1978,10 @@ var RECORDS = [
 var ATLAS = {
   kicker: "THE STATIC ATLAS",
   lede: [
-    "Somewhere between fifty and forty&#8209;three thousand years ago &mdash; and the " +
-    "rocks argue for older &mdash; people put out onto open water toward land they " +
-    "could not see, and reached a continent nobody had ever stood on. This is beat 06 " +
+    "People reached Sahul somewhere between fifty and forty&#8209;three thousand years " +
+    "ago; the rocks argue for older. Falling seas joined many islands to the " +
+    "continents around them. But the water east of Asia never became a bridge. " +
+    "The people who reached Sahul crossed open sea. This is beat 06 " +
     "of <i>One Ember</i>.",
 
     "This page is the film&rsquo;s other half. The film is desktop, scroll and WebGL; " +
@@ -2765,22 +2803,26 @@ function copyCheck() {
   /* every film-voice line is the beat's own onScreen field, not a paraphrase
      of it - checked rather than trusted, because a paraphrase is exactly how
      "all non-Africans" became "everyone" the first time */
-  var voiceText = VOICES.map(function (v) { return v.lines.join(" "); });
-  [5, 6, 7].forEach(function (b, i) {
-    check(voiceText[i],
+  function voiceForBeat(beat) {
+    return VOICES.filter(function (v) { return v.beat === beat; });
+  }
+  [5, 6, 7].forEach(function (b) {
+    var voiceText = voiceForBeat(b).map(function (v) { return v.lines.join(" "); }).join(" ");
+    check(voiceText,
       "verbatim from beat " + (b < 10 ? "0" : "") + b + "'s onScreen field in timeline.json",
-      D.specs[b] && D.specs[b].onScreen === voiceText[i]);
+      D.specs[b] && D.specs[b].onScreen === voiceText);
   });
 
   /* ---------------- beat 05 ---------------- */
   var bab = door("bab-el-mandeb"), sin = door("sinai");
   var bab60 = bab.filter(function (r) { return Math.abs(r.seaM + 84.7) < 0.05; });
 
-  check("This one did not go out.",
-    "ooa-dispersal carries a 60-50 ka range and the line claims no date; and it says " +
-    "THIS one, so it makes no claim about anyone else's ancestry",
+  check("Later, another dispersal began. It was not the first, and it was not guaranteed to succeed. But it endured.",
+    "ooa-dispersal carries a 60-50 ka range; the narration preserves the earlier attempts " +
+    "and calls endurance contingent rather than inevitable",
     ev["ooa-dispersal"] && ev["ooa-dispersal"].dateRange[0] === 60000 &&
-    ev["ooa-dispersal"].dateRange[1] === 50000);
+    ev["ooa-dispersal"].dateRange[1] === 50000 &&
+    voiceForBeat(5).some(function (v) { return /not guaranteed/.test(v.lines.join(" ")); }));
 
   check("SINAI · DRY LAND AT EVERY SEA LEVEL IN THE RECORD",
     "every measured row at this door is one land component, at every sea level " +
@@ -2824,10 +2866,13 @@ function copyCheck() {
     ev["dispersal-route"] && ev["dispersal-route"].confidence === "band" &&
     D.routes.filter(function (r) { return r.beat === 5; }).length === 2);
 
-  check("They could not see it. They went anyway.",
-    "wallacea-crossing is solid and carries no date, so the line claims nothing dated",
+  check("The water east of Asia never became a bridge. The people who reached Sahul crossed open sea.",
+    "the event's open-water floor is solid; Bird supports purposeful southern voyaging while " +
+    "Kealy's northern intervisibility means the film does not claim one route or an unseen destination",
     ev["wallacea-crossing"] && ev["wallacea-crossing"].confidence === "solid" &&
-    ev["wallacea-crossing"].dateRange === null);
+    ev["wallacea-crossing"].dateRange === null &&
+    ev["wallacea-crossing"].sourceIds.indexOf("bird2018") >= 0 &&
+    ev["wallacea-crossing"].sourceIds.indexOf("kealy2017") >= 0);
 
   check("WALLACEA · NEVER BRIDGED, AT ANY SEA LEVEL IN THE RECORD",
     "the bottleneck stays above 70 km at every sea level tested, lowstand included",
@@ -2899,12 +2944,11 @@ function copyCheck() {
     ev["sahul-arrival"].confidence === "contested");
 
   /* ---------------- beat 07 ---------------- */
-  check("If your ancestors left Africa, two percent of you is them.",
-    "the film voice rounds 1.5-2% to two percent, which is only safe because the " +
-    "record voice states the full range IN THE SAME FRAME - and the sentence is " +
-    "conditional, because the figure is for non-Africans and not for everyone",
-    /1\.5&ndash;2%/.test(RECORDS[6].html) &&
-    RECORDS[6].t[0] < VOICES[2].t[1] && RECORDS[6].t[1] > VOICES[2].t[0]);
+  check("By the end of this beat, Neanderthals are gone. We do not know exactly why.",
+    "the film does not turn uncertain disappearance into a clean extinction mechanism; the " +
+    "record preserves the dated range and the contested causes",
+    /CAUSE CONTESTED &middot; NOT DEPICTED/.test(RECORDS[6].html) &&
+    voiceForBeat(7).some(function (v) { return /do not know exactly why/.test(v.lines.join(" ")); }));
 
   check("The last securely dated occupation is forty-one to thirty-nine thousand " +
         "years ago, and it was staggered, not simultaneous.",
@@ -2972,8 +3016,7 @@ function copyCheck() {
   var A = ATLAS, cap = {};
   A.shots.forEach(function (sh) { cap[sh.id] = sh.cap; });
 
-  check("Somewhere between fifty and forty-three thousand years ago - and the rocks " +
-        "argue for older - people put out onto open water toward land they could not see.",
+  check("The water east of Asia never became a bridge. The people who reached Sahul crossed open sea.",
     "the arrival is contested and the atlas opens by saying so: sahul-arrival is " +
     "50,000-43,000, marked contested, and ITS OWN dispute names 65,000-59,000 as the " +
     "alternative - which is where 'the rocks argue for older' comes from. (The first " +
@@ -2986,7 +3029,10 @@ function copyCheck() {
     ev["sahul-arrival"].dispute.alternative[0] === 65000 &&
     ev.madjedbebe && ev.madjedbebe.dateRange[0] > ev["sahul-arrival"].dateRange[0] &&
     ev["wallacea-crossing"] && ev["wallacea-crossing"].dateRange === null &&
-    /could not be seen/.test(ev["wallacea-crossing"].why));
+    ev["wallacea-crossing"].sourceIds.indexOf("bird2018") >= 0 &&
+    ev["wallacea-crossing"].sourceIds.indexOf("kealy2017") >= 0 &&
+    /reached Sahul crossed open sea/.test(A.lede.join(" ")) &&
+    !/could not see/i.test(A.lede.join(" ")));
 
   check("Eight still frames, baked from the same shader at the same eight values of " +
         "the film's single time variable.",
@@ -3410,7 +3456,7 @@ function drawFrame(s, opts) {
   return s;
 }
 
-var running = false;
+var running = false, EXTERNAL_T = null;
 
 function loop(now) {
   /* STOPPED, NOT THROTTLED. The gate can go up while the film is running -
@@ -3421,6 +3467,7 @@ function loop(now) {
   if (ftPrev) { FT[ftAt] = now - ftPrev; ftAt = (ftAt + 1) % FT.length; ftN++; }
   ftPrev = now;
 
+  if (EXTERNAL_T !== null) target = EXTERNAL_T;
   cur += (target - cur) * 0.08;
   drawFrame(stateFor(tFor(cur)));
   requestAnimationFrame(loop);
@@ -3569,6 +3616,12 @@ function panel(s) {
   $("p-gpums").textContent = !TQ.ext ? "not exposed"
     : TQ.ms < 0 ? "measuring…"
     : TQ.ms.toFixed(2) + " ms  ·  " + Math.round(TQ.ms / 16.67 * 100) + "% of a frame";
+  var tt = TILE_TIMING;
+  function timingText(v) { return typeof v === "number" ? v.toFixed(1) + " ms" : "—"; }
+  $("p-defer-tile").textContent = tt.tile ? tt.tile + "  ·  " + tt.state : tt.state;
+  $("p-defer-canvas").textContent = timingText(tt.imageDecode) + " / " + timingText(tt.readback);
+  $("p-defer-upload").textContent = timingText(tt.terrainDecode) + " / " + timingText(tt.upload);
+  $("p-defer-total").textContent = timingText(tt.mipmap) + " / " + timingText(tt.total);
   if (f) {
     var el = $("p-frame");
     el.className = f.p95 < 20 ? "ok" : f.p95 < 34 ? "" : "bad";
@@ -3704,8 +3757,23 @@ function start() {
   if (REDUCED.addEventListener) REDUCED.addEventListener("change", applyGate);
   else if (REDUCED.addListener) REDUCED.addListener(applyGate);
   window.addEventListener("scroll", function () {
-    target = window.scrollY / maxScroll();
+    if (EXTERNAL_T === null) target = window.scrollY / maxScroll();
   }, { passive: true });
+  /* The full film owns its t. This slice can still stand alone, but when it is
+     embedded it becomes a quiet visual child: parent copy, ruler and controls
+     are the only production chrome the reader sees. */
+  window.addEventListener("message", function (event) {
+    var msg = event.data;
+    if (!msg || msg.type !== "one-ember:external-t") return;
+    if (typeof msg.presentation === "boolean") {
+      document.documentElement.classList.toggle("presentation", msg.presentation);
+    }
+    if (typeof msg.t === "number") {
+      EXTERNAL_T = clamp((msg.t - D.tSpan[0]) / (D.tSpan[1] - D.tSpan[0]), 0, 1);
+      target = cur = EXTERNAL_T;
+      renderAt(msg.t, { measure: false });
+    }
+  });
   bindTests();
   /* Shot-checking: #t=0.3350 jumps to a t, and the whole state function is
      exposed so a shot can be inspected without scrubbing to it by hand. */
@@ -3722,6 +3790,7 @@ function start() {
                    law06: law06, absence: absence, hold: hold,
                    ROUTES: ROUTES, tileFor: tileFor, renderAt: renderAt, bench: bench,
                    tilesReady: tilesReady, readerCopy: readerCopy,
+                   tileTiming: function () { return Object.assign({}, TILE_TIMING); },
                    independence: independence,
                    /* "reduced motion means stop moving" is a claim about the
                       loop, not about a panel, so the loop is askable. */

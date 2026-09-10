@@ -231,7 +231,7 @@ def cmd_verify(a):
         txt = page.inner_text("body")
         scripts = page.eval_on_selector_all("script", "a => a.length")
         want = {
-            "film voice": "They could not see it.",
+            "film voice": "The people who reached Sahul crossed open sea.",
             "a caption": "Seventy point five kilometres.",
             "a margin label": "NEVER BRIDGED, AT ANY SEA LEVEL IN THE RECORD",
             "the ground register": "ORIGINAL DIAGRAM, NOT A PHOTOGRAPH OF THE SITE",

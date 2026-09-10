@@ -9,7 +9,7 @@
    1080
   ],
   "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (Subzero) (0x0000C0DE)), SwiftShader driver)",
-  "when": "2026-09-08"
+  "when": "2026-09-10"
  },
  "tests": {
   "purity": {
@@ -85,7 +85,13 @@
    "w": 1440,
    "h": 810,
    "dpr": 2,
-   "voice": null,
+   "voice": {
+    "i": 4,
+    "lines": [
+     "Falling seas joined many islands to the continents around them."
+    ],
+    "a": 0.926
+   },
    "record": null,
    "state": [
     "<span class=\"k\">SEA LEVEL</span> -72.1 M",
@@ -156,7 +162,7 @@
    "gap": null,
    "reserved": null,
    "file": "06-02.webp",
-   "bytes": 128346
+   "bytes": 122156
   },
   {
    "t": 0.322,
@@ -175,7 +181,13 @@
    "w": 1440,
    "h": 810,
    "dpr": 2,
-   "voice": null,
+   "voice": {
+    "i": 5,
+    "lines": [
+     "But the water east of Asia never became a bridge."
+    ],
+    "a": 0.844
+   },
    "record": null,
    "state": [
     "<span class=\"k\">SEA LEVEL</span> -76.5 M",
@@ -246,7 +258,7 @@
    "gap": null,
    "reserved": null,
    "file": "06-03.webp",
-   "bytes": 100834
+   "bytes": 90714
   },
   {
    "t": 0.335,
@@ -266,12 +278,11 @@
    "h": 810,
    "dpr": 2,
    "voice": {
-    "i": 1,
+    "i": 6,
     "lines": [
-     "They could not see it.",
-     "They went anyway."
+     "The people who reached Sahul crossed open sea."
     ],
-    "a": 1
+    "a": 0.259
    },
    "record": null,
    "state": [
@@ -373,7 +384,7 @@
    },
    "reserved": null,
    "file": "06-04.webp",
-   "bytes": 100548
+   "bytes": 110558
   },
   {
    "t": 0.345,
@@ -392,14 +403,7 @@
    "w": 1440,
    "h": 810,
    "dpr": 2,
-   "voice": {
-    "i": 1,
-    "lines": [
-     "They could not see it.",
-     "They went anyway."
-    ],
-    "a": 1
-   },
+   "voice": null,
    "record": {
     "i": 2,
     "html": "The rock under Madjedbebe reads sixty&#8209;five thousand years. The genomes read fifty to forty&#8209;three. Both are careful, both are published, and nobody has resolved it &mdash; so neither does the film.<span class=\"src\">MADJEDBEBE &middot; 65,000&ndash;59,000 BP &middot; OSL<br>ARRIVAL &middot; 50,000&ndash;43,000 BP &middot; GENETIC<br>DRAWN ON THE TIME RAIL, NOT ON THE MAP</span>",
@@ -504,7 +508,7 @@
    },
    "reserved": null,
    "file": "06-05.webp",
-   "bytes": 113778
+   "bytes": 118960
   },
   {
    "t": 0.352,
@@ -523,14 +527,7 @@
    "w": 1440,
    "h": 810,
    "dpr": 2,
-   "voice": {
-    "i": 1,
-    "lines": [
-     "They could not see it.",
-     "They went anyway."
-    ],
-    "a": 1
-   },
+   "voice": null,
    "record": {
     "i": 2,
     "html": "The rock under Madjedbebe reads sixty&#8209;five thousand years. The genomes read fifty to forty&#8209;three. Both are careful, both are published, and nobody has resolved it &mdash; so neither does the film.<span class=\"src\">MADJEDBEBE &middot; 65,000&ndash;59,000 BP &middot; OSL<br>ARRIVAL &middot; 50,000&ndash;43,000 BP &middot; GENETIC<br>DRAWN ON THE TIME RAIL, NOT ON THE MAP</span>",
@@ -635,7 +632,7 @@
    },
    "reserved": null,
    "file": "06-06.webp",
-   "bytes": 109022
+   "bytes": 108194
   },
   {
    "t": 0.361,
@@ -758,7 +755,7 @@
  "atlas": {
   "kicker": "THE STATIC ATLAS",
   "lede": [
-   "Somewhere between fifty and forty&#8209;three thousand years ago &mdash; and the rocks argue for older &mdash; people put out onto open water toward land they could not see, and reached a continent nobody had ever stood on. This is beat 06 of <i>One Ember</i>.",
+   "People reached Sahul somewhere between fifty and forty&#8209;three thousand years ago; the rocks argue for older. Falling seas joined many islands to the continents around them. But the water east of Asia never became a bridge. The people who reached Sahul crossed open sea. This is beat 06 of <i>One Ember</i>.",
    "This page is the film&rsquo;s other half. The film is desktop, scroll and WebGL; this is the same beat as eight still frames, baked from the same shader at the same eight values of the film&rsquo;s single time variable, so the two artifacts cannot disagree about what the world looked like. Every word on this page is text, not pixels.",
    "It is also the mobile experience, the reduced&#8209;motion fallback, the no&#8209;JavaScript fallback, the crawler content, and the answer for a browser that has switched WebGL off."
   ],
@@ -978,7 +975,7 @@
    43000
   ],
   "motion": 4,
-  "onScreen": "They could not see it. They went anyway.",
+  "onScreen": "Falling seas joined many islands to the continents around them. But the water east of Asia never became a bridge. The people who reached Sahul crossed open sea.",
   "slug": "the-crossing-to-sahul",
   "act": 2,
   "tentpole": false
@@ -1119,10 +1116,11 @@
    "dateNote": "Minimum open-water crossing of roughly 70–100 km at any Pleistocene sea level. Sunda and Sahul were each continuous land; the gap between them never closed.",
    "confidence": "solid",
    "sourceIds": [
-    "bird2018"
+    "bird2018",
+    "kealy2017"
    ],
    "beat": 6,
-   "why": "The whole point of the beat. Deliberate watercraft, toward land that could not be seen."
+   "why": "The point of the beat: no land bridge. Bird models purposeful, coordinated southern voyaging; Kealy finds northern-route intervisibility most parsimonious. The film therefore states the crossing without adjudicating its route or what was visible."
   },
   {
    "id": "liang-metanduno",
@@ -1295,8 +1293,13 @@
   },
   "bird2018": {
    "cite": "Bird, M. I. et al. (2018). Palaeogeography and voyage modeling indicates early human colonization of Australia was likely from Timor-Roti. Quaternary Science Reviews 191, 431–439.",
-   "checked": "book-standard",
-   "note": "Book or monograph: the citation is correct, but the content has not been re-checked against the physical text."
+   "checked": "read-2026-09-08",
+   "note": "Bird et al. model low-probability accidental arrival, likely successful 4–7 day purposeful summer-monsoon voyages, and emergent islands visible from high points near the Timor–Roti coast. It supports a southern route, not a universal claim that destination land was unseen."
+  },
+  "kealy2017": {
+   "cite": "Kealy, S., Louys, J. & O'Connor, S. (2017). Reconstructing Palaeogeography and Inter-island Visibility in the Wallacean Archipelago During the Likely Period of Sahul Colonization, 65–45,000 Years Ago. Archaeological Prospection 24, 259–272.",
+   "checked": "abstract-2026-09-08",
+   "note": "Kealy et al. reconstruct five palaeogeographies and inter-island visibility. Their intervisibility result makes the northern route into Papua New Guinea the most parsimonious first entry; it does not settle the route."
   },
   "sulawesi2026": {
    "cite": "Oktaviana, A. A., Joannes-Boyau, R., Hakim, B. et al. (2026). Rock art from at least 67,800 years ago in Sulawesi. Nature 650, 652-656.",
