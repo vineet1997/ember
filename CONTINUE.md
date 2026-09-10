@@ -12,10 +12,12 @@ Read in this order:
    traps. It is loaded into your context automatically. It is the constitution.
 3. **`HANDOFF.md`** — the delta from the last two sessions. Recent, specific,
    and it expires; `CLAUDE.md` does not.
-4. **`storyboard.html`** — open it in a browser. All fourteen beats. It is the
-   creative source of truth and only four of those beats are built.
+4. **`PROJECT_PLAN.md`** — the completion roadmap. It records the next
+   authorised phase, its acceptance check, and intentionally unresolved work.
+5. **`storyboard.html`** — open it in a browser. All fourteen beats. It is the
+   creative source of truth, and all fourteen beats now have implementations.
 
-Do not re-derive any of the four. They are long because the reasons are long.
+Do not re-derive any of the five. They are long because the reasons are long.
 
 ---
 
@@ -43,13 +45,61 @@ decisions exist only to preserve it.
 | `slice/` | **Beats 05, 06, 07 at final quality**, on one continuous `t`. The hold, the crossing to Sahul, the others. Six panel tests. This code *is* the film. |
 | `slice/atlas.html` | Beat 06 as a static artifact. Eight stills baked from the film's own shader; every word live HTML. **Generated — edit `film.js` and rebuild.** |
 | `unroll/` | **Beat 12's transition**, Law 03's second verb: orbital → atlas as one continuous surface. Six tests. Phase 6. |
+| `flow/` | **The 08–12 integration shell.** It owns the project’s global deep-time `t` (0.4400–0.8500), derives every local beat time from `timeline.json`, and keeps one scene renderer active at a time. |
 | `timeline.json` | Every dated claim: 66 events, 70 sources, coordinates, confidence, disputes, open questions. **Nothing goes on screen that is not in here.** |
 | `data/` | The environmental channels and their builders. All acquired. |
 | `evidence/` | Things only a picture or a deliberate break can establish. Read its README. |
 | `audit/` | An external audit's reproduction scripts, kept because they were written without sight of ours. |
 | `spike/` | Phase 3 throwaway. **Do not promote this code.** |
 
-Beats 01–04 and 08–11, 13, 14 do not exist.
+All fourteen beats are built. The master film at `film/index.html` is their
+current integration surface; `flow/index.html` retains the separately useful
+08–12 time-ownership shell, and the scene pages remain directed-work and
+individual-contract surfaces.
+
+## Entry points and checks
+
+Run `python serve.py` from the repository root for an uncached server at
+<http://127.0.0.1:8899/>. This is the root expected by the browser contracts;
+do not substitute a caching server while developing a renderer.
+
+| Beat(s) | Entry point | Contract |
+|---|---|---|
+| 01–04 | `origins/index.html` | `origins/check.py` |
+| 05–07 | `slice/index.html` | `slice/tools/check.py verify` |
+| 08 | `shrink/index.html` | `shrink/check.py` |
+| 09 | `steppe/index.html` | `steppe/check.py` |
+| 10 | `sweep/index.html` | `sweep/check.py` |
+| 11 | `doors/index.html` | `doors/check.py` |
+| 12 | `unroll/index.html` | `unroll/shoot.py` |
+| 08–12 | `flow/index.html` | `flow/check.py`, `transitions/check.py` |
+| 13 | `ocean/index.html` | `ocean/check.py` |
+| 14 | `epilogue/index.html` | `epilogue/check.py` |
+| 01–14 | `film/index.html` | `film/check.py` |
+
+The editorial sources are `story/` (`check_direction.py`,
+`check_narration.py`). `timeline.json` is the dated-claim record. The
+evidence-preserving raster inputs, generated fields and builders live in
+`data/` and `slice/data/`; see `ASSET_CONTRACT.md` for their delivery status.
+
+### Phase 0 baseline record
+
+- Repository-root checks passed once on 2026-09-10: both story contracts; all
+  fourteen scene contracts; the 08–12 transition contract; and the master-film
+  contract. The unroll verifier passed its six tests twice, and the slice
+  terrain verifier passed its six panel checks twice plus raster-failure,
+  fallback, reader and atlas checks. Those two are run separately because their
+  software-rendered visual work is substantially heavier.
+- Current evidence-grade terrain fields are global 2048×1024 plus Red Sea
+  2040×1920, Sunda/Wallacea 3840×3120 and Europe/west Asia 4320×1860. Their
+  current PNGs total 36,729,566 bytes; global + Red Sea are 8,887,064 bytes
+  (8.48 MiB).
+- The target observation was Chrome DevTools **Slow 4G** (1.44 Mbps). At that
+  shaping rate, the global + Red Sea PNG pair has a 49.4-second transfer-only
+  lower bound. The deferred-tile GPU preparation measured about **186 ms** on
+  the target machine; network delivery, not conversion, is the current
+  first-visit risk. Automated SwiftShader runs establish correctness only and
+  are not timing evidence.
 
 ---
 
@@ -200,7 +250,7 @@ less than a red one you did.
 
 In the order the last session would have done them.
 
-### 1. The 230 ms decode hitch — measured, not fixed
+### 1. The 230 ms decode hitch — instrumented, not fixed
 
 Two of the three terrain tiles now load *after* the film starts, which took the
 blocking set from 36.8 MB to 8.8 MB. The decode of an arriving tile is
@@ -209,64 +259,105 @@ measured a **230 ms worst frame**.
 
 **Do not fix this by chunking the pixel loop.** That was the obvious move and it
 is wrong: the loop was benchmarked on the target CPU at **54 ms of the 230**.
-The rest is the canvas readback (`getImageData` of 48 MB), the GPU upload and
-the mipmap. **Instrument all four phases onto the panel first**, then ask the
-director for one Slow-4G reload, then fix what is actually large.
+The panel now splits a deferred tile into canvas image decode, canvas readback
+(`getImageData` of 48 MB), Terrain-RGB conversion, texture-upload call,
+mipmap-generation call and total. The boundaries are stated in the panel so a
+CPU call time is never passed off as hidden GPU completion.
+
+The instrument was exercised in software rendering only; that confirmed that
+every phase reaches the panel and said nothing about the target machine. **Ask
+the director for one visible-window Slow-4G reload, read the new rows beside the
+worst-frame line, then fix what is actually large.**
 
 Free and unrelated: **lossless WebP is 25% smaller than these PNGs and
 byte-exact** — measured on all four rasters, round trip verified identical.
 Terrain-RGB encodes elevation in pixel values, so lossy would silently move
 coastlines; lossless will not. That takes the blocking set to 6.7 MB.
 
-### 2. The audit's historical framing — findings 1, 3 and 6
+### 2. The audit's historical framing — copy corrected; chronology picture open
 
-**This is the highest-stakes item and it is deliberately untouched.** An
-external audit reads Bird 2018 and Kealy 2017 as concluding *purposeful,
-informed voyaging with intervisibility on the northern routes*. If that holds,
-beat 06's film voice — *"They could not see it. They went anyway."* — is
-factually wrong **and** condescending about the people it describes. It is the
-most prominent sentence in everything built: once in the film, once in the
-atlas, and **the copy check currently approves it**.
-
-The previous handoff says do not act on the audit's reading without reading the
-papers. The URLs are in `audit/AUDIT-EVIDENCE.md`. Read them, then either
-defend the line or change it. The proposed replacement is *"The sea never
-closed. They crossed it."*
+Bird 2018 was checked against its accepted manuscript: it models a purposeful,
+coordinated Timor–Roti crossing and finds Sahul Banks islands visible from some
+high points. Kealy 2017's abstract finds northern-route intervisibility most
+parsimonious. Neither source licenses a universal claim that the destination was
+unseen. The film, atlas, record and copy check now say: *"The sea never closed.
+They crossed it."* The check requires both sources and rejects the old claim.
 
 Finding 1 is adjacent and its structural half needs no citation: the film claims
 neutrality on Sahul chronology while the *picture* adjudicates — the ember rides
 the 50–43 ka genetic window and the atlas labels landfall 45,450 BP, with the
-older reading demoted to a rail annotation.
+older reading demoted to a rail annotation. **That is still a director decision:**
+the corrected voyage line must not be mistaken for a resolution of the chronology
+picture.
 
-### 3. Two stale figures the last session created
+### 3. Two stale figures corrected
 
-Both are one-line fixes and both are in `storyboard.html`:
+- Law 03 now says **1 of 6** centres are visible from an Africa-centred globe.
+  `sixTest` re-derives that figure.
+- The Sahel has been removed from Beat 12's frame and its question moved to
+  `timeline.json → resolved → oq-beat12-sahel`; pearl millet remains in Beat 13.
 
-- Law 03's card says **2 of 6** centres are visible from an Africa-centred
-  globe. It is now **1 of 6**, because the Sahel moved to beat 13. The gap got
-  *wider*, so the argument is stronger, but the number is stale. `sixTest`
-  prints the correct figure.
-- Beat 12's frame lists **"the Sahel"** among its six lights. The data puts West
-  African domestication at ~4,900 BP against a beat that closes at 5,000. See
-  `timeline.json → openQuestions → oq-beat12-sahel`, which lays out three ways
-  out and says it is the director's call.
+### 4. Beats 08–11 and the unroll
 
-### 4. The unroll's remaining work
+**Beat 08 now exists** at `shrink/index.html`. It pulls back across the northern
+hemisphere, tracks the sourced sea-level fall from −90.3 m to −128.9 m, and
+draws the Sungir → Yana northward trace from `timeline.json`. The renderer
+explicitly disables its ICE-6G field for the whole 39–26.5 ka span: the local
+atlas begins at 26 ka, so it must not be misrepresented as an earlier animated
+ice sheet. That absence is visible in both the frame and panel, and
+`shrink/check.py` asserts it.
 
-The transition is solved and joined to the film's camera. What is left:
+**The 08→11 flow now has a transition contract** in `transitions/check.py`.
+Every handoff keeps its boundary year and sea level; 08→09 also keeps all five
+camera values exactly, while 09→10 and 10→11 are named deliberate hard cuts.
+The first real ICE-6G field fades in only after the 26 ka boundary inside Beat
+09, rather than appearing at 26.5 ka. Run it against a repo-root static server
+with `python transitions/check.py`.
 
-- **Beat 11 does not exist**, so the unroll's entry keyframe is a placeholder —
-  a wide globe on the Fertile Crescent, which is the light beat 11 ends on. When
-  beat 11 is built, its last keyframe replaces row 0 of `KEYS` and `joinTest`
-  keeps the two cameras identical at k = 0.
-- **The unroll has no `t` in the film's timeline.** It runs on its own 0→1. It
-  needs to become a window of the film's deep-time `t` like beats 05–07.
+**Beat timing is now data-derived where the sequence makes an occurrence
+visible.** Beat 08 reads Sungir&rsquo;s 34 ka point and Yana&rsquo;s 33&ndash;31 ka range
+from its generated events; Beat 10 holds White Sands through 21 ka, keeps the
+record uncertain until 16 ka, and starts the continental sweep only then.
+Beat 11 now follows the same rule for the Younger Dryas, Beringia&rsquo;s inundation,
+Doggerland&rsquo;s final flooding, and the Fertile Crescent&rsquo;s appearance.
+
+**Beat 09 now exists** at `steppe/index.html`. It holds the Beringian ember on
+the exposed, cold-but-unglaciated landmass; its small blue herds are causal
+steppe life rather than decorative fauna. `steppe/build_steppe.py` and
+`steppe/check.py` use the same record and browser contract as the next scenes.
+
+**Beat 10 now exists** at `sweep/index.html`. White Sands holds as a small
+ember, then turns uncertain during the record gap without going out; the later
+continental sweep draws the coastal route solid and the interior corridor
+dashed. `sweep/build_sweep.py` derives its sites, routes, sources, sea level
+and ice from the project record; `sweep/check.py` exercises it in Chromium.
+
+**Beat 11 now exists** at `doors/index.html`. It reads the recorded sea-level
+curve and ICE-6G atlas, draws the Beringia and Doggerland closures, and fixes
+the Fertile Crescent light while the water rises. `doors/build_doors.py` emits
+its only final camera tuple; `unroll/unroll.js` fetches that same record before
+it starts and `joinTest` fails if its k = 0 camera differs. `doors/check.py`
+checks the Beat 11 state and the shared tuple in Chromium.
+
+**The 08→12 integration shell now exists** at `flow/index.html`. Its generated
+`flow/data/run08-12.json` derives the global windows from the project’s
+`scrollWeight`s: Beat 08 is `.4400–.5400`, 09 `.5400–.6100`, 10
+`.6100–.6800`, 11 `.6800–.7800`, and 12 `.7800–.8500`. The shell alone reads
+scroll; it sends the owning beat its derived local `t` and explicitly idles the
+four hidden WebGL scenes. `flow/check.py` verifies the windows, the final Beat
+12 handoff, and forward/backward purity against a repo-root static server.
+
+What is still left:
+
+- The integration shell establishes time ownership, not final transition
+  direction. Review its live pacing, seams and copy as one run before changing
+  any scene-level choreography.
 - No atlas fallback, no accessibility work, no copy check beyond `recordTest`.
   It is a slice.
 
 ### 5. Then the unbuilt beats
 
-Beats 01–04, 08–11, 13 and 14. The storyboard specifies all of them. Two known
+Beats 01–04, 13 and 14. The storyboard specifies all of them. Two known
 blockers: the **vegetation dataset is still unnamed** and has now cost written
 frames in beats 02, 05 and 12; and there is **no temperature record before
 60 ka** (low priority).
