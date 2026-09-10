@@ -1,0 +1,36 @@
+{
+ "schema": 1,
+ "thesis": "Human movement across deep time is persistence under changing conditions, not a march of destiny.",
+ "ui": {
+  "filmElements": ["beat-date", "time-ruler", "place-evidence-labels", "subtitles"],
+  "subtitleMaxLines": 2,
+  "subtitlePlacement": "lower-left",
+  "diagnosticsInFilm": false,
+  "narrationAfterFrameMs": 900
+ },
+ "acts": [
+  {"id": 1, "beats": [1, 2, 3], "name": "Africa"},
+  {"id": 2, "beats": [4, 5, 6, 7], "name": "The breakout"},
+  {"id": 3, "beats": [8, 9, 10], "name": "The ice"},
+  {"id": 4, "beats": [11, 12, 13, 14], "name": "The return"}
+ ],
+ "silences": [
+  {"beat": 1, "id": "opening-globe"},
+  {"beat": 3, "id": "qafzeh-burial"},
+  {"beat": 5, "id": "endured-hold"},
+  {"beat": 7, "id": "pale-withdrawal"},
+  {"beat": 8, "id": "sungir-detail"},
+  {"beat": 9, "id": "beringia-wind"},
+  {"beat": 10, "id": "record-gap"},
+  {"beat": 11, "id": "water-closes-routes"},
+  {"beat": 12, "id": "atlas-reveal"},
+  {"beat": 14, "id": "ancestral-fan"}
+ ],
+ "beatContracts": {
+  "1": "world-before-people", "2": "continental-origin", "3": "early-dispersals-end",
+  "4": "toba-not-bottleneck", "5": "enduring-dispersal", "6": "open-sea-crossing",
+  "7": "encounter-not-cause", "8": "care-in-cold", "9": "beringia-homeland",
+  "10": "record-gap-not-world-gap", "11": "routes-irreversible", "12": "independent-cultivation",
+  "13": "navigation-networks", "14": "shared-ancestral-web"
+ }
+}
