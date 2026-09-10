@@ -14,8 +14,8 @@ with sync_playwright() as p:
       const F=window.FILM, samples=[0,.20,.45,.68,.85,.99].map(t=>{const s=F.stateFor(t);return {id:s.beat.id,year:s.yearBP}});
       const active=[...document.querySelectorAll('iframe')].map(f=>f.title);
       const before=F.active, handoffs=[.44,.54,.61,.68,.78,.85,.93].map(t=>{const s=F.renderAt(t);return {id:s.beat.id,held:F.active === before && F.pending === s.beat.id};});
-      F.renderAt(0); const jump=F.advance(.55);
-      return {count:F.D.beats.length,pure:F.purity(),samples,active,handoffs,jump:{id:jump.beat.id,pending:F.pending,title:document.querySelector('#title').textContent},stagedTitle:document.querySelector('#title').textContent,stagedSubtitle:document.querySelector('#subtitle').textContent,progress:document.querySelector('#progress').style.width,visible:getComputedStyle(document.querySelector('iframe')).visibility === 'visible' && getComputedStyle(document.querySelector('iframe')).opacity === '1',subtitle:document.querySelector('#subtitle').textContent,
+      F.renderAt(0); const jump=F.renderAt(.55);
+      return {count:F.D.beats.length,pure:F.purity(),samples,active,handoffs,jump:{id:jump.beat.id,pending:F.pending,title:document.querySelector('#title').textContent},committedTitle:document.querySelector('#title').textContent,committedSubtitle:document.querySelector('#subtitle').textContent,visible:getComputedStyle(document.querySelector('iframe')).visibility === 'visible' && getComputedStyle(document.querySelector('iframe')).opacity === '1',subtitle:document.querySelector('#subtitle').textContent,
               live:document.querySelector('#subtitle').getAttribute('aria-live'),ruler:document.querySelectorAll('#ticks .tick').length};
     }""")
     page.keyboard.press("End")
@@ -28,9 +28,8 @@ assert [sample["id"] for sample in result["samples"]] == [1, 4, 8, 11, 13, 14]
 assert len(result["active"]) == 1
 assert [handoff["id"] for handoff in result["handoffs"]] == [8, 9, 10, 11, 12, 13, 14]
 assert all(handoff["held"] for handoff in result["handoffs"])
-assert result["jump"] == {"id": 9, "pending": 9, "title": "Mammoth steppe"}
-assert result["stagedTitle"] == "Mammoth steppe" and result["stagedSubtitle"] == ""
-assert result["progress"] == "55%"
+assert result["jump"] == {"id": 9, "pending": 9, "title": "The dark earth"}
+assert result["committedTitle"] == "The dark earth" and result["committedSubtitle"] == ""
 assert result["visible"]
 assert result["endKeyScroll"]
 assert result["live"] == "polite" and result["ruler"] == 15
