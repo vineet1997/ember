@@ -27,7 +27,7 @@
     active=pending; pending=null; loadedSrc=source(s); post(s); paint(s);
   }
   function request(s) { pending=s.beat.id; stage(s); frame.src=s.beat.src; frame.title="Beat "+pending+": "+s.beat.title; settle(); }
-  function apply(t) { var s=stateFor(t), src=source(s);
+  function apply(t) { var s=stateFor(t), src=source(s); $("progress").style.width=(s.t*100).toFixed(3)+"%";
     if (active === s.beat.id && !pending) { post(s); paint(s); return s; }
     if (src === loadedSrc && !pending) { active=s.beat.id; post(s); paint(s); return s; }
     if (pending !== s.beat.id) request(s);
