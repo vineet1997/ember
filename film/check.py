@@ -14,7 +14,7 @@ with sync_playwright() as p:
       const F=window.FILM, samples=[0,.20,.45,.68,.85,.99].map(t=>{const s=F.stateFor(t);return {id:s.beat.id,year:s.yearBP}});
       const active=[...document.querySelectorAll('iframe')].map(f=>f.title);
       const before=F.active, handoffs=[.44,.54,.61,.68,.78,.85,.93].map(t=>{const s=F.renderAt(t);return {id:s.beat.id,held:F.active === before && F.pending === s.beat.id};});
-      return {count:F.D.beats.length,pure:F.purity(),samples,active,handoffs,visible:getComputedStyle(document.querySelector('iframe')).visibility === 'visible' && getComputedStyle(document.querySelector('iframe')).opacity === '1',subtitle:document.querySelector('#subtitle').textContent,
+      return {count:F.D.beats.length,pure:F.purity(),samples,active,handoffs,stagedTitle:document.querySelector('#title').textContent,stagedSubtitle:document.querySelector('#subtitle').textContent,visible:getComputedStyle(document.querySelector('iframe')).visibility === 'visible' && getComputedStyle(document.querySelector('iframe')).opacity === '1',subtitle:document.querySelector('#subtitle').textContent,
               live:document.querySelector('#subtitle').getAttribute('aria-live'),ruler:document.querySelectorAll('#ticks .tick').length};
     }""")
     browser.close()
@@ -24,5 +24,6 @@ assert [sample["id"] for sample in result["samples"]] == [1, 4, 8, 11, 13, 14]
 assert len(result["active"]) == 1
 assert [handoff["id"] for handoff in result["handoffs"]] == [8, 9, 10, 11, 12, 13, 14]
 assert all(handoff["held"] for handoff in result["handoffs"])
+assert result["stagedTitle"] == "The human web" and result["stagedSubtitle"] == ""
 assert result["visible"]
 assert result["live"] == "polite" and result["ruler"] == 15

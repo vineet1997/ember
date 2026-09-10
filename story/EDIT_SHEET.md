@@ -7,10 +7,11 @@ script; copy changes belong to Phase 6.
 ## Master rule
 
 One global deep-time position owns the edit. A change of renderer is a hard
-cut: the master keeps the outgoing beat's heading and narration on screen until
-the incoming renderer is ready, then commits image, heading and narration in
-the same frame. Beats 05–07 remain one continuous terrain renderer and should
-not cut or reload between their internal chapter boundaries.
+cut: the master immediately stages the incoming beat's heading, but withholds
+its narration until the incoming renderer is ready. That acknowledges a large
+scroll without letting the next beat's words sit over the outgoing image. Beats
+05–07 remain one continuous terrain renderer and should not cut or reload
+between their internal chapter boundaries.
 
 ## Beat-by-beat direction
 
@@ -35,8 +36,9 @@ not cut or reload between their internal chapter boundaries.
 
 - The scene iframe is explicitly revealed only after the opening renderer is
   ready; the initial film no longer completes behind an invisible scene.
-- At every renderer change, the master defers its own beat label and subtitle
-  until that renderer exposes its public ready handle. This fixes the observed
+- At every renderer change, the master immediately stages the incoming beat
+  label but defers its subtitle until that renderer exposes its public ready
+  handle. This keeps a large scroll responsive while preventing the observed
   mismatch where the next beat's narration sat over the prior renderer's final
   frame.
 - The master continues to use one iframe. It does not create a second WebGL

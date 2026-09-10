@@ -17,6 +17,8 @@
   function year(y) { return y >= 1000 ? (y/1000).toFixed(y%1000?1:0)+" KA" : Math.round(y)+" BP"; }
   function paint(s) { $("act").textContent="Beat "+String(s.beat.id).padStart(2,"0")+" · "+year(s.beat.yearsBP[0])+" — "+year(s.beat.yearsBP[1]); $("title").textContent=s.beat.title;
     var text=segment(s); $("subtitle").textContent=text; $("subtitle").classList.toggle("on",!!text); }
+  function stage(s) { $("act").textContent="Beat "+String(s.beat.id).padStart(2,"0")+" · "+year(s.beat.yearsBP[0])+" — "+year(s.beat.yearsBP[1]); $("title").textContent=s.beat.title;
+    $("subtitle").textContent=""; $("subtitle").classList.remove("on"); }
   function childReady(id) { var w=frame.contentWindow; return w && (id===12 ? w.UNROLL : w["EMBER"+id]); }
   function settle() { var s=stateFor(cur);
     if (!pending) return;
@@ -24,7 +26,7 @@
     if (!childReady(pending)) return setTimeout(settle,60);
     active=pending; pending=null; loadedSrc=source(s); post(s); paint(s);
   }
-  function request(s) { pending=s.beat.id; frame.src=s.beat.src; frame.title="Beat "+pending+": "+s.beat.title; settle(); }
+  function request(s) { pending=s.beat.id; stage(s); frame.src=s.beat.src; frame.title="Beat "+pending+": "+s.beat.title; settle(); }
   function apply(t) { var s=stateFor(t), src=source(s);
     if (active === s.beat.id && !pending) { post(s); paint(s); return s; }
     if (src === loadedSrc && !pending) { active=s.beat.id; post(s); paint(s); return s; }
