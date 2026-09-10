@@ -1,0 +1,69 @@
+{
+ "_readme": "Built from timeline.json. t is the project's one deep-time float; do not edit by hand.",
+ "range": [
+  0.44,
+  0.85
+ ],
+ "beats": [
+  {
+   "id": 8,
+   "title": "The world gets smaller",
+   "yearsBP": [
+    39000,
+    26500
+   ],
+   "scrollWeight": 10,
+   "t0": 0.44,
+   "t1": 0.54,
+   "src": "../shrink/index.html"
+  },
+  {
+   "id": 9,
+   "title": "Mammoth steppe",
+   "yearsBP": [
+    26500,
+    23000
+   ],
+   "scrollWeight": 7,
+   "t0": 0.54,
+   "t1": 0.61,
+   "src": "../steppe/index.html"
+  },
+  {
+   "id": 10,
+   "title": "The sweep",
+   "yearsBP": [
+    23000,
+    14000
+   ],
+   "scrollWeight": 7,
+   "t0": 0.61,
+   "t1": 0.68,
+   "src": "../sweep/index.html"
+  },
+  {
+   "id": 11,
+   "title": "The doors close",
+   "yearsBP": [
+    14000,
+    8000
+   ],
+   "scrollWeight": 10,
+   "t0": 0.68,
+   "t1": 0.78,
+   "src": "../doors/index.html"
+  },
+  {
+   "id": 12,
+   "title": "Seeds",
+   "yearsBP": [
+    8000,
+    5000
+   ],
+   "scrollWeight": 7,
+   "t0": 0.78,
+   "t1": 0.85,
+   "src": "../unroll/index.html"
+  }
+ ]
+}

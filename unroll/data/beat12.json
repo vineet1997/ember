@@ -7,7 +7,7 @@
    8000,
    5000
   ],
-  "onScreen": "In at least six places, with no contact between them, we arrived at the same answer.",
+  "onScreen": "Across widely separated parts of the world, communities began to cultivate plants and reshape their landscapes. They did not learn this from one source. They found different ways of doing it for themselves.",
   "motion": 1
  },
  "centres": [
@@ -157,13 +157,5 @@
    "checked": "web-2026-09-08"
   }
  },
- "openQuestions": [
-  {
-   "id": "oq-beat12-sahel",
-   "question": "Beat 12's frame lights six places including 'the Sahel', and the Sahel does not fit inside the beat.",
-   "status": "open — for the director",
-   "detail": "Beat 12 runs 8,000-5,000 BP. The earliest defensible West African domestication is pearl millet: ~4,900 BP by genomes, ~4,500 BP by directly dated caryopses in the Tilemsi Valley. That is after the beat closes. THE COUNT SURVIVES WITHOUT IT: inside the window the defensible independent centres are the Yangtze, the northern millet belt, New Guinea, Mesoamerica and the Andes - five - plus the Fertile Crescent, which beat 11 has already fixed in place. Six, which is exactly what the on-screen line claims. Three ways out, and it is a director's call: drop the Sahel from beat 12's frame and keep the six; move the light to the beat 12/13 boundary and let it arrive as beat 13 opens, which is where the data puts it; or widen the beat, which costs beat 13 its opening. The event exists in the record either way, in beat 13, as west-africa-millet.",
-   "raised": "2026-09-08"
-  }
- ]
+ "openQuestions": []
 }

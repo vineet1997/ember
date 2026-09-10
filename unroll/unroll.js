@@ -69,7 +69,7 @@ function clamp(x, a, b) { return x < a ? a : x > b ? b : x; }
 function ss(x) { x = clamp(x, 0, 1); return x * x * (3 - 2 * x); }
 function lerp(a, b, f) { return a + (b - a) * f; }
 
-var D12 = null;              /* the beat's own record - see the loader */
+var D12 = null, D11 = null;  /* the two sides of the entry cut - see loader */
 var earth = $("earth"), over = $("over"), octx = over.getContext("2d");
 var W = 0, H = 0, DPR = 1, gl = null, prog = null, U = {}, TEXG = null;
 
@@ -228,10 +228,10 @@ function filmFrame(c) {
    and the globe flattens" is not a metaphor, it is a factor of three in
    altitude, and the storyboard wrote it down before anyone measured it.
 
-   BEAT 11 DOES NOT EXIST YET, so the entry pose is a placeholder that is
-   honest about being one: a wide globe over the Fertile Crescent, which is the
-   light beat 11 ends on. When beat 11 is built, its last keyframe replaces
-   row 0 and joinTest keeps the two cameras identical at k = 0.
+   Beat 11 now owns the entry pose. It is fetched from doors/data/beat11.json
+   before this scene starts, and rows 0 and 1 are replaced from that record.
+   There is deliberately no second hand-authored camera tuple here: a join that
+   looks identical until one director changes one side is not a join.
 
    The last channel is a LENS SHIFT — the camera slides along its own up-axis
    while the view direction stays put, which is what a rise-and-fall lens does.
@@ -256,8 +256,8 @@ function filmFrame(c) {
    atlas end. */
 var KEYS = [
   /*  t       k     lon    lat   alt   pitch bearing shift */
-  [0.000, 0.000,  38.0,  36.5, 3.60,   6,  0,   0.00],   /* beat 11's light */
-  [0.180, 0.000,  38.0,  36.5, 3.60,   6,  0,   0.00],   /* held: the entry */
+  [0.000, 0.000,  38.0,  36.5, 3.60,   6,  0,   0.00],   /* replaced from Beat 11 */
+  [0.180, 0.000,  38.0,  36.5, 3.60,   6,  0,   0.00],   /* held: same record */
   [0.300, 0.060,  30.0,  27.0, 4.30,   5,  0,   0.00],   /* a pull-back first */
   [0.620, 0.640,  16.0,  10.0, 7.60,   3,  0,  -0.10],
   [0.840, 1.000,  10.0,   0.0, 9.60,   0,  0,  -0.30],   /* flat on: the atlas */
@@ -1082,8 +1082,9 @@ function sphereTest() {
    swap to their flat-limit branch, and measures the step IN PIXELS. A branch on
    a uniform is allowed; a branch you have not measured is not.              */
 function joinTest() {
+  var entry = D11 && D11.finalCamera;
   var CASES = [
-    { lon: 38.0, lat: 36.5, alt: 3.60, pitch: 16, bearing: 0 },
+    entry || { lon: 38.0, lat: 36.5, alt: 3.60, pitch: 6, bearing: 0 },
     { lon: -99.5, lat: 18.0, alt: 1.20, pitch: 34, bearing: 120 },
     { lon: 144.33, lat: -5.78, alt: 0.42, pitch: 44, bearing: 305 },
     { lon: 10.0, lat: 0.0, alt: 9.60, pitch: 0, bearing: 0 },
@@ -1148,7 +1149,10 @@ function joinTest() {
     }
   }
 
-  var ok = worst < 1e-9 && step < 0.5 && clamped.length === 0;
+  var fromBeat11 = !!entry && ["lon", "lat", "alt", "pitch", "bearing"].every(function (k) {
+    return camAt(0)[k] === entry[k];
+  });
+  var ok = worst < 1e-9 && step < 0.5 && clamped.length === 0 && fromBeat11;
   $("o-join").innerHTML =
     (ok ? '<span class="ok">PASS</span>\n' : '<span class="bad">FAIL</span>\n') +
     "At k = 0 this slice's camera must BE the film's,\nnot resemble it: beat 12 is entered from beat 11 " +
@@ -1164,7 +1168,9 @@ function joinTest() {
     "   horizon. A high camera cannot pitch - the\n   ceiling is 12.2\u00b0 at 3.6 earth radii and 5.4\u00b0\n" +
     "   at 9.6 - and frame() clamping quietly is how\n   the entry pose came out as a cap at the\n" +
     "   bottom of an empty frame.\n" +
-    (clamped.length ? "   " + clamped.join("\n   ") + "\n" : "") + "\n" +
+    (clamped.length ? "   " + clamped.join("\n   ") + "\n" : "") +
+    (fromBeat11 ? "· entry tuple comes from Beat 11's generated record\n\n"
+                : "✗ entry tuple does not equal Beat 11's generated record\n\n") +
     "filmFrame() is the film's own function copied\nverbatim, in the FILM's convention - y is the pole,\n" +
     "x runs through 0E - and this slice's is the other\nchirality. The rotation between them is written\n" +
     "out in the test, so if either convention moves\nthis says so instead of a frame quietly\nreflecting.";
@@ -1192,22 +1198,22 @@ function purity() {
 
 /* LAW 03's JUSTIFICATION, RE-DERIVED HERE RATHER THAN QUOTED.
 
-   The storyboard says: from an Africa-centred globe only 2 of 6 agricultural
+   The storyboard says: from an Africa-centred globe only 1 of 6 agricultural
    centres are visible; the atlas shows 6 of 6. That is the entire argument for
    the atlas register existing, so this slice measures it rather than repeating
    it - and measures it on ITS OWN camera and ITS OWN surface, which could have
    produced a different answer.                                             */
 /* LAW 03'S JUSTIFICATION, RE-DERIVED RATHER THAN QUOTED.
 
-   The storyboard has said since Phase 3 that from an Africa-centred globe only
-   2 of 6 agricultural centres are visible and the atlas shows 6 of 6, and that
+   The storyboard now says that from an Africa-centred globe only
+   1 of 6 agricultural centres are visible and the atlas shows 6 of 6, and that
    measurement is the entire argument for the atlas register existing. So this
    slice measures it again, on its own camera and its own surface, which could
    have produced a different answer.
 
    IT DOES PRODUCE A DIFFERENT ANSWER FOR THE BEAT'S OWN POSE, and that is not
    a contradiction - it is the reason the test asserts the GAP and not a number.
-   The published 2-of-6 is a fact about an AFRICA-CENTRED globe. Beat 12 opens
+   The published 1-of-6 is a fact about an AFRICA-CENTRED globe. Beat 12 opens
    on the Fertile Crescent, because that is the light beat 11 fixes in place,
    and a globe centred there is turned about thirty degrees east and holds one
    more. Both are true; they are measurements of different shots.
@@ -1256,11 +1262,9 @@ function sixTest() {
     }).join("\n") +
     "\n\n  an Africa-centred globe        " + afr + " of " + N + "\n" +
     "  which is the storyboard's own shot.\n\n" +
-    "THE STORYBOARD'S PUBLISHED NUMBER IS 2 OF 6 AND\nTHIS SHOT NOW HOLDS " + afr +
-    ". The difference is the\nSahel: it was one of the two visible from Africa,\n" +
-    "and the data moved it to beat 13 because it\nbegins 4,900 BP against a beat that closes at\n" +
-    "5,000. The gap Law 03 rests on got WIDER, not\nnarrower - but the published figure is stale and\n" +
-    "the storyboard should say " + afr + " of " + N + ".\n\n" +
+    "THE STORYBOARD'S PUBLISHED NUMBER IS 1 OF 6 AND\nTHIS SHOT HOLDS " + afr +
+    ". The Sahel moved to beat 13 because it\nbegins 4,900 BP against a beat that closes at\n" +
+    "5,000. That correction made the atlas gap\nwider; the card and this measurement now agree.\n\n" +
     (full !== null ? "All " + N + " are in frame from k " + full.toFixed(2) +
       " onward: the\nregister stops being a globe well before it\nfinishes becoming an atlas.\n\n" : "") +
     "WHAT IS ASSERTED IS THE GAP, not a number: no\nglobe holds them all and the atlas does. The beat\n" +
@@ -1330,7 +1334,7 @@ function recordTest() {
 
 /* ═══ 7 · THE LOOP ═══════════════════════════════════════════════════════ */
 
-var target = 0, cur = 0, driving = "scrub";
+var target = 0, cur = 0, driving = "scrub", EXTERNAL = null;
 
 function resize() {
   DPR = Math.min(2, window.devicePixelRatio || 1);
@@ -1376,6 +1380,11 @@ function drawFrame(s) {
 }
 
 function loop() {
+  if (EXTERNAL) {
+    if (EXTERNAL.active) renderAt(EXTERNAL.t);
+    requestAnimationFrame(loop);
+    return;
+  }
   cur += (target - cur) * 0.10;
   drawFrame(stateFor(cur));
   requestAnimationFrame(loop);
@@ -1385,10 +1394,28 @@ function loop() {
    every automated browser throttles rAF to uselessness, which the film learned
    the expensive way */
 function renderAt(t) {
-  target = cur = t;
-  $("k").value = camAt(t).k;
-  return drawFrame(stateFor(t));
+  target = cur = clamp(t, 0, 1);
+  $("k").value = camAt(cur).k;
+  return drawFrame(stateFor(cur));
 }
+
+/* The 08–12 shell sends the local beat time directly.  It also explicitly
+   idles hidden iframes, so the shell has one active WebGL renderer at a time. */
+window.addEventListener("message", function (e) {
+  var m = e.data;
+  if (!m || m.type !== "one-ember:external-t") return;
+  if (typeof m.presentation === "boolean") {
+    document.documentElement.classList.toggle("presentation", m.presentation);
+    if (!document.getElementById("presentation-style")) {
+      var style = document.createElement("style");
+      style.id = "presentation-style";
+      style.textContent = "html.presentation #head,html.presentation #copy,html.presentation #state,html.presentation #scrub,html.presentation #hint,html.presentation #panel{display:none!important}";
+      document.head.appendChild(style);
+    }
+  }
+  EXTERNAL = { active: !!m.active, t: clamp(+m.t || 0, 0, 1) };
+  if (EXTERNAL.active && gl) renderAt(EXTERNAL.t);
+});
 
 function start() {
   initGL();
@@ -1419,7 +1446,7 @@ function start() {
                     agreementTest: agreementTest, sphereTest: sphereTest,
                     purity: purity, sixTest: sixTest, recordTest: recordTest,
                     joinTest: joinTest, filmFrame: filmFrame, pitchMax: pitchMax,
-                    D12: D12, LON0: LON0 };
+                    D11: D11, D12: D12, LON0: LON0 };
   requestAnimationFrame(loop);
   setTimeout(function () { $("load").classList.add("off"); }, 260);
 }
@@ -1444,6 +1471,14 @@ Promise.all([
       VOICE.line = j.beat.onScreen;
       $("lbar").style.width = "35%";
       $("lmsg").textContent = "the earth, 2048 x 1024";
+    }),
+  fetch("../doors/data/beat11.json").then(function (r) { return r.json(); })
+    .then(function (j) {
+      D11 = j;
+      var c = j.finalCamera;
+      /* The hold belongs to the transition, but its pose belongs to Beat 11. */
+      KEYS[0] = [0.000, 0.000, c.lon, c.lat, c.alt, c.pitch, c.bearing, 0.00];
+      KEYS[1] = [0.180, 0.000, c.lon, c.lat, c.alt, c.pitch, c.bearing, 0.00];
     }),
   image("../slice/data/bathy_global.png").then(function (i) { TEXG = i; })
 ]).then(function () {

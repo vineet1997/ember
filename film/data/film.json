@@ -1,0 +1,177 @@
+{
+ "_readme": "One global deep-time t, built from timeline.json.",
+ "range": [
+  0,
+  1
+ ],
+ "beats": [
+  {
+   "id": 1,
+   "title": "The dark earth",
+   "yearsBP": [
+    300000,
+    260000
+   ],
+   "scrollWeight": 4,
+   "t0": 0.0,
+   "t1": 0.04,
+   "src": "../origins/index.html?beat=1"
+  },
+  {
+   "id": 2,
+   "title": "Shimmer",
+   "yearsBP": [
+    260000,
+    200000
+   ],
+   "scrollWeight": 6,
+   "t0": 0.04,
+   "t1": 0.1,
+   "src": "../origins/index.html?beat=2"
+  },
+  {
+   "id": 3,
+   "title": "The failed doors",
+   "yearsBP": [
+    200000,
+    76000
+   ],
+   "scrollWeight": 7,
+   "t0": 0.1,
+   "t1": 0.17,
+   "src": "../origins/index.html?beat=3"
+  },
+  {
+   "id": 4,
+   "title": "Toba",
+   "yearsBP": [
+    76000,
+    60000
+   ],
+   "scrollWeight": 6,
+   "t0": 0.17,
+   "t1": 0.23,
+   "src": "../origins/index.html?beat=4"
+  },
+  {
+   "id": 5,
+   "title": "The line that held",
+   "yearsBP": [
+    60000,
+    50000
+   ],
+   "scrollWeight": 7,
+   "t0": 0.23,
+   "t1": 0.3,
+   "src": "../slice/index.html"
+  },
+  {
+   "id": 6,
+   "title": "The crossing to Sahul",
+   "yearsBP": [
+    50000,
+    43000
+   ],
+   "scrollWeight": 8,
+   "t0": 0.3,
+   "t1": 0.38,
+   "src": "../slice/index.html"
+  },
+  {
+   "id": 7,
+   "title": "The others",
+   "yearsBP": [
+    43000,
+    39000
+   ],
+   "scrollWeight": 6,
+   "t0": 0.38,
+   "t1": 0.44,
+   "src": "../slice/index.html"
+  },
+  {
+   "id": 8,
+   "title": "The world gets smaller",
+   "yearsBP": [
+    39000,
+    26500
+   ],
+   "scrollWeight": 10,
+   "t0": 0.44,
+   "t1": 0.54,
+   "src": "../shrink/index.html"
+  },
+  {
+   "id": 9,
+   "title": "Mammoth steppe",
+   "yearsBP": [
+    26500,
+    23000
+   ],
+   "scrollWeight": 7,
+   "t0": 0.54,
+   "t1": 0.61,
+   "src": "../steppe/index.html"
+  },
+  {
+   "id": 10,
+   "title": "The sweep",
+   "yearsBP": [
+    23000,
+    14000
+   ],
+   "scrollWeight": 7,
+   "t0": 0.61,
+   "t1": 0.68,
+   "src": "../sweep/index.html"
+  },
+  {
+   "id": 11,
+   "title": "The doors close",
+   "yearsBP": [
+    14000,
+    8000
+   ],
+   "scrollWeight": 10,
+   "t0": 0.68,
+   "t1": 0.78,
+   "src": "../doors/index.html"
+  },
+  {
+   "id": 12,
+   "title": "Seeds",
+   "yearsBP": [
+    8000,
+    5000
+   ],
+   "scrollWeight": 7,
+   "t0": 0.78,
+   "t1": 0.85,
+   "src": "../unroll/index.html"
+  },
+  {
+   "id": 13,
+   "title": "Across water",
+   "yearsBP": [
+    5000,
+    800
+   ],
+   "scrollWeight": 8,
+   "t0": 0.85,
+   "t1": 0.93,
+   "src": "../ocean/index.html"
+  },
+  {
+   "id": 14,
+   "title": "The human web",
+   "yearsBP": [
+    800,
+    0
+   ],
+   "scrollWeight": 7,
+   "t0": 0.93,
+   "t1": 1.0,
+   "src": "../epilogue/index.html"
+  }
+ ]
+}
