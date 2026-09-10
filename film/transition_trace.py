@@ -22,6 +22,8 @@ with sync_playwright() as playwright:
         iframeTitle:document.querySelector('iframe').title};
     }""")
     page.wait_for_function("window.FILM.pending === null", timeout=180000)
+    page.wait_for_function("""() => window.FILM.diagnostics().events.some(
+      event => event.type === 'child-first-frame' && event.detail.beat === 8)""", timeout=180000)
     trace = page.evaluate("() => window.FILM.diagnostics()")
     browser.close()
 
@@ -30,3 +32,9 @@ assert not errors, errors
 assert immediate == {"active": 1, "pending": 8, "title": "The dark earth", "iframeTitle": "Beat 8: The world gets smaller"}
 assert any(event["type"] == "request" and event["detail"]["beat"] == 8 for event in trace["events"])
 assert any(event["type"] == "commit" and event["detail"]["beat"] == 8 for event in trace["events"])
+child_frame = next(event["detail"] for event in trace["events"]
+                   if event["type"] == "child-first-frame" and event["detail"]["beat"] == 8)
+assert {key: child_frame[key] for key in ("beat", "covers", "handle", "loaderHidden")} == {
+    "beat": 8, "covers": [8], "handle": "EMBER8", "loaderHidden": True,
+}
+assert child_frame["firstFrameAt"] >= 0

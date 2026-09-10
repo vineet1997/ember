@@ -8,6 +8,7 @@ with sync_playwright() as p:
     page.on("pageerror", lambda error: errors.append(str(error)))
     page.goto("http://127.0.0.1:8899/film/index.html", wait_until="load", timeout=60000)
     page.wait_for_function("window.FILM && window.FILM.ready", timeout=180000)
+    page.wait_for_function("window.FILM.childFrames[1]", timeout=180000)
     page.wait_for_function("""() => { const f=document.querySelector('iframe');
       return f && f.contentDocument && f.contentDocument.documentElement.classList.contains('presentation'); }""")
     result = page.evaluate("""() => {

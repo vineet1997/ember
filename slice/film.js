@@ -4049,3 +4049,10 @@ function start() {
 }
 
 })();
+
+/* Beats 5–7 run inside this renderer and use the shared readiness contract. */
+(function () {
+  var script = document.createElement("script");
+  script.src = new URL("../film/child-ready.js", location.href).href;
+  document.head.appendChild(script);
+})();

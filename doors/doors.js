@@ -50,3 +50,10 @@ function join(){var want=D.finalCamera,got=camAt(1),keys=["lon","lat","alt","pit
 function boot(v){D=v;init();resize();var presentation=document.createElement("style");presentation.textContent="html.presentation #head,html.presentation #copy,html.presentation #state,html.presentation #ruler,html.presentation #hint,html.presentation #panel{display:none!important}";document.head.appendChild(presentation);addEventListener("resize",resize);addEventListener("keydown",function(e){if(e.key.toLowerCase()==="i")$("panel").classList.toggle("on")});addEventListener("message",function(e){var m=e.data;if(!m||m.type!=="one-ember:external-t")return;if(typeof m.presentation==="boolean")document.documentElement.classList.toggle("presentation",m.presentation);external={active:!!m.active,t:clamp(+m.t||0,0,1)};if(external.active)renderAt(external.t)});$("t-purity").onclick=purity;var jb=$("t-join");if(jb)jb.onclick=join;$("load").classList.add("off");running=true;window["EMBER"+CFG.id]={stateFor:stateFor,camAt:camAt,frame:frame,finalCamera:D.finalCamera,purity:purity,join:join,renderAt:renderAt,D:D};tick()}
 Promise.all([fetch(CFG.data).then(function(r){return r.json()}),image("../data/bathymetry.png"),image("../data/ice_atlas.png")]).then(function(x){bathy=x[1];ice=x[2];boot(x[0])}).catch(function(e){$("lmsg").textContent=String(e.message||e);$("lmsg").style.color="#E8703A"});
 })();
+
+/* Every doors-based beat shares the same parent-facing first-frame contract. */
+(function () {
+  var script = document.createElement("script");
+  script.src = new URL("../film/child-ready.js", location.href).href;
+  document.head.appendChild(script);
+})();

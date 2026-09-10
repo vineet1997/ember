@@ -1490,3 +1490,10 @@ Promise.all([
 });
 
 })();
+
+/* Beat 12 reports through the same readiness contract as the other children. */
+(function () {
+  var script = document.createElement("script");
+  script.src = new URL("../film/child-ready.js", location.href).href;
+  document.head.appendChild(script);
+})();

@@ -1,6 +1,6 @@
 /* The master shell owns one deep-time t. It keeps exactly one WebGL child alive. */
 (function () { "use strict";
-  var D, N, frame, active = null, pending = null, loadedSrc = "", ready = false, target = 0, cur = 0, contractReported = null;
+  var D, N, frame, active = null, pending = null, loadedSrc = "", ready = false, target = 0, cur = 0, contractReported = null, childFrames = {};
   var diag=window.EMBER_DIAGNOSTICS || {record:function(){},childResources:function(){return {};}};
   var $ = function (id) { return document.getElementById(id); };
   function clamp(x, a, b) { return x < a ? a : x > b ? b : x; }
@@ -19,6 +19,10 @@
   function paint(s) { $("act").textContent="Beat "+String(s.beat.id).padStart(2,"0")+" · "+year(s.beat.yearsBP[0])+" — "+year(s.beat.yearsBP[1]); $("title").textContent=s.beat.title;
     var text=segment(s); $("subtitle").textContent=text; $("subtitle").classList.toggle("on",!!text); }
   function childReady(id) { var w=frame.contentWindow; return w && (id===12 ? w.UNROLL : w["EMBER"+id]); }
+  addEventListener("message",function(e){var m=e.data;if(!m||m.type!=="one-ember:child-ready"||!frame||e.source!==frame.contentWindow)return;
+    (m.covers||[m.beat]).forEach(function(id){childFrames[id]=m;});
+    diag.record("child-first-frame",{beat:m.beat,covers:m.covers,handle:m.handle,firstFrameAt:m.firstFrameAt,loaderHidden:m.loaderHidden});
+  });
   function settle() { var s=stateFor(cur);
     if (!pending) return;
     if (s.beat.id !== pending) return request(s);
@@ -48,5 +52,5 @@
   function buildRuler(){$("ticks").innerHTML=D.beats.map(function(b){return '<span class="tick" style="left:'+(b.t0*100).toFixed(3)+'%"><i>'+year(b.yearsBP[0])+'</i></span>';}).join("")+'<span class="tick hot" style="left:100%"><i style="transform:translateX(-100%)">now</i></span>';}
   function wait(){if(!childReady(D.beats[0].id))return setTimeout(wait,60);ready=true;loadedSrc=source(stateFor(0));renderAt(0);frame.classList.add("on");$("bar").style.width="100%";$("status").textContent="ready · one renderer";$("load").classList.add("off");diag.record("initial-ready",{beat:1,resources:diag.childResources(frame),firstMeaningfulFrame:null})}
   function purity(){var f=[],b=[],i;for(i=0;i<=400;i++)f.push(JSON.stringify(stateFor(i/400)));for(i=400;i>=0;i--)b.unshift(JSON.stringify(stateFor(i/400)));return f.every(function(v,n){return v===b[n]})}
-  Promise.all([fetch("data/film.json").then(function(r){return r.json()}),fetch("../story/narration.json").then(function(r){return r.json()})]).then(function(x){D=x[0];N=x[1];buildRuler();installInput();frame=document.createElement("iframe");frame.setAttribute("aria-label","One Ember visual scene");frame.setAttribute("tabindex","-1");frame.addEventListener("load",function(){diag.record("iframe-load",{title:frame.title,resources:diag.childResources(frame)});});$("stack").appendChild(frame);frame.src=D.beats[0].src;frame.title="Beat 1: "+D.beats[0].title;active=1;window.FILM={D:D,stateFor:stateFor,renderAt:renderAt,purity:purity,diagnostics:function(){return window.EMBER_DIAGNOSTICS.snapshot()},get active(){return active},get pending(){return pending},get ready(){return ready}};wait();requestAnimationFrame(tick)}).catch(function(e){diag.record("boot-error",{message:String(e.message||e)});$("status").textContent=String(e.message||e)});
+  Promise.all([fetch("data/film.json").then(function(r){return r.json()}),fetch("../story/narration.json").then(function(r){return r.json()})]).then(function(x){D=x[0];N=x[1];buildRuler();installInput();frame=document.createElement("iframe");frame.setAttribute("aria-label","One Ember visual scene");frame.setAttribute("tabindex","-1");frame.addEventListener("load",function(){diag.record("iframe-load",{title:frame.title,resources:diag.childResources(frame)});});$("stack").appendChild(frame);frame.src=D.beats[0].src;frame.title="Beat 1: "+D.beats[0].title;active=1;window.FILM={D:D,stateFor:stateFor,renderAt:renderAt,purity:purity,diagnostics:function(){return window.EMBER_DIAGNOSTICS.snapshot()},get childFrames(){return Object.assign({},childFrames)},get active(){return active},get pending(){return pending},get ready(){return ready}};wait();requestAnimationFrame(tick)}).catch(function(e){diag.record("boot-error",{message:String(e.message||e)});$("status").textContent=String(e.message||e)});
 }());
