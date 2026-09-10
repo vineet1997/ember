@@ -115,6 +115,8 @@ function step(msg) {
    bindTile(), where the fallback is arranged so the shader mixes the global
    field with ITSELF and the frame is that field exactly.                    */
 function terrainAsset(stem) {
+  var delivered = window.EMBER_TERRAIN_ASSETS && window.EMBER_TERRAIN_ASSETS[stem];
+  if (delivered) return delivered;
   return { webp: "data/" + stem + ".webp", png: "data/" + stem + ".png" };
 }
 var GLOBE = terrainAsset("bathy_global_overview");

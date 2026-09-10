@@ -11,3 +11,7 @@ spike/bathy_*.png
 
 # Playwright shot-check output
 .playwright-mcp/
+
+# Vercel's generated static deployment output. The build starts from source on
+# every deployment; this directory must never be published as source itself.
+.vercel/

@@ -1,0 +1,22 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "python3 data/build_vercel_static.py",
+  "outputDirectory": ".vercel/output/static",
+  "rewrites": [
+    { "source": "/", "destination": "/film/" }
+  ],
+  "headers": [
+    {
+      "source": "/terrain/:path*",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    },
+    {
+      "source": "/slice/data/terrain_delivery.js",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }
+      ]
+    }
+  ]
+}

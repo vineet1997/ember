@@ -118,6 +118,29 @@ continuity, and the failure state in headless Chromium. It does **not** claim
 the three time budgets above: those still require a visible-browser, cold-cache
 Slow 4G trace at the target display and a representative switch-pose capture.
 
+## Phase 4 production cache contract
+
+`data/build_vercel_static.py` creates the only static artifact intended for
+Vercel. It copies the runtime film surface into `.vercel/output/static`, then
+publishes every browser-used terrain raster at `/terrain/<name>.<sha256>.ext`.
+The source-named fields remain in the repository for builders, evidence checks
+and the local no-cache server, but do not appear at mutable names in the public
+artifact. A changed terrain byte therefore creates a changed URL; Vercel may
+serve that URL with `Cache-Control: public, max-age=31536000, immutable`
+without risking a stale coastline after a deployment.
+
+The generated `slice/data/terrain_delivery.js` is intentionally revalidated on
+each navigation. It maps the film's logical field names to the current
+fingerprinted URLs; source pages and source data keep normal deployment cache
+behaviour. `data/check_vercel_static.py` builds the artifact and refuses a
+mutable terrain alias, a missing/digest-mismatched object, an unrewritten later
+scene reference, or an absent immutable-header contract.
+
+No service worker is installed in this phase. The atlas remains the readable
+route for an interrupted terrain download, and a cache that could pin an old
+historical/data release is not an improvement until offline and update rules
+have been designed and tested.
+
 ## Benchmark result
 
 Pillow 12.3.0 lossless WebP, encoder method 6, produced the numbers above.
