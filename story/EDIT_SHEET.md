@@ -11,7 +11,9 @@ cut: the master immediately stages the incoming beat's heading, but withholds
 its narration until the incoming renderer is ready. That acknowledges a large
 scroll without letting the next beat's words sit over the outgoing image. Beats
 05–07 remain one continuous terrain renderer and should not cut or reload
-between their internal chapter boundaries.
+between their internal chapter boundaries. A large scroll jump selects its
+destination renderer immediately; it never walks through every intervening
+beat and restarts their loads.
 
 ## Beat-by-beat direction
 
