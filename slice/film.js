@@ -57,6 +57,7 @@ if (GATED) { $("gate").classList.add("on"); return; }
 /* ═══ 1 · BOOT ═══════════════════════════════════════════════════════════ */
 
 var D = null, TEXG = null, TXG = null, gl = null, prog = null, U = {};
+var MAIN_VAO = null, DECODE_PASS = null;
 /* The three frame tiles, by id. Only ONE is bound at a time - see section 7,
    tileFor(t): the camera is only ever in one of them, and swapping on the CPU
    keeps the shader at two elevation fetches instead of eight. */
@@ -815,6 +816,23 @@ var FRAG =
 "  frag = vec4(col*uFade, 1.0);\n" +
 "}\n";
 
+/* One exact Terrain-RGB expansion pass. The source stays nearest-filtered at
+   level zero, so its R and G bytes are never averaged before they become
+   elevation. The destination is the same R16F field the CPU route used to
+   upload, which means its mip pyramid averages metres rather than encoded
+   colour. */
+var DECODE_FRAG =
+"#version 300 es\n" +
+"precision highp float;\n" +
+"uniform sampler2D uSource;\n" +
+"uniform float uScale, uOffset;\n" +
+"out vec4 frag;\n" +
+"void main(){\n" +
+"  ivec2 p = ivec2(gl_FragCoord.xy);\n" +
+"  vec2 rg = texelFetch(uSource, p, 0).rg * 255.0;\n" +
+"  frag = vec4((rg.r*256.0 + rg.g)*uScale + uOffset, 0.0, 0.0, 1.0);\n" +
+"}\n";
+
 /* WHICH FRAME TILE IS BOUND, as a function of t.
 
    Three beats now need three high-resolution tiles, and the obvious move was
@@ -859,6 +877,22 @@ function shader(type, src) {
 }
 var ANISO = 0, FLOAT_ELEV = false;
 
+function compileDecodePass() {
+  if (!FLOAT_ELEV) return null;
+  var p = gl.createProgram();
+  gl.attachShader(p, shader(gl.VERTEX_SHADER, VERT));
+  gl.attachShader(p, shader(gl.FRAGMENT_SHADER, DECODE_FRAG));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+    gl.deleteProgram(p);
+    return null;
+  }
+  return { prog: p,
+           source: gl.getUniformLocation(p, "uSource"),
+           scale: gl.getUniformLocation(p, "uScale"),
+           offset: gl.getUniformLocation(p, "uOffset") };
+}
+
 /* Terrain-RGB is not mip-safe, and this cost a day to find.
 
    Elevation is stored as (R*256 + G), so R is the high byte. A mip level
@@ -893,7 +927,94 @@ function decodePNG(img, meta, timing) {
   return out;
 }
 
+function mipLevels(w, h) { return 1 + Math.floor(Math.log2(Math.max(w, h))); }
+
+/* This is deliberately not a GPU benchmark. Like the upload and mip clocks,
+   it measures command issue time, not hidden completion. The important change
+   is structural: no canvas drawImage/getImageData and no 48 MB readback exist
+   on the main thread on this route. */
+function gpuElevTexture(img, wrap, meta, timing) {
+  var priorUnit = gl.getParameter(gl.ACTIVE_TEXTURE);
+  var source = gl.createTexture(), tx = gl.createTexture(), fb = gl.createFramebuffer();
+  var w = img.width, h = img.height, mip = true;
+  try {
+    gl.activeTexture(gl.TEXTURE3);
+    gl.bindTexture(gl.TEXTURE_2D, source);
+    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+    var uploadAt = performance.now();
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB8, gl.RGB, gl.UNSIGNED_BYTE, img);
+    timing.sourceUpload = performance.now() - uploadAt;
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    gl.activeTexture(priorUnit);
+    gl.bindTexture(gl.TEXTURE_2D, tx);
+    gl.texStorage2D(gl.TEXTURE_2D, mipLevels(w, h), gl.R16F, w, h);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrap);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
+    gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tx, 0);
+    if (gl.checkFramebufferStatus(gl.FRAMEBUFFER) !== gl.FRAMEBUFFER_COMPLETE)
+      throw new Error("float elevation target is not renderable");
+    gl.useProgram(DECODE_PASS.prog);
+    gl.uniform1i(DECODE_PASS.source, 3);
+    gl.uniform1f(DECODE_PASS.scale, meta.scale);
+    gl.uniform1f(DECODE_PASS.offset, meta.offset);
+    gl.viewport(0, 0, w, h);
+    var decodeAt = performance.now();
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    timing.gpuDecode = performance.now() - decodeAt;
+
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.activeTexture(priorUnit);
+    gl.bindTexture(gl.TEXTURE_2D, tx);
+    var mipAt = performance.now();
+    try { gl.generateMipmap(gl.TEXTURE_2D); } catch (e) { mip = false; }
+    timing.mipmap = performance.now() - mipAt;
+    if (gl.getError() !== gl.NO_ERROR) mip = false;
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER,
+                     mip ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
+    var ext = gl.getExtension("EXT_texture_filter_anisotropic");
+    if (ext && mip) {
+      ANISO = Math.min(4, gl.getParameter(ext.MAX_TEXTURE_MAX_ANISOTROPY_EXT));
+      gl.texParameterf(gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT, ANISO);
+    }
+    return tx;
+  } catch (e) {
+    gl.deleteTexture(tx);
+    throw e;
+  } finally {
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.deleteFramebuffer(fb);
+    gl.deleteTexture(source);
+    gl.useProgram(prog);
+    gl.bindVertexArray(MAIN_VAO);
+    gl.viewport(0, 0, earth.width, earth.height);
+    gl.activeTexture(priorUnit);
+  }
+}
+
 function elevTexture(img, wrap, meta, timing) {
+  if (DECODE_PASS) {
+    try {
+      if (timing) timing.path = "gpu";
+      return gpuElevTexture(img, wrap, meta, timing || {});
+    } catch (gpuError) {
+      /* A renderable float target is optional even after the extension check.
+         The established CPU route preserves the film on unusual WebGL stacks. */
+      if (timing) {
+        timing.path = "cpu fallback";
+        timing.gpuError = String(gpuError && gpuError.message || gpuError);
+        timing.sourceUpload = null; timing.gpuDecode = null; timing.mipmap = null;
+      }
+    }
+  }
   var tx = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, tx);
   gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
@@ -988,7 +1109,8 @@ function initGL() {
   if (!gl.getProgramParameter(prog, gl.LINK_STATUS))
     throw new Error(gl.getProgramInfoLog(prog));
   gl.useProgram(prog);
-  gl.bindVertexArray(gl.createVertexArray());
+  MAIN_VAO = gl.createVertexArray();
+  gl.bindVertexArray(MAIN_VAO);
 
   ["uRes", "uGlobal", "uTile", "uBox", "uScale", "uOffset", "uSea", "uTanHalf", "uFloatElev", "uDebug", "uGlobalSize", "uTileSize",
    "uChill", "uFade", "uGhost", "uCopy", "uCam", "uFwd", "uUp", "uRight"]
@@ -998,6 +1120,7 @@ function initGL() {
   gl.uniform1f(U.uTanHalf, TAN_HALF);
 
   FLOAT_ELEV = !!gl.getExtension("EXT_color_buffer_float");
+  DECODE_PASS = compileDecodePass();
   /* KEPT, not discarded: bindTile() puts this same texture into the tile slot
      while a tile is still in flight. */
   gl.activeTexture(gl.TEXTURE0); TXG = elevTexture(TEXG, gl.REPEAT, any);
@@ -3644,7 +3767,14 @@ function panel(s) {
   var tt = TILE_TIMING;
   function timingText(v) { return typeof v === "number" ? v.toFixed(1) + " ms" : "—"; }
   $("p-defer-tile").textContent = tt.tile ? tt.tile + "  ·  " + tt.state : tt.state;
-  $("p-defer-canvas").textContent = timingText(tt.imageDecode) + " / " + timingText(tt.readback);
+  var gpuPath = tt.path === "gpu";
+  $("p-defer-canvas-label").textContent = gpuPath
+    ? "source upload / GPU conversion"
+    : "image decode / canvas readback";
+  $("p-defer-canvas").textContent = gpuPath
+    ? timingText(tt.sourceUpload) + " / " + timingText(tt.gpuDecode)
+    : timingText(tt.imageDecode) + " / " + timingText(tt.readback);
+  $("p-defer-upload-row").style.display = gpuPath ? "none" : "flex";
   $("p-defer-upload").textContent = timingText(tt.terrainDecode) + " / " + timingText(tt.upload);
   $("p-defer-total").textContent = timingText(tt.mipmap) + " / " + timingText(tt.total);
   if (f) {

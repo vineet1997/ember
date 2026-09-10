@@ -128,6 +128,26 @@ def cmd_verify(a):
         if errors:
             fails.append("page errors on the film: %s" % errors)
 
+        # This is the regression guard for the Slow-4G hitch investigation.
+        # The SwiftShader renderer is not meaningful for milliseconds, but it
+        # does expose the float render target that makes the no-readback route
+        # possible.  Wait for both deferred tiles and ask which route actually
+        # completed; a picture alone cannot tell us whether it came through
+        # getImageData() first.
+        settle(page)
+        terrain = page.evaluate("() => window.EMBER.tileTiming()")
+        gpu_ok = (terrain.get("state") == "complete" and
+                  terrain.get("path") == "gpu" and
+                  terrain.get("readback") is None and
+                  terrain.get("terrainDecode") is None and
+                  isinstance(terrain.get("sourceUpload"), (int, float)) and
+                  isinstance(terrain.get("gpuDecode"), (int, float)))
+        print("  deferred tile route: %s  canvas readback: %s"
+              % (terrain.get("path") or "CPU fallback", terrain.get("readback")))
+        if not gpu_ok:
+            fails.append("the deferred terrain tile did not use the GPU conversion route: %r"
+                         % terrain)
+
     # ── the two background tiles, aborted ────────────────────────────────
     # 1280x800 exactly, which is the smallest viewport the gate lets through -
     # SwiftShader charges by the pixel and this is asking whether the film RUNS
