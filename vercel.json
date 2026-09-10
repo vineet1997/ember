@@ -2,8 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "buildCommand": "python3 data/build_vercel_static.py",
   "outputDirectory": ".vercel/output/static",
-  "rewrites": [
-    { "source": "/", "destination": "/film/" }
+  "redirects": [
+    { "source": "/", "destination": "/film/", "permanent": false }
   ],
   "headers": [
     {

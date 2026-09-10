@@ -64,8 +64,8 @@ def main() -> None:
         for h in immutable[0].get("headers", [])
     ):
         fail("vercel.json does not give immutable terrain URLs a one-year cache contract")
-    if config.get("rewrites") != [{"source": "/", "destination": "/film/"}]:
-        fail("the production root does not enter the master film")
+    if config.get("redirects") != [{"source": "/", "destination": "/film/", "permanent": False}]:
+        fail("the production root does not redirect into the master film's relative-URL base")
     if any(output.rglob("service-worker.js")):
         fail("a service worker entered the artifact without an offline-data decision")
 

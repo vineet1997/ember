@@ -6,7 +6,9 @@ in `vercel.json` supplies the build and output settings. No token, project id,
 or `.vercel` directory belongs in Git.
 
 Every GitHub branch receives a Vercel preview. `main` is the production branch.
-The project root rewrites to `/film/`, the fourteen-beat master film.
+The project root redirects to `/film/`, the fourteen-beat master film. The
+redirect matters: the master film's JavaScript and data use relative URLs and
+must resolve beneath `/film/`, not from the bare domain root.
 
 ## What the build publishes
 
