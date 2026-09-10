@@ -36,8 +36,18 @@
   function renderAt(t) { cur=target=clamp(t,0,1);return apply(cur); }
   function advance(t) { t=clamp(t,0,1); cur=Math.abs(t-cur)>.08 ? t : cur+(t-cur)*.14; return apply(cur); }
   function tick(){if(ready){target=clamp(scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight),0,1);advance(target)}requestAnimationFrame(tick)}
+  function installInput(){var input=$("input"),touchY=null;
+    function focus(){input.focus({preventScroll:true})}
+    function move(y){scrollBy(0,y)}
+    input.addEventListener("pointerdown",focus);
+    input.addEventListener("wheel",function(e){e.preventDefault();move(e.deltaY)},{passive:false});
+    input.addEventListener("touchstart",function(e){touchY=e.touches[0].clientY},{passive:true});
+    input.addEventListener("touchmove",function(e){var y=e.touches[0].clientY;if(touchY!==null){e.preventDefault();move(touchY-y);touchY=y}},{passive:false});
+    addEventListener("keydown",function(e){var d=0;if(e.key==="End"){e.preventDefault();scrollTo(0,document.documentElement.scrollHeight);return}if(e.key==="Home"){e.preventDefault();scrollTo(0,0);return}if(e.key==="PageDown"||e.key===" ")d=innerHeight*.82;else if(e.key==="PageUp")d=-innerHeight*.82;else if(e.key==="ArrowDown")d=80;else if(e.key==="ArrowUp")d=-80;if(d){e.preventDefault();move(d)}},true);
+    focus();
+  }
   function buildRuler(){$("ticks").innerHTML=D.beats.map(function(b){return '<span class="tick" style="left:'+(b.t0*100).toFixed(3)+'%"><i>'+year(b.yearsBP[0])+'</i></span>';}).join("")+'<span class="tick hot" style="left:100%"><i style="transform:translateX(-100%)">now</i></span>';}
   function wait(){if(!childReady(D.beats[0].id))return setTimeout(wait,60);ready=true;loadedSrc=source(stateFor(0));renderAt(0);frame.classList.add("on");$("bar").style.width="100%";$("status").textContent="ready · one renderer";$("load").classList.add("off")}
   function purity(){var f=[],b=[],i;for(i=0;i<=400;i++)f.push(JSON.stringify(stateFor(i/400)));for(i=400;i>=0;i--)b.unshift(JSON.stringify(stateFor(i/400)));return f.every(function(v,n){return v===b[n]})}
-  Promise.all([fetch("data/film.json").then(function(r){return r.json()}),fetch("../story/narration.json").then(function(r){return r.json()})]).then(function(x){D=x[0];N=x[1];buildRuler();frame=document.createElement("iframe");frame.setAttribute("aria-label","One Ember visual scene");$("stack").appendChild(frame);frame.src=D.beats[0].src;frame.title="Beat 1: "+D.beats[0].title;active=1;window.FILM={D:D,stateFor:stateFor,renderAt:renderAt,advance:advance,purity:purity,get active(){return active},get pending(){return pending},get ready(){return ready}};wait();requestAnimationFrame(tick)}).catch(function(e){$("status").textContent=String(e.message||e)});
+  Promise.all([fetch("data/film.json").then(function(r){return r.json()}),fetch("../story/narration.json").then(function(r){return r.json()})]).then(function(x){D=x[0];N=x[1];buildRuler();installInput();frame=document.createElement("iframe");frame.setAttribute("aria-label","One Ember visual scene");frame.setAttribute("tabindex","-1");$("stack").appendChild(frame);frame.src=D.beats[0].src;frame.title="Beat 1: "+D.beats[0].title;active=1;window.FILM={D:D,stateFor:stateFor,renderAt:renderAt,advance:advance,purity:purity,get active(){return active},get pending(){return pending},get ready(){return ready}};wait();requestAnimationFrame(tick)}).catch(function(e){$("status").textContent=String(e.message||e)});
 }());
