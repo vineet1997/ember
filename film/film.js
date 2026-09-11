@@ -34,7 +34,10 @@
      Route before staging anything so a narrow reader gets the complete atlas,
      never a technical child-loader timeout. */
   function readableReason() { var c=diag.snapshot().capability||{};if(!c.webgl)return "no-webgl";if(innerWidth<1280||innerHeight<700)return "narrow";return ""; }
-  function stageBudget() { var requested=Number(new URLSearchParams(location.search).get("stage-timeout")); return diag.enabled&&isFinite(requested)&&requested>0 ? requested : 30000; }
+  function timeoutOverride() { var requested=Number(new URLSearchParams(location.search).get("stage-timeout")); return diag.enabled&&isFinite(requested)&&requested>0 ? requested : 0; }
+  /* A hidden rich preload should be quick. A longer wait is only useful once
+     we have fallen back to the one-context serial path. */
+  function stageBudget(serial) { var requested=timeoutOverride(); return requested || (serial ? 30000 : 8000); }
   function installStageSurface() { var style=document.createElement("style");
     style.textContent="#stack iframe.scene{z-index:0;transition:opacity .22s ease}#stack iframe.scene.incoming{z-index:1}#still{position:fixed;inset:0;z-index:3;width:100%;height:100%;display:none;background:#04060a;pointer-events:none}#still.on{display:block}#bridge{position:fixed;inset:0;z-index:4;display:none;place-content:center;text-align:center;padding:32px;color:#8fa8c4;font:400 11px/1.6 var(--mono);letter-spacing:.1em;text-transform:uppercase;pointer-events:none}#bridge.on{display:grid}#bridge>div{padding:10px 12px;background:rgba(4,6,10,.8)}#bridge button,#bridge a{margin:10px 5px 0;padding:7px 10px;border:1px solid #647c99;background:#04060a;color:#e6e2d8;font:inherit;text-decoration:none;pointer-events:auto}#ruler{pointer-events:auto}#ruler .tick{padding:0;border:0;background:none;cursor:pointer;pointer-events:auto;transform:translateX(-50%)}#ruler .tick:first-child{transform:none}#ruler .tick:last-child{transform:translateX(-100%)}#ruler .tick:focus-visible{outline:1px solid #e6e2d8;outline-offset:4px}#ruler .tick[aria-current=true]{border-left:1px solid #e6e2d8}#destination{position:absolute;top:-5px;height:9px;border-left:1px dashed #8fa8c4;transition:left .16s linear;pointer-events:none}";
     document.head.appendChild(style); still=document.createElement("canvas"); still.id="still"; still.setAttribute("aria-hidden","true"); document.body.appendChild(still); stillContext=still.getContext("2d"); bridge=document.createElement("div"); bridge.id="bridge"; bridge.setAttribute("role","status"); document.body.appendChild(bridge); var marker=document.createElement("i");marker.id="destination";$("ruler").appendChild(marker); }
@@ -68,15 +71,24 @@
   function commitSerial(stage) { if(staging!==stage || stateFor(cur).beat.id!==stage.beat)return; var s=stateFor(cur); if(stage.timer)clearTimeout(stage.timer);
     renderTo(stage,s);staging=null;committed=stage;frame=stage.frame;active=stage.beat;pending=null;childFrames=Object.assign({},stage.frames);paint(s);frame.classList.add("on");hideStill();hideBridge();diag.record("commit",{beat:active,requestedT:s.t,tier:tier.name,stagingMs:Math.round(performance.now()-stage.createdAt)}); }
   function holdCommitted() { var held=ownState(cur);cur=target=held.t;scrollTo(0,target*Math.max(1,document.documentElement.scrollHeight-innerHeight));pending=null; }
-  function restoreSerial(stage) { var old=stage.previous;failedTarget=cur;staging={frame:stage.frame,beat:old.beat,src:old.src,frames:{},serial:true,restoring:true,createdAt:performance.now()}; frame=stage.frame; frame.title="Beat "+old.beat+": "+beatFor(old.beat).title; frame.src=old.src; bridgeMessage("The next scene could not be prepared. Restoring the committed scene.",false); }
-  function stageTimeout(stage) { if(staging!==stage)return;diag.record("stage-timeout",{beat:stage.beat,tier:tier.name}); if(stage.serial){restoreSerial(stage);return;}failedTarget=cur;dispose(stage,"timeout");staging=null;holdCommitted();bridgeMessage("The next scene did not become ready. The committed scene remains visible.",true); }
+  function restoreSerial(stage) { var old=stage.previous;failedTarget=cur;if(stage.timer)clearTimeout(stage.timer);
+    /* Do not let the virtual timeline immediately cancel this restoration and
+       queue the failed destination again. Preserve that destination only for
+       the explicit Retry control. */
+    holdCommitted();staging={frame:stage.frame,beat:old.beat,src:old.src,frames:{},serial:true,restoring:true,createdAt:performance.now()}; frame=stage.frame; frame.title="Beat "+old.beat+": "+beatFor(old.beat).title; frame.src=old.src; bridgeMessage("The next scene could not be prepared. Restoring the committed scene.",false); }
+  function stageTimeout(stage) { if(staging!==stage)return;diag.record("stage-timeout",{beat:stage.beat,tier:tier.name});
+    /* A capability probe cannot predict temporary context pressure. Retry once
+       with one live renderer and a smaller pixel budget before showing failure
+       UI; the committed scene remains visible throughout the downgrade. */
+    if(!stage.serial&&tier.concurrent&&!timeoutOverride()){var requested=stateFor(cur);dispose(stage,"rich-timeout");staging=null;tier={concurrent:false,name:"serial"};if(diag.setQualityTier)diag.setQualityTier(tier.name);diag.record("tier-downgrade",{beat:requested.beat.id,reason:"rich-stage-timeout",retryTier:tier.name});startStage(requested);return;}
+    if(stage.serial){restoreSerial(stage);return;}failedTarget=cur;dispose(stage,"timeout");staging=null;holdCommitted();bridgeMessage("The next scene did not become ready. The committed scene remains visible.",true); }
   function startStage(s) { if(retiring){pending=s.beat.id;return;} var serial=!tier.concurrent, stage;
     if(serial){renderTo(committed,ownState(cur)); var previous={beat:active,src:committed.src}; captureStill(committed); bridgeMessage("Holding this moment while the next scene prepares.",false); committed.frame.classList.remove("on"); stage={frame:committed.frame,beat:s.beat.id,src:source(s),frames:{},createdAt:performance.now(),serial:true,previous:previous}; frame=stage.frame;frame.title="Beat "+stage.beat+": "+s.beat.title;frame.src=stage.src;
     }else stage=makeScene(s,true);
-    staging=stage;pending=s.beat.id;failedTarget=null;diag.record("stage-create",{beat:stage.beat,requestedT:s.t,tier:tier.name,concurrent:!serial,rendererCount:rendererCount(),timeoutMs:stageBudget()});stage.timer=setTimeout(function(){stageTimeout(stage);},stageBudget()); }
+    staging=stage;pending=s.beat.id;failedTarget=null;var timeoutMs=stageBudget(serial);diag.record("stage-create",{beat:stage.beat,requestedT:s.t,tier:tier.name,concurrent:!serial,rendererCount:rendererCount(),timeoutMs:timeoutMs});stage.timer=setTimeout(function(){stageTimeout(stage);},timeoutMs); }
   function request(s) { if(staging && staging.beat===s.beat.id)return; if(staging)cancelStage("target-changed",s.beat.id); startStage(s); }
   function apply(t) { if(!ready)return stateFor(t); var s=stateFor(t);
-    if(active===s.beat.id){if(staging&&!staging.serial){cancelStage("returned-to-committed",s.beat.id);pending=null;}if(!staging){renderTo(committed,s);paint(s);return s;}}
+    if(active===s.beat.id){if(staging){if(staging.serial&&!staging.restoring){restoreSerial(staging);return s;}if(!staging.serial){cancelStage("returned-to-committed",s.beat.id);pending=null;}}if(!staging){renderTo(committed,s);paint(s);return s;}}
     if(active!==null){var held=ownState(t);renderTo(committed,held);paint(held);}
     if(!staging || staging.beat!==s.beat.id)request(s); return s; }
   function maxScroll() { return Math.max(1,document.documentElement.scrollHeight-innerHeight); }

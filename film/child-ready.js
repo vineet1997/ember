@@ -6,6 +6,10 @@
   function contract() {
     if (window.UNROLL) return {beat:12,covers:[12],handle:"UNROLL"};
     if (window.EMBER_CONFIG && window["EMBER"+window.EMBER_CONFIG.id]) return {beat:window.EMBER_CONFIG.id,covers:[window.EMBER_CONFIG.id],handle:"EMBER"+window.EMBER_CONFIG.id};
+    /* Some standalone renderer pages expose EMBER<n> directly rather than
+       repeating a separate EMBER_CONFIG object. The parent still needs their
+       first-frame signal before it may commit the scene. */
+    for (var id=1; id<=14; id++) if (window["EMBER"+id]) return {beat:id,covers:[id],handle:"EMBER"+id};
     if (window.EMBER) return {beat:5,covers:[5,6,7],handle:"EMBER"};
     return null;
   }

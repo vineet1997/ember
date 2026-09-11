@@ -14,7 +14,7 @@ SCENES = (
     ("shrink/index.html", 8, [8]),
     ("steppe/index.html", 9, [9]),
     ("sweep/index.html", 10, [10]),
-    ("doors/index.html", 11, [11]),
+    ("doors/index.html?pixelRatio=.95", 11, [11]),
     ("unroll/index.html", 12, [12]),
     ("ocean/index.html", 13, [13]),
     ("epilogue/index.html", 14, [14]),

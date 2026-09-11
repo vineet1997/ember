@@ -16,11 +16,12 @@ def main():
         page = browser.new_page(viewport={"width": 1440, "height": 810})
         errors = []
         page.on("pageerror", lambda error: errors.append(str(error)))
-        page.goto("http://127.0.0.1:8899/doors/index.html",
+        page.goto("http://127.0.0.1:8899/doors/index.html?pixelRatio=.95",
                   wait_until="networkidle", timeout=60000)
         page.wait_for_timeout(1000)
         result = page.evaluate("""() => ({
           ready: !!window.EMBER11,
+          childReady: window.ONE_EMBER_FRAME_READY || null,
           purity: window.EMBER11 && EMBER11.purity(),
           join: window.EMBER11 && EMBER11.join(),
           final: window.EMBER11 && EMBER11.camAt(1),
@@ -50,7 +51,8 @@ def main():
                  result["afterBeringia"]["beringia"] == 1 and result["beforeDogger"]["dogger"] == 0 and
                  result["afterDogger"]["dogger"] == 1)
     copy_ok = " ".join(result["copy"]["lines"]) == result["copy"]["expected"]
-    return 0 if result["ready"] and result["purity"] and result["join"] and timing_ok and copy_ok and not errors else 1
+    child_ready = result["childReady"] and result["childReady"]["beat"] == 11
+    return 0 if result["ready"] and child_ready and result["purity"] and result["join"] and timing_ok and copy_ok and not errors else 1
 
 
 if __name__ == "__main__":

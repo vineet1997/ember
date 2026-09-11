@@ -40,11 +40,10 @@ with sync_playwright() as p:
         except Exception:
             print(json.dumps(page.evaluate("""() => ({
               active:FILM.active, pending:FILM.pending, staging:FILM.staging,
-              incoming:(() => { const f=[...document.querySelectorAll('iframe.incoming')].at(-1); return !f ? null : {
-                src:f.src, ember:!!f.contentWindow.EMBER, ready:!!f.contentWindow.ONE_EMBER_FRAME_READY,
-                loader:f.contentDocument.querySelector('#load') && f.contentDocument.querySelector('#load').className,
-                text:f.contentDocument.body.innerText.slice(0,400)
-              }; })(),
+              incoming:(() => { const f=[...document.querySelectorAll('iframe.incoming')].at(-1), d=f&&f.contentDocument;
+                return !f ? null : {src:f.src, ember:!!f.contentWindow.EMBER, ready:!!f.contentWindow.ONE_EMBER_FRAME_READY,
+                  loader:d&&d.querySelector('#load')&&d.querySelector('#load').className,
+                  text:d&&d.body ? d.body.innerText.slice(0,400) : ''}; })(),
               events:FILM.diagnostics().events.slice(-12)
             })"""), indent=2), flush=True)
             raise
@@ -64,10 +63,13 @@ with sync_playwright() as p:
         "window.FILM.active === 9 && window.FILM.pending === null",
         timeout=30000,
     )
-    reverse = page.evaluate("""() => {
+    page.evaluate("""() => {
       const F=window.FILM; F.renderAt(.54); F.renderAt(.45); F.renderAt(.54);
-      return {active:F.active,pending:F.pending,staging:F.staging,title:document.querySelector('#title').textContent};
     }""")
+    page.wait_for_function("window.FILM.active === 9 && window.FILM.pending === null && window.FILM.staging === null", timeout=30000)
+    reverse = page.evaluate("""() => ({
+      active:FILM.active,pending:FILM.pending,staging:FILM.staging,title:document.querySelector('#title').textContent
+    })""")
     page.keyboard.press("End")
     page.wait_for_timeout(120)
     destination = page.evaluate("() => ({target:FILM.target,current:FILM.current,active:FILM.active,iframeCount:document.querySelectorAll('iframe').length})")

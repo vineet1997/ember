@@ -18,10 +18,15 @@ with sync_playwright() as p:
     committed = page.evaluate("""() => ({iframeCount:document.querySelectorAll('iframe').length,
       still:document.querySelector('#still').classList.contains('on'),
       loaderHidden:document.querySelector('iframe').contentDocument.querySelector('#load').classList.contains('off')})""")
+    page.evaluate("""() => { const F=window.FILM; F.renderAt(.54); F.renderAt(.45); }""")
+    page.wait_for_function("window.FILM.active === 8 && window.FILM.pending === null && window.FILM.staging === null", timeout=30000)
+    reversed = page.evaluate("""() => ({active:FILM.active,pending:FILM.pending,staging:FILM.staging,
+      iframeCount:document.querySelectorAll('iframe').length,still:document.querySelector('#still').classList.contains('on')})""")
     browser.close()
 
-print({"immediate": immediate, "committed": committed})
+print({"immediate": immediate, "committed": committed, "reversed": reversed})
 assert not errors, errors
 assert immediate == {"tier": {"concurrent": False, "name": "serial"}, "active": 1, "pending": 8,
                      "staging": {"beat": 8, "serial": True}, "iframeCount": 1, "still": True}
 assert committed == {"iframeCount": 1, "still": False, "loaderHidden": True}
+assert reversed == {"active": 8, "pending": None, "staging": None, "iframeCount": 1, "still": False}
