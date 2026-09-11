@@ -1,7 +1,9 @@
-/* The master shell owns one deep-time t. It keeps exactly one WebGL child alive. */
+/* The master shell owns one deep-time t and commits a scene only after a frame exists. */
 (function () { "use strict";
-  var D, N, frame, active = null, pending = null, loadedSrc = "", ready = false, target = 0, cur = 0, contractReported = null, childFrames = {};
-  var diag=window.EMBER_DIAGNOSTICS || {record:function(){},childResources:function(){return {};}};
+  var D, N, frame, committed, staging = null, retiring = null;
+  var active = null, pending = null, ready = false, target = 0, cur = 0, failedTarget = null, childFrames = {};
+  var still, stillContext, bridge, tier;
+  var diag = window.EMBER_DIAGNOSTICS || {record:function(){},childResources:function(){return {};},snapshot:function(){return {capability:{}};}};
   var $ = function (id) { return document.getElementById(id); };
   function clamp(x, a, b) { return x < a ? a : x > b ? b : x; }
   function lerp(a, b, f) { return a + (b - a) * f; }
@@ -9,8 +11,8 @@
     for (var i = 0; i < D.beats.length - 1; i++) if (t < D.beats[i].t1) { beat = D.beats[i]; break; }
     var local = clamp((t - beat.t0) / (beat.t1 - beat.t0), 0, 1);
     return {t:t,beat:beat,localT:local,yearBP:lerp(beat.yearsBP[0],beat.yearsBP[1],local)}; }
+  function beatFor(id) { return D.beats.filter(function(b){return b.id===id;})[0]; }
   function childT(s) { return s.beat.id >= 5 && s.beat.id <= 7 ? s.t : s.localT; }
-  function post(s) { if (frame && frame.contentWindow) frame.contentWindow.postMessage({type:"one-ember:external-t",active:true,t:childT(s),presentation:true}, location.origin); }
   function source(s) { return new URL(s.beat.src, location.href).href; }
   function segment(s) { var narration=N.beats[s.beat.id-1], a=narration.segments, n=a.length;
     if (!n || s.localT < .10 || s.localT > .82) return "";
@@ -18,39 +20,62 @@
   function year(y) { return y >= 1000 ? (y/1000).toFixed(y%1000?1:0)+" KA" : Math.round(y)+" BP"; }
   function paint(s) { $("act").textContent="Beat "+String(s.beat.id).padStart(2,"0")+" · "+year(s.beat.yearsBP[0])+" — "+year(s.beat.yearsBP[1]); $("title").textContent=s.beat.title;
     var text=segment(s); $("subtitle").textContent=text; $("subtitle").classList.toggle("on",!!text); }
-  function childReady(id) { var w=frame.contentWindow; return w && (id===12 ? w.UNROLL : w["EMBER"+id]); }
-  addEventListener("message",function(e){var m=e.data;if(!m||m.type!=="one-ember:child-ready"||!frame||e.source!==frame.contentWindow)return;
-    (m.covers||[m.beat]).forEach(function(id){childFrames[id]=m;});
-    diag.record("child-first-frame",{beat:m.beat,covers:m.covers,handle:m.handle,firstFrameAt:m.firstFrameAt,loaderHidden:m.loaderHidden});
+  function renderer(scene, id) { var w=scene && scene.frame && scene.frame.contentWindow; return w && (id===12 ? w.UNROLL : w["EMBER"+id]); }
+  function frameReady(scene, id) { return !!(scene && scene.frames && scene.frames[id]); }
+  function ownState(t) { var b=beatFor(active), edge=Math.max(b.t0,b.t1-.000001); return stateFor(clamp(t,b.t0,edge)); }
+  function renderTo(scene, s) { var w=scene && scene.frame.contentWindow, r=renderer(scene,s.beat.id); if(!w)return;
+    try { if(r && r.renderAt) r.renderAt(childT(s)); } catch(e) { diag.record("child-render-error",{beat:s.beat.id,message:String(e.message||e)}); }
+    w.postMessage({type:"one-ember:external-t",active:true,t:childT(s),presentation:true}, location.origin); }
+  function sceneForWindow(w) { if(staging && staging.frame.contentWindow===w)return staging; if(committed && committed.frame.contentWindow===w)return committed; if(retiring && retiring.frame.contentWindow===w)return retiring; return null; }
+  function capabilities() { var c=(diag.snapshot().capability||{}), memory=navigator.deviceMemory, cores=navigator.hardwareConcurrency, concurrent=!!c.webgl&&!c.saveData&&!c.reducedMotion&&innerWidth>=800&&innerHeight>=600&&(!memory||memory>=4)&&(!cores||cores>=4);
+    return {concurrent:concurrent,name:concurrent?"concurrent":"serial"}; }
+  function stageBudget() { var requested=Number(new URLSearchParams(location.search).get("stage-timeout")); return diag.enabled&&isFinite(requested)&&requested>0 ? requested : 30000; }
+  function installStageSurface() { var style=document.createElement("style");
+    style.textContent="#stack iframe.scene{z-index:0;transition:opacity .22s ease}#stack iframe.scene.incoming{z-index:1}#still{position:fixed;inset:0;z-index:3;width:100%;height:100%;display:none;background:#04060a;pointer-events:none}#still.on{display:block}#bridge{position:fixed;inset:0;z-index:4;display:none;place-content:center;text-align:center;padding:32px;color:#8fa8c4;font:400 11px/1.6 var(--mono);letter-spacing:.1em;text-transform:uppercase;pointer-events:none}#bridge.on{display:grid}#bridge>div{padding:10px 12px;background:rgba(4,6,10,.8)}#bridge button,#bridge a{margin:10px 5px 0;padding:7px 10px;border:1px solid #647c99;background:#04060a;color:#e6e2d8;font:inherit;text-decoration:none;pointer-events:auto}";
+    document.head.appendChild(style); still=document.createElement("canvas"); still.id="still"; still.setAttribute("aria-hidden","true"); document.body.appendChild(still); stillContext=still.getContext("2d"); bridge=document.createElement("div"); bridge.id="bridge"; bridge.setAttribute("role","status"); document.body.appendChild(bridge); }
+  function hideBridge() { bridge.classList.remove("on"); bridge.replaceChildren(); }
+  function captureStill(scene) { try { var doc=scene.frame.contentDocument, canvases=doc&&doc.querySelectorAll("canvas"); if(!canvases||!canvases.length)return false;
+      var scale=Math.min(1.25,devicePixelRatio||1), w=Math.max(1,Math.round(innerWidth*scale)), h=Math.max(1,Math.round(innerHeight*scale)); still.width=w;still.height=h;stillContext.fillStyle="#04060a";stillContext.fillRect(0,0,w,h);
+      Array.prototype.forEach.call(canvases,function(canvas){stillContext.drawImage(canvas,0,0,w,h);}); still.classList.add("on"); return true;
+    } catch(e) { diag.record("still-capture-error",{message:String(e.message||e)}); return false; } }
+  function hideStill() { still.classList.remove("on"); still.width=1; still.height=1; }
+  function bridgeMessage(message, retry) { bridge.replaceChildren(); var line=document.createElement("div");line.textContent=message;bridge.appendChild(line);
+    if(retry){var button=document.createElement("button");button.type="button";button.textContent="Retry scene";button.onclick=function(){var wanted=failedTarget;hideBridge();if(wanted!==null)renderAt(wanted);};bridge.appendChild(button);}
+    var link=document.createElement("a");link.href="../storyboard.html";link.textContent="Open storyboard";bridge.appendChild(link);bridge.classList.add("on"); }
+  function makeScene(s, incoming) { var f=document.createElement("iframe"), scene={frame:f,beat:s.beat.id,src:source(s),frames:{},createdAt:performance.now(),serial:false};
+    f.className="scene"+(incoming?" incoming":""); f.setAttribute("aria-label","One Ember visual scene"); f.setAttribute("tabindex","-1"); f.title="Beat "+scene.beat+": "+s.beat.title;
+    f.addEventListener("load",function(){diag.record("iframe-load",{beat:scene.beat,staged:!!incoming,resources:diag.childResources(f)});}); $("stack").appendChild(f); f.src=s.beat.src; return scene; }
+  function rendererCount() { return $("stack").querySelectorAll("iframe").length; }
+  function dispose(scene, reason) { if(!scene)return; if(scene.timer)clearTimeout(scene.timer); if(scene.serial)return;
+    if(scene.frame.parentNode)scene.frame.remove(); diag.record("dispose",{beat:scene.beat,reason:reason,lifetimeMs:Math.round(performance.now()-scene.createdAt),rendererCount:rendererCount()}); }
+  function cancelStage(reason, replacement) { if(!staging)return; diag.record("cancel",{beat:staging.beat,replacedBy:replacement||null,reason:reason}); if(staging.serial){hideStill();hideBridge();}dispose(staging,reason);staging=null; }
+  function transitionDone() { if(retiring){dispose(retiring,"crossfade-complete");retiring=null;} apply(cur); }
+  function commitRich(stage) { if(staging!==stage || stateFor(cur).beat.id!==stage.beat)return; var s=stateFor(cur), old=committed;
+    renderTo(stage,s); staging=null; if(stage.timer)clearTimeout(stage.timer); committed=stage;frame=stage.frame;active=stage.beat;pending=null;childFrames=Object.assign({},stage.frames);paint(s);frame.classList.add("on");
+    retiring=old; diag.record("commit",{beat:active,requestedT:s.t,tier:tier.name,stagingMs:Math.round(performance.now()-stage.createdAt)}); setTimeout(transitionDone,230); }
+  function commitSerial(stage) { if(staging!==stage || stateFor(cur).beat.id!==stage.beat)return; var s=stateFor(cur); if(stage.timer)clearTimeout(stage.timer);
+    renderTo(stage,s);staging=null;committed=stage;frame=stage.frame;active=stage.beat;pending=null;childFrames=Object.assign({},stage.frames);paint(s);frame.classList.add("on");hideStill();hideBridge();diag.record("commit",{beat:active,requestedT:s.t,tier:tier.name,stagingMs:Math.round(performance.now()-stage.createdAt)}); }
+  function holdCommitted() { var held=ownState(cur);cur=target=held.t;scrollTo(0,target*Math.max(1,document.documentElement.scrollHeight-innerHeight));pending=null; }
+  function restoreSerial(stage) { var old=stage.previous;failedTarget=cur;staging={frame:stage.frame,beat:old.beat,src:old.src,frames:{},serial:true,restoring:true,createdAt:performance.now()}; frame=stage.frame; frame.title="Beat "+old.beat+": "+beatFor(old.beat).title; frame.src=old.src; bridgeMessage("The next scene could not be prepared. Restoring the committed scene.",false); }
+  function stageTimeout(stage) { if(staging!==stage)return;diag.record("stage-timeout",{beat:stage.beat,tier:tier.name}); if(stage.serial){restoreSerial(stage);return;}failedTarget=cur;dispose(stage,"timeout");staging=null;holdCommitted();bridgeMessage("The next scene did not become ready. The committed scene remains visible.",true); }
+  function startStage(s) { if(retiring){pending=s.beat.id;return;} var serial=!tier.concurrent, stage;
+    if(serial){renderTo(committed,ownState(cur)); var previous={beat:active,src:committed.src}; captureStill(committed); bridgeMessage("Holding this moment while the next scene prepares.",false); committed.frame.classList.remove("on"); stage={frame:committed.frame,beat:s.beat.id,src:source(s),frames:{},createdAt:performance.now(),serial:true,previous:previous}; frame=stage.frame;frame.title="Beat "+stage.beat+": "+s.beat.title;frame.src=s.beat.src;
+    }else stage=makeScene(s,true);
+    staging=stage;pending=s.beat.id;failedTarget=null;diag.record("stage-create",{beat:stage.beat,requestedT:s.t,tier:tier.name,concurrent:!serial,rendererCount:rendererCount(),timeoutMs:stageBudget()});stage.timer=setTimeout(function(){stageTimeout(stage);},stageBudget()); }
+  function request(s) { if(staging && staging.beat===s.beat.id)return; if(staging)cancelStage("target-changed",s.beat.id); startStage(s); }
+  function apply(t) { if(!ready)return stateFor(t); var s=stateFor(t);
+    if(active===s.beat.id){if(staging&&!staging.serial){cancelStage("returned-to-committed",s.beat.id);pending=null;}if(!staging){renderTo(committed,s);paint(s);return s;}}
+    if(active!==null)renderTo(committed,ownState(t));
+    if(!staging || staging.beat!==s.beat.id)request(s); return s; }
+  function renderAt(t) { cur=target=clamp(t,0,1); scrollTo(0,target*Math.max(1,document.documentElement.scrollHeight-innerHeight)); return apply(cur); }
+  function tick(){if(ready){target=clamp(scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight),0,1);cur+=(target-cur)*.14;apply(cur);}requestAnimationFrame(tick);}
+  addEventListener("message",function(e){var m=e.data;if(!m||m.type!=="one-ember:child-ready")return;var owner=sceneForWindow(e.source);if(!owner)return;
+    (m.covers||[m.beat]).forEach(function(id){owner.frames[id]=m;childFrames[id]=m;});diag.record("child-first-frame",{beat:m.beat,covers:m.covers,handle:m.handle,firstFrameAt:m.firstFrameAt,loaderHidden:m.loaderHidden,staged:owner===staging});
+    if(owner===committed&&!ready&&frameReady(committed,1)){ready=true;active=1;frame=committed.frame;renderTo(committed,stateFor(0));frame.classList.add("on");$("bar").style.width="100%";$("status").textContent="ready · "+tier.name;$("load").classList.add("off");paint(stateFor(0));diag.record("initial-ready",{beat:1,resources:diag.childResources(frame),firstMeaningfulFrame:committed.frames[1].firstFrameAt});}
+    if(owner===staging&&frameReady(staging,staging.beat)){diag.record("stage-first-frame",{beat:staging.beat,firstFrameAt:staging.frames[staging.beat].firstFrameAt,tier:tier.name});if(staging.restoring){var restored=staging;staging=null;active=restored.beat;committed={frame:restored.frame,beat:restored.beat,src:restored.src,frames:restored.frames,createdAt:restored.createdAt,serial:true};frame=committed.frame;holdCommitted();frame.classList.add("on");hideStill();bridgeMessage("The previous scene is restored. You can retry when ready.",true);return;}if(staging.serial)commitSerial(staging);else requestAnimationFrame(function(){commitRich(owner);});}
   });
-  function settle() { var s=stateFor(cur);
-    if (!pending) return;
-    if (s.beat.id !== pending) return request(s);
-    if (!childReady(pending)) return setTimeout(settle,60);
-    if(contractReported!==pending){contractReported=pending;diag.record("child-contract-ready",{beat:pending,resources:diag.childResources(frame),firstMeaningfulFrame:null});}
-    active=pending; pending=null; loadedSrc=source(s); post(s); paint(s);diag.record("commit",{beat:active,requestedT:s.t});
-  }
-  function request(s) { if(pending && pending!==s.beat.id)diag.record("cancel",{beat:pending,replacedBy:s.beat.id}); pending=s.beat.id; contractReported=null;diag.record("request",{beat:pending,requestedT:s.t,src:source(s)}); frame.src=s.beat.src; frame.title="Beat "+pending+": "+s.beat.title; settle(); }
-  function apply(t) { var s=stateFor(t), src=source(s);
-    if (active === s.beat.id && !pending) { post(s); paint(s); return s; }
-    if (src === loadedSrc && !pending) { active=s.beat.id; post(s); paint(s); return s; }
-    if (pending !== s.beat.id) request(s);
-    return s;
-  }
-  function renderAt(t) { cur=target=clamp(t,0,1);return apply(cur); }
-  function tick(){if(ready){target=clamp(scrollY/Math.max(1,document.documentElement.scrollHeight-innerHeight),0,1);cur+=(target-cur)*.14;apply(cur)}requestAnimationFrame(tick)}
-  function installInput(){var input=$("input"),touchY=null;
-    function focus(){input.focus({preventScroll:true})}
-    function move(y){scrollBy(0,y)}
-    input.addEventListener("pointerdown",focus);
-    input.addEventListener("wheel",function(e){e.preventDefault();move(e.deltaY)},{passive:false});
-    input.addEventListener("touchstart",function(e){touchY=e.touches[0].clientY},{passive:true});
-    input.addEventListener("touchmove",function(e){var y=e.touches[0].clientY;if(touchY!==null){e.preventDefault();move(touchY-y);touchY=y}},{passive:false});
-    addEventListener("keydown",function(e){var d=0;if(e.key==="End"){e.preventDefault();scrollTo(0,document.documentElement.scrollHeight);return}if(e.key==="Home"){e.preventDefault();scrollTo(0,0);return}if(e.key==="PageDown"||e.key===" ")d=innerHeight*.82;else if(e.key==="PageUp")d=-innerHeight*.82;else if(e.key==="ArrowDown")d=80;else if(e.key==="ArrowUp")d=-80;if(d){e.preventDefault();move(d)}},true);
-    focus();
-  }
+  function installInput(){var input=$("input"),touchY=null;function focus(){input.focus({preventScroll:true});}function move(y){scrollBy(0,y);}input.addEventListener("pointerdown",focus);input.addEventListener("wheel",function(e){e.preventDefault();move(e.deltaY);},{passive:false});input.addEventListener("touchstart",function(e){touchY=e.touches[0].clientY;},{passive:true});input.addEventListener("touchmove",function(e){var y=e.touches[0].clientY;if(touchY!==null){e.preventDefault();move(touchY-y);touchY=y;}},{passive:false});addEventListener("keydown",function(e){var d=0;if(e.key==="End"){e.preventDefault();scrollTo(0,document.documentElement.scrollHeight);return;}if(e.key==="Home"){e.preventDefault();scrollTo(0,0);return;}if(e.key==="PageDown"||e.key===" ")d=innerHeight*.82;else if(e.key==="PageUp")d=-innerHeight*.82;else if(e.key==="ArrowDown")d=80;else if(e.key==="ArrowUp")d=-80;if(d){e.preventDefault();move(d);}},true);focus();}
   function buildRuler(){$("ticks").innerHTML=D.beats.map(function(b){return '<span class="tick" style="left:'+(b.t0*100).toFixed(3)+'%"><i>'+year(b.yearsBP[0])+'</i></span>';}).join("")+'<span class="tick hot" style="left:100%"><i style="transform:translateX(-100%)">now</i></span>';}
-  function wait(){if(!childReady(D.beats[0].id))return setTimeout(wait,60);ready=true;loadedSrc=source(stateFor(0));renderAt(0);frame.classList.add("on");$("bar").style.width="100%";$("status").textContent="ready · one renderer";$("load").classList.add("off");diag.record("initial-ready",{beat:1,resources:diag.childResources(frame),firstMeaningfulFrame:null})}
-  function purity(){var f=[],b=[],i;for(i=0;i<=400;i++)f.push(JSON.stringify(stateFor(i/400)));for(i=400;i>=0;i--)b.unshift(JSON.stringify(stateFor(i/400)));return f.every(function(v,n){return v===b[n]})}
-  Promise.all([fetch("data/film.json").then(function(r){return r.json()}),fetch("../story/narration.json").then(function(r){return r.json()})]).then(function(x){D=x[0];N=x[1];buildRuler();installInput();frame=document.createElement("iframe");frame.setAttribute("aria-label","One Ember visual scene");frame.setAttribute("tabindex","-1");frame.addEventListener("load",function(){diag.record("iframe-load",{title:frame.title,resources:diag.childResources(frame)});});$("stack").appendChild(frame);frame.src=D.beats[0].src;frame.title="Beat 1: "+D.beats[0].title;active=1;window.FILM={D:D,stateFor:stateFor,renderAt:renderAt,purity:purity,diagnostics:function(){return window.EMBER_DIAGNOSTICS.snapshot()},get childFrames(){return Object.assign({},childFrames)},get active(){return active},get pending(){return pending},get ready(){return ready}};wait();requestAnimationFrame(tick)}).catch(function(e){diag.record("boot-error",{message:String(e.message||e)});$("status").textContent=String(e.message||e)});
+  function purity(){var f=[],b=[],i;for(i=0;i<=400;i++)f.push(JSON.stringify(stateFor(i/400)));for(i=400;i>=0;i--)b.unshift(JSON.stringify(stateFor(i/400)));return f.every(function(v,n){return v===b[n];});}
+  Promise.all([fetch("data/film.json").then(function(r){return r.json();}),fetch("../story/narration.json").then(function(r){return r.json();})]).then(function(x){D=x[0];N=x[1];tier=capabilities();installStageSurface();buildRuler();installInput();committed=makeScene(stateFor(0),false);frame=committed.frame;active=1;window.FILM={D:D,stateFor:stateFor,renderAt:renderAt,purity:purity,diagnostics:function(){return window.EMBER_DIAGNOSTICS.snapshot();},get childFrames(){return Object.assign({},childFrames);},get active(){return active;},get pending(){return pending;},get ready(){return ready;},get tier(){return Object.assign({},tier);},get staging(){return staging&&{beat:staging.beat,serial:staging.serial};}};requestAnimationFrame(tick);}).catch(function(e){diag.record("boot-error",{message:String(e.message||e)});$("status").textContent=String(e.message||e);});
 }());

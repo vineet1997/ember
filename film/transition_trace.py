@@ -29,8 +29,8 @@ with sync_playwright() as playwright:
 
 print(json.dumps({"immediate": immediate, "trace": trace}, indent=2))
 assert not errors, errors
-assert immediate == {"active": 1, "pending": 8, "title": "The dark earth", "iframeTitle": "Beat 8: The world gets smaller"}
-assert any(event["type"] == "request" and event["detail"]["beat"] == 8 for event in trace["events"])
+assert immediate == {"active": 1, "pending": 8, "title": "The dark earth", "iframeTitle": "Beat 1: The dark earth"}
+assert any(event["type"] == "stage-create" and event["detail"]["beat"] == 8 for event in trace["events"])
 assert any(event["type"] == "commit" and event["detail"]["beat"] == 8 for event in trace["events"])
 child_frame = next(event["detail"] for event in trace["events"]
                    if event["type"] == "child-first-frame" and event["detail"]["beat"] == 8)
