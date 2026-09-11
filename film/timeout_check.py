@@ -19,5 +19,5 @@ with sync_playwright() as p:
 print(result)
 assert not errors, errors
 assert result["active"] == 1 and result["title"] == "The dark earth" and result["iframeCount"] == 1
-assert "Retry scene" in result["bridge"] and "Open storyboard" in result["bridge"]
+assert "Retry scene" in result["bridge"] and "Open readable atlas" in result["bridge"]
 assert any(e["type"] == "stage-timeout" and e["detail"]["beat"] == 8 for e in result["events"])

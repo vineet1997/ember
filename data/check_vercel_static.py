@@ -69,6 +69,13 @@ def main() -> None:
     if any(output.rglob("service-worker.js")):
         fail("a service worker entered the artifact without an offline-data decision")
 
+    atlas = output / "film" / "atlas.html"
+    if not atlas.is_file():
+        fail("the no-WebGL readable atlas is missing from the deployment artifact")
+    atlas_text = atlas.read_text(encoding="utf-8").lower()
+    if atlas_text.count("<article") != 14 or atlas_text.count("<script"):
+        fail("the readable atlas is not a script-free fourteen-beat fallback")
+
     total_bytes = sum(path.stat().st_size for path in output.rglob("*") if path.is_file())
     # Keep a little deployment-engineering discipline around the Hobby static
     # upload ceiling. This is a guard on the generated artifact, not a claim

@@ -11,6 +11,7 @@ with sync_playwright() as p:
     page.wait_for_function("window.FILM && window.FILM.ready", timeout=10000)
     initial = page.evaluate("""() => ({target:FILM.target,current:FILM.current,resolution:FILM.resolution,
       canvas:document.querySelector('iframe').contentDocument.querySelector('#earth').width,
+      pixelRatio:new URL(document.querySelector('iframe').src).searchParams.get('pixelRatio'),
       buttons:document.querySelectorAll('#ticks button').length,
       ruler:document.querySelector('#ruler').getAttribute('aria-label')})""")
     page.keyboard.press("End")
@@ -29,6 +30,7 @@ print({"initial": initial, "end": end, "ruler": ruler})
 assert not errors, errors
 assert initial["buttons"] == 15 and initial["ruler"] == "Choose a destination chapter"
 assert 0.65 <= initial["resolution"] < 2 and initial["canvas"] <= 1440 * initial["resolution"] + 2
+assert float(initial["pixelRatio"]) == initial["resolution"]
 assert end["target"] == 1 and end["current"] < .08 and end["scroll"] == end["maximum"] and end["active"] == 1
 assert ruler["target"] == .44 and ruler["current"] < .08 and ruler["active"] == 1
 assert ruler["selected"] == "true" and ruler["destination"] == "44%"
