@@ -71,7 +71,7 @@ function lerp(a, b, f) { return a + (b - a) * f; }
 
 var D12 = null, D11 = null;  /* the two sides of the entry cut - see loader */
 var earth = $("earth"), over = $("over"), octx = over.getContext("2d");
-var W = 0, H = 0, DPR = 1, gl = null, prog = null, U = {}, TEXG = null;
+var W = 0, H = 0, DPR = 1, pixelRatio = +new URLSearchParams(location.search).get("pixelRatio") || 2, gl = null, prog = null, U = {}, TEXG = null;
 
 window.addEventListener("keydown", function (e) {
   if (e.key === "i" || e.key === "I") $("panel").classList.toggle("on");
@@ -1337,7 +1337,7 @@ function recordTest() {
 var target = 0, cur = 0, driving = "scrub", EXTERNAL = null;
 
 function resize() {
-  DPR = Math.min(2, window.devicePixelRatio || 1);
+  DPR = Math.min(2, window.devicePixelRatio || 1, pixelRatio);
   W = window.innerWidth; H = window.innerHeight;
   earth.width = Math.round(W * DPR); earth.height = Math.round(H * DPR);
   over.width = Math.round(W * DPR); over.height = Math.round(H * DPR);
@@ -1412,6 +1412,10 @@ window.addEventListener("message", function (e) {
       style.textContent = "html.presentation #head,html.presentation #copy,html.presentation #state,html.presentation #scrub,html.presentation #hint,html.presentation #panel{display:none!important}";
       document.head.appendChild(style);
     }
+  }
+  if (typeof m.pixelRatio === "number") {
+    pixelRatio = clamp(m.pixelRatio, .65, 2);
+    resize();
   }
   EXTERNAL = { active: !!m.active, t: clamp(+m.t || 0, 0, 1) };
   if (EXTERNAL.active && gl) renderAt(EXTERNAL.t);

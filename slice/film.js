@@ -74,7 +74,7 @@ var TILE_TIMING = { tile: null, state: "waiting for a background tile",
                     imageDecode: null, readback: null, terrainDecode: null,
                     upload: null, mipmap: null, total: null };
 var earth = $("earth"), over = $("over"), octx = over.getContext("2d");
-var W = 0, H = 0, DPR = 1;
+var W = 0, H = 0, DPR = 1, pixelRatio = +new URLSearchParams(location.search).get("pixelRatio") || 2;
 
 /* Attached before anything can fail. The panel is where you find out WHY the
    film did not start, so it must not be a casualty of the film not starting. */
@@ -3571,7 +3571,7 @@ function makePlate() {
 }
 
 function resize() {
-  DPR = Math.min(2, window.devicePixelRatio || 1);
+  DPR = Math.min(2, window.devicePixelRatio || 1, pixelRatio);
   W = window.innerWidth; H = window.innerHeight;
   earth.width = Math.round(W * DPR); earth.height = Math.round(H * DPR);
   over.width = Math.round(W * DPR); over.height = Math.round(H * DPR);
@@ -4007,6 +4007,10 @@ function start() {
     if (!msg || msg.type !== "one-ember:external-t") return;
     if (typeof msg.presentation === "boolean") {
       document.documentElement.classList.toggle("presentation", msg.presentation);
+    }
+    if (typeof msg.pixelRatio === "number") {
+      pixelRatio = clamp(msg.pixelRatio, .65, 2);
+      resize();
     }
     if (typeof msg.t === "number") {
       EXTERNAL_T = clamp((msg.t - D.tSpan[0]) / (D.tSpan[1] - D.tSpan[0]), 0, 1);
